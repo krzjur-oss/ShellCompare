@@ -197,27 +197,33 @@ M\xF3w wy\u0142\u0105cznie w j\u0119zyku polskim.`;
   }
 });
 app.get("/sw.js", (req, res, next) => {
-  const filePath = import_path.default.join(process.cwd(), "dist", "sw.js");
-  if (import_fs.default.existsSync(filePath)) {
-    res.setHeader("Content-Type", "application/javascript");
-    return res.sendFile(filePath);
+  if (process.env.NODE_ENV === "production") {
+    const filePath = import_path.default.join(process.cwd(), "dist", "sw.js");
+    if (import_fs.default.existsSync(filePath)) {
+      res.setHeader("Content-Type", "application/javascript");
+      return res.sendFile(filePath);
+    }
   }
   next();
 });
 app.get("/manifest.webmanifest", (req, res, next) => {
-  const filePath = import_path.default.join(process.cwd(), "dist", "manifest.webmanifest");
-  if (import_fs.default.existsSync(filePath)) {
-    res.setHeader("Content-Type", "application/manifest+json");
-    return res.sendFile(filePath);
+  if (process.env.NODE_ENV === "production") {
+    const filePath = import_path.default.join(process.cwd(), "dist", "manifest.webmanifest");
+    if (import_fs.default.existsSync(filePath)) {
+      res.setHeader("Content-Type", "application/manifest+json");
+      return res.sendFile(filePath);
+    }
   }
   next();
 });
 app.get("/workbox-*.js", (req, res, next) => {
-  const fileName = import_path.default.basename(req.path);
-  const filePath = import_path.default.join(process.cwd(), "dist", fileName);
-  if (import_fs.default.existsSync(filePath)) {
-    res.setHeader("Content-Type", "application/javascript");
-    return res.sendFile(filePath);
+  if (process.env.NODE_ENV === "production") {
+    const fileName = import_path.default.basename(req.path);
+    const filePath = import_path.default.join(process.cwd(), "dist", fileName);
+    if (import_fs.default.existsSync(filePath)) {
+      res.setHeader("Content-Type", "application/javascript");
+      return res.sendFile(filePath);
+    }
   }
   next();
 });
