@@ -20,7 +20,9 @@ import {
   Award,
   CheckCircle2,
   XCircle,
-  RotateCcw
+  RotateCcw,
+  Download,
+  Smartphone
 } from "lucide-react";
 import { ATLAS_CATEGORIES, ATLAS_ITEMS } from "./data/atlasData";
 import { ActiveTab, AtlasItem, CommandComparison, ConceptComparison, ShellType } from "./types";
@@ -31,6 +33,38 @@ import TerminalWindow from "./components/TerminalWindow";
 export default function App() {
   // Tab states
   const [activeTab, setActiveTab] = useState<ActiveTab>("atlas");
+  
+  // PWA Installation state
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallBtn, setShowInstallBtn] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBtn(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    // Check if app is already running standalone
+    if (window.matchMedia("(display-mode: standalone)").matches) {
+      setShowInstallBtn(false);
+    }
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User installation outcome: ${outcome}`);
+    setDeferredPrompt(null);
+    setShowInstallBtn(false);
+  };
   
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
@@ -298,8 +332,18 @@ export default function App() {
           </button>
         </div>
 
-        <div className="hidden lg:flex items-center gap-4 text-xs font-semibold text-slate-400">
-          <div className="flex items-center gap-2 px-2.5 py-1 rounded bg-slate-950 border border-slate-800">
+        <div className="flex items-center gap-3 text-xs font-semibold text-slate-400">
+          {showInstallBtn && (
+            <button
+              onClick={handleInstallClick}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs font-semibold rounded-lg shadow-lg shadow-indigo-500/20 transition-all border border-indigo-500/40 cursor-pointer animate-pulse"
+              title="Zainstaluj jako aplikację na komputerze lub telefonie"
+            >
+              <Smartphone size={13} />
+              <span>Zainstaluj Aplikację</span>
+            </button>
+          )}
+          <div className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded bg-slate-950 border border-slate-800">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span className="text-[10px] text-emerald-400 font-mono">Gemini 3.5 Flash Active</span>
           </div>
