@@ -1,6 +1,7 @@
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
+import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 
@@ -201,6 +202,36 @@ Mów wyłącznie w języku polskim.`;
     console.error("Error in /api/compare-concept:", error);
     res.status(500).json({ error: error.message || "Błąd wewnętrzny serwera." });
   }
+});
+
+
+// Serve PWA assets from dist directory directly with correct MIME types
+app.get("/sw.js", (req, res, next) => {
+  const filePath = path.join(process.cwd(), "dist", "sw.js");
+  if (fs.existsSync(filePath)) {
+    res.setHeader("Content-Type", "application/javascript");
+    return res.sendFile(filePath);
+  }
+  next();
+});
+
+app.get("/manifest.webmanifest", (req, res, next) => {
+  const filePath = path.join(process.cwd(), "dist", "manifest.webmanifest");
+  if (fs.existsSync(filePath)) {
+    res.setHeader("Content-Type", "application/manifest+json");
+    return res.sendFile(filePath);
+  }
+  next();
+});
+
+app.get("/workbox-*.js", (req, res, next) => {
+  const fileName = path.basename(req.path);
+  const filePath = path.join(process.cwd(), "dist", fileName);
+  if (fs.existsSync(filePath)) {
+    res.setHeader("Content-Type", "application/javascript");
+    return res.sendFile(filePath);
+  }
+  next();
 });
 
 
