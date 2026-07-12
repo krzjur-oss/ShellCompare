@@ -54,7 +54,15 @@ export default function App() {
 
   // Quiz states
   const [isQuizMode, setIsQuizMode] = useState(false);
+  const [isFlashcardMode, setIsFlashcardMode] = useState(false);
+  const [flashcardResetKey, setFlashcardResetKey] = useState(0);
+
   const [quizQuestion, setQuizQuestion] = useState<AtlasItem | null>(null);
+
+  // Auto-reset flashcards state when changing atlas item or flashcard mode toggled
+  useEffect(() => {
+    setFlashcardResetKey(prev => prev + 1);
+  }, [selectedAtlasItem, isFlashcardMode]);
   const [quizSourceShell, setQuizSourceShell] = useState<ShellType>("bash");
   const [quizTargetShell, setQuizTargetShell] = useState<ShellType>("powershell");
   const [quizOptions, setQuizOptions] = useState<string[]>([]);
@@ -418,9 +426,12 @@ export default function App() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
                 <div className="flex bg-slate-900 p-1 rounded-lg border border-slate-800 self-start">
                   <button
-                    onClick={() => setIsQuizMode(false)}
+                    onClick={() => {
+                      setIsQuizMode(false);
+                      setIsFlashcardMode(false);
+                    }}
                     className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all flex items-center gap-2 ${
-                      !isQuizMode
+                      !isQuizMode && !isFlashcardMode
                         ? "bg-blue-600 text-white shadow-md shadow-blue-500/15"
                         : "text-slate-400 hover:text-slate-200"
                     }`}
@@ -430,14 +441,29 @@ export default function App() {
                   </button>
                   <button
                     onClick={() => {
+                      setIsQuizMode(false);
+                      setIsFlashcardMode(true);
+                    }}
+                    className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all flex items-center gap-2 ${
+                      !isQuizMode && isFlashcardMode
+                        ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/15"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    <span className="text-xs">🎴</span>
+                    Fiszki (Flashcards)
+                  </button>
+                  <button
+                    onClick={() => {
                       setIsQuizMode(true);
+                      setIsFlashcardMode(false);
                       if (!quizQuestion) {
                         startNewQuizQuestion();
                       }
                     }}
                     className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all flex items-center gap-2 ${
                       isQuizMode
-                        ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/15"
+                        ? "bg-purple-600 text-white shadow-md shadow-purple-500/15"
                         : "text-slate-400 hover:text-slate-200"
                     }`}
                   >
@@ -501,27 +527,47 @@ export default function App() {
                     </div>
                   </div>
 
+                  {isFlashcardMode && (
+                    <div className="bg-indigo-950/20 border border-indigo-500/20 rounded-xl p-4 flex items-start gap-3 animate-fadeIn">
+                      <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-400 shrink-0">
+                        <span className="text-lg">🎴</span>
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-xs font-bold text-white uppercase tracking-wider">Interaktywny Trening Fiszki</h4>
+                        <p className="text-xs text-indigo-200 leading-relaxed">
+                          Składnia poleceń została celowo ukryta. Spróbuj przypomnieć sobie, jak wygląda komenda dla wybranego zadania (<strong>{selectedAtlasItem.title}</strong>) w poszczególnych powłokach, a następnie kliknij odpowiednią kartę, aby sprawdzić swoją wiedzę i odsłonić detale!
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Terminal Windows Comparison Grid */}
                   <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                     <TerminalWindow 
+                      key={`${selectedAtlasItem.id}-${flashcardResetKey}-bash`}
                       type="bash" 
                       command={selectedAtlasItem.bash} 
                       output={`$ ${selectedAtlasItem.bash}\n# Wykonano pomyślnie. Plik/operacja przetworzona w środowisku POSIX.\n# Wynik symulowany:\n(Operacja wykonana w katalogu /home/user)`} 
                       explanation={`${selectedAtlasItem.title} w Bashu: Standard POSIX / Linux. Bardzo wydajne przetwarzanie tekstowe przy pomocy narzędzi systemowych.`} 
+                      isFlashcardMode={isFlashcardMode}
                     />
 
                     <TerminalWindow 
+                      key={`${selectedAtlasItem.id}-${flashcardResetKey}-cmd`}
                       type="cmd" 
                       command={selectedAtlasItem.cmd} 
                       output={`C:\\Users\\Admin> ${selectedAtlasItem.cmd}\n\n[CMD System Executed]\nMicrosoft Windows [Version 10.0.22631]`} 
                       explanation={`${selectedAtlasItem.title} w CMD: Klasyczny interpreter poleceń MS-DOS / Windows. Posiada ograniczoną składnię i słabe wsparcie dla typów.`} 
+                      isFlashcardMode={isFlashcardMode}
                     />
 
                     <TerminalWindow 
+                      key={`${selectedAtlasItem.id}-${flashcardResetKey}-powershell`}
                       type="powershell" 
                       command={selectedAtlasItem.powershell} 
                       output={`PS C:\\Users\\Admin> ${selectedAtlasItem.powershell}\n\nDirectory: C:\\Users\\Admin\\projekty\nMode                 LastWriteTime         Length Name\n----                 -------------         ------ ----`} 
                       explanation={`${selectedAtlasItem.title} w PowerShell: Nowoczesny interpreter oparty o obiekty .NET Core. Zwraca bogate dane zamiast czystego tekstu.`} 
+                      isFlashcardMode={isFlashcardMode}
                     />
                   </div>
 

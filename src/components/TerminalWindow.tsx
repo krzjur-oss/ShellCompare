@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import { Terminal, Copy, Check, Info, Maximize2, Minimize2 } from "lucide-react";
+import { Terminal, Copy, Check, Info, Maximize2, Minimize2, Eye, EyeOff, HelpCircle } from "lucide-react";
 import { ShellType } from "../types";
 
 interface TerminalWindowProps {
+  key?: string;
   type: ShellType;
   command: string;
   output: string;
   explanation?: string;
   isLoading?: boolean;
+  isFlashcardMode?: boolean;
 }
 
 export default function TerminalWindow({
@@ -16,9 +18,11 @@ export default function TerminalWindow({
   output,
   explanation,
   isLoading = false,
+  isFlashcardMode = false,
 }: TerminalWindowProps) {
   const [copied, setCopied] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(false);
 
   const handleCopy = async () => {
     try {
@@ -70,12 +74,21 @@ export default function TerminalWindow({
     },
   }[type];
 
+  const showContent = !isFlashcardMode || isRevealed;
+
   return (
     <div
       id={`terminal-${type}`}
-      className={`flex flex-col h-full rounded-xl overflow-hidden border ${shellTheme.border} ${shellTheme.glow} transition-all duration-300 bg-[#0d1117] ${
-        isExpanded ? "fixed inset-4 z-50 shadow-2xl" : "relative shadow-md"
-      }`}
+      onClick={() => {
+        if (isFlashcardMode && !isRevealed) {
+          setIsRevealed(true);
+        }
+      }}
+      className={`flex flex-col h-full rounded-xl overflow-hidden border transition-all duration-300 bg-[#0d1117] ${
+        isFlashcardMode && !isRevealed
+          ? "border-indigo-500/30 hover:border-indigo-500/60 shadow-md shadow-indigo-500/5 cursor-pointer hover:-translate-y-0.5"
+          : `${shellTheme.border} ${shellTheme.glow}`
+      } ${isExpanded ? "fixed inset-4 z-50 shadow-2xl" : "relative shadow-md"}`}
     >
       {/* Terminal Title Bar */}
       <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-900 border-b border-zinc-800 select-none">
@@ -91,22 +104,42 @@ export default function TerminalWindow({
 
         {/* Action Controls */}
         <div className="flex items-center space-x-2">
+          {/* Eye icon for flashcard toggle */}
+          {isFlashcardMode && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsRevealed(!isRevealed);
+              }}
+              title={isRevealed ? "Ukryj składnię (Fiszka)" : "Odkryj składnię (Fiszka)"}
+              className="p-1 hover:bg-zinc-800 text-indigo-400 hover:text-indigo-300 rounded-md transition-colors"
+            >
+              {isRevealed ? <EyeOff size={14} /> : <Eye size={14} />}
+            </button>
+          )}
+
           {/* Badge indicator */}
           <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md border ${shellTheme.badge} uppercase tracking-wider`}>
             {type}
           </span>
 
           <button
-            onClick={() => setIsExpanded(!isExpanded)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(!isExpanded);
+            }}
             title={isExpanded ? "Zminimalizuj" : "Maksymalizuj"}
             className="p-1 hover:bg-zinc-800 text-zinc-400 hover:text-white rounded-md transition-colors"
           >
             {isExpanded ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
           </button>
 
-          {command && (
+          {command && showContent && (
             <button
-              onClick={handleCopy}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCopy();
+              }}
               className={`p-1 hover:bg-zinc-800 text-zinc-400 hover:text-white rounded-md transition-colors flex items-center space-x-1`}
               title="Kopiuj polecenie"
             >
@@ -127,18 +160,35 @@ export default function TerminalWindow({
       </div>
 
       {/* Terminal Area */}
-      <div className={`flex-1 p-4 font-mono text-xs md:text-sm overflow-y-auto min-h-[180px] max-h-[350px] ${shellTheme.bg} transition-all duration-200`}>
+      <div className={`flex-1 flex flex-col font-mono text-xs md:text-sm overflow-y-auto min-h-[180px] max-h-[350px] ${shellTheme.bg} transition-all duration-200`}>
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center h-full space-y-3 py-10">
+          <div className="flex-1 flex flex-col items-center justify-center space-y-3 py-10">
             <div className="flex space-x-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-zinc-600 animate-bounce" style={{ animationDelay: "0ms" }}></span>
               <span className="w-2.5 h-2.5 rounded-full bg-zinc-600 animate-bounce" style={{ animationDelay: "150ms" }}></span>
               <span className="w-2.5 h-2.5 rounded-full bg-zinc-600 animate-bounce" style={{ animationDelay: "300ms" }}></span>
             </div>
-            <p className="text-zinc-500 text-xs">Generowanie symulacji...</p>
+            <p className="text-zinc-500 text-xs font-sans">Generowanie symulacji...</p>
+          </div>
+        ) : !showContent ? (
+          /* FLASHCARD BACK SIDE */
+          <div className="flex-1 flex flex-col items-center justify-center p-6 text-center select-none bg-gradient-to-b from-slate-950/20 to-slate-950/60 min-h-[180px] animate-fadeIn">
+            <div className="w-11 h-11 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:border-indigo-500/40 transition-transform duration-300">
+              <HelpCircle className="text-indigo-400 animate-pulse" size={20} />
+            </div>
+            <p className="text-xs text-slate-300 font-sans max-w-[220px] mb-1 font-medium leading-relaxed">
+              Spróbuj przypomnieć sobie polecenie dla tej powłoki
+            </p>
+            <p className="text-[10px] text-slate-500 font-sans max-w-[200px]">
+              Kliknij w dowolnym miejscu tej karty, aby odsłonić składnię
+            </p>
+            <span className="text-[9px] font-mono text-indigo-400 font-bold tracking-wider uppercase bg-indigo-500/5 px-2 py-0.5 rounded border border-indigo-500/10 mt-3.5">
+              Odkryj {type.toUpperCase()} 🎴
+            </span>
           </div>
         ) : (
-          <div className="space-y-3 leading-relaxed">
+          /* NORMAL TERMINAL CONTENT */
+          <div className="p-4 space-y-3 leading-relaxed">
             {/* Input command line */}
             <div className="flex items-start">
               <span className={`select-none ${shellTheme.text} shrink-0`}>
@@ -169,7 +219,7 @@ export default function TerminalWindow({
               Jak to działa i co oznacza?
             </h5>
             <p className="text-zinc-400 text-xs leading-relaxed font-sans">
-              {explanation}
+              {showContent ? explanation : "Kliknij kartę powyżej, aby odkryć składnię i szczegółowe wyjaśnienie tej komendy."}
             </p>
           </div>
         </div>
