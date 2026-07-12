@@ -207,29 +207,35 @@ Mów wyłącznie w języku polskim.`;
 
 // Serve PWA assets from dist directory directly with correct MIME types
 app.get("/sw.js", (req, res, next) => {
-  const filePath = path.join(process.cwd(), "dist", "sw.js");
-  if (fs.existsSync(filePath)) {
-    res.setHeader("Content-Type", "application/javascript");
-    return res.sendFile(filePath);
+  if (process.env.NODE_ENV === "production") {
+    const filePath = path.join(process.cwd(), "dist", "sw.js");
+    if (fs.existsSync(filePath)) {
+      res.setHeader("Content-Type", "application/javascript");
+      return res.sendFile(filePath);
+    }
   }
   next();
 });
 
 app.get("/manifest.webmanifest", (req, res, next) => {
-  const filePath = path.join(process.cwd(), "dist", "manifest.webmanifest");
-  if (fs.existsSync(filePath)) {
-    res.setHeader("Content-Type", "application/manifest+json");
-    return res.sendFile(filePath);
+  if (process.env.NODE_ENV === "production") {
+    const filePath = path.join(process.cwd(), "dist", "manifest.webmanifest");
+    if (fs.existsSync(filePath)) {
+      res.setHeader("Content-Type", "application/manifest+json");
+      return res.sendFile(filePath);
+    }
   }
   next();
 });
 
 app.get("/workbox-*.js", (req, res, next) => {
-  const fileName = path.basename(req.path);
-  const filePath = path.join(process.cwd(), "dist", fileName);
-  if (fs.existsSync(filePath)) {
-    res.setHeader("Content-Type", "application/javascript");
-    return res.sendFile(filePath);
+  if (process.env.NODE_ENV === "production") {
+    const fileName = path.basename(req.path);
+    const filePath = path.join(process.cwd(), "dist", fileName);
+    if (fs.existsSync(filePath)) {
+      res.setHeader("Content-Type", "application/javascript");
+      return res.sendFile(filePath);
+    }
   }
   next();
 });
