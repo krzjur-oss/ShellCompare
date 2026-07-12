@@ -22,7 +22,8 @@ import {
   XCircle,
   RotateCcw,
   Download,
-  Smartphone
+  Smartphone,
+  X
 } from "lucide-react";
 import { ATLAS_CATEGORIES, ATLAS_ITEMS } from "./data/atlasData";
 import { ActiveTab, AtlasItem, CommandComparison, ConceptComparison, ShellType } from "./types";
@@ -36,9 +37,13 @@ export default function App() {
   
   // PWA Installation state
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [showInstallBtn, setShowInstallBtn] = useState(false);
+  const [showInstallBtn, setShowInstallBtn] = useState(true);
+  const [showInstallModal, setShowInstallModal] = useState(false);
+  const [isInIframe, setIsInIframe] = useState(false);
 
   useEffect(() => {
+    setIsInIframe(window.self !== window.top);
+
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -58,12 +63,21 @@ export default function App() {
   }, []);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`User installation outcome: ${outcome}`);
-    setDeferredPrompt(null);
-    setShowInstallBtn(false);
+    if (!deferredPrompt) {
+      // Show manual install guide modal if prompt is not supported (e.g. inside an iframe, Safari iOS, etc)
+      setShowInstallModal(true);
+      return;
+    }
+    try {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User installation outcome: ${outcome}`);
+      setDeferredPrompt(null);
+      setShowInstallBtn(false);
+    } catch (err) {
+      console.warn("Native PWA prompt failed, opening fallback instructions:", err);
+      setShowInstallModal(true);
+    }
   };
   
   // Search state
@@ -1227,6 +1241,92 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* PWA MANUAL INSTALLATION MODAL */}
+      {showInstallModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-lg w-full p-6 shadow-2xl space-y-5 relative">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Smartphone className="text-blue-400" size={18} />
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Instalacja Aplikacji</h3>
+              </div>
+              <button 
+                onClick={() => setShowInstallModal(false)}
+                className="text-slate-400 hover:text-white transition-colors cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="space-y-4 text-xs text-slate-300 leading-relaxed">
+              {isInIframe && (
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 space-y-3">
+                  <div className="flex items-start gap-2.5">
+                    <span className="text-amber-400 text-lg">⚠️</span>
+                    <div className="space-y-1">
+                      <h4 className="font-bold text-amber-300 font-sans">Wykryto tryb podglądu (Iframe)</h4>
+                      <p className="text-[11px] text-slate-300 leading-relaxed">
+                        Przeglądarki internetowe blokują instalację aplikacji PWA bezpośrednio z okna podglądu AI Studio. Kliknij poniższy przycisk, aby otworzyć aplikację w osobnym oknie i natychmiast odblokować instalację:
+                      </p>
+                    </div>
+                  </div>
+                  <a
+                    href={window.location.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-lg font-bold text-xs shadow-md transition-all cursor-pointer"
+                  >
+                    <ExternalLink size={14} />
+                    Otwórz w nowej karcie i zainstaluj
+                  </a>
+                </div>
+              )}
+
+              <p>
+                Aplikacja <strong>ShellCompare</strong> wspiera technologię <strong>PWA (Progressive Web App)</strong>, umożliwiając działanie jako niezależny program na komputerze lub smartfonie (działa szybciej, bez pasków przeglądarki).
+              </p>
+
+              <div className="space-y-3">
+                {/* Desktop */}
+                <div className="bg-slate-950/50 p-3 rounded-lg border border-slate-800/60 space-y-1">
+                  <span className="font-semibold text-blue-400 font-mono text-[10px] uppercase tracking-wider">💻 KOMPUTERY (Chrome, Edge, Opera, Safari)</span>
+                  <p>W pasku adresu przeglądarki (po prawej stronie) kliknij ikonę instalacji <strong>(monitor ze strzałką)</strong> lub kliknij trzy kropki i wybierz <strong>"Zainstaluj aplikację ShellCompare"</strong>.</p>
+                </div>
+
+                {/* Android */}
+                <div className="bg-slate-950/50 p-3 rounded-lg border border-slate-800/60 space-y-1">
+                  <span className="font-semibold text-emerald-400 font-mono text-[10px] uppercase tracking-wider">🤖 SMARTFONY ANDROID</span>
+                  <p>Kliknij ikonę menu (trzy kropki) w prawym górnym rogu przeglądarki Chrome i wybierz <strong>"Zainstaluj aplikację"</strong> lub <strong>"Dodaj do ekranu głównego"</strong>.</p>
+                </div>
+
+                {/* iOS */}
+                <div className="bg-slate-950/50 p-3 rounded-lg border border-slate-800/60 space-y-1">
+                  <span className="font-semibold text-violet-400 font-mono text-[10px] uppercase tracking-wider">🍏 IPHONE & IPAD (Safari)</span>
+                  <p>Kliknij przycisk <strong>"Udostępnij"</strong> (kwadrat z pionową strzałką) na dolnym pasku Safari, przewiń listę w dół i wybierz opcję <strong>"Dodaj do ekranu początkowego"</strong>.</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 text-[10px] text-slate-500 bg-blue-500/5 p-2.5 rounded border border-blue-500/10">
+                <Info size={14} className="text-blue-400 shrink-0" />
+                <span>Jeśli przeglądasz aplikację wewnątrz podglądu AI Studio, otwórz ją w nowej karcie za pomocą przycisku w prawym górnym rogu, aby aktywować pełną instalację.</span>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex justify-end pt-2">
+              <button
+                onClick={() => setShowInstallModal(false)}
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+              >
+                Rozumiem
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

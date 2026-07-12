@@ -12,12 +12,16 @@ export default defineConfig(() => {
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
-        injectRegister: 'auto',
+        injectRegister: 'inline',
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
           cleanupOutdatedCaches: true,
           clientsClaim: true,
           skipWaiting: true,
+        },
+        devOptions: {
+          enabled: true,
+          type: 'module'
         },
         manifest: {
           name: 'ShellCompare - Atlas i Komparator Terminali',
@@ -26,7 +30,8 @@ export default defineConfig(() => {
           theme_color: '#0f172a',
           background_color: '#0f172a',
           display: 'standalone',
-          start_url: '.',
+          start_url: '/',
+          scope: '/',
           icons: [
             {
               src: 'icon-192.png',
