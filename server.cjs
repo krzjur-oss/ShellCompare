@@ -25,6 +25,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 var import_express = __toESM(require("express"), 1);
 var import_path = __toESM(require("path"), 1);
 var import_dotenv = __toESM(require("dotenv"), 1);
+var import_fs = __toESM(require("fs"), 1);
 var import_vite = require("vite");
 var import_genai = require("@google/genai");
 import_dotenv.default.config();
@@ -194,6 +195,31 @@ M\xF3w wy\u0142\u0105cznie w j\u0119zyku polskim.`;
     console.error("Error in /api/compare-concept:", error);
     res.status(500).json({ error: error.message || "B\u0142\u0105d wewn\u0119trzny serwera." });
   }
+});
+app.get("/sw.js", (req, res, next) => {
+  const filePath = import_path.default.join(process.cwd(), "dist", "sw.js");
+  if (import_fs.default.existsSync(filePath)) {
+    res.setHeader("Content-Type", "application/javascript");
+    return res.sendFile(filePath);
+  }
+  next();
+});
+app.get("/manifest.webmanifest", (req, res, next) => {
+  const filePath = import_path.default.join(process.cwd(), "dist", "manifest.webmanifest");
+  if (import_fs.default.existsSync(filePath)) {
+    res.setHeader("Content-Type", "application/manifest+json");
+    return res.sendFile(filePath);
+  }
+  next();
+});
+app.get("/workbox-*.js", (req, res, next) => {
+  const fileName = import_path.default.basename(req.path);
+  const filePath = import_path.default.join(process.cwd(), "dist", fileName);
+  if (import_fs.default.existsSync(filePath)) {
+    res.setHeader("Content-Type", "application/javascript");
+    return res.sendFile(filePath);
+  }
+  next();
 });
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
