@@ -25,6 +25,7 @@ import {
 import { ATLAS_CATEGORIES, ATLAS_ITEMS } from "./data/atlasData";
 import { ActiveTab, AtlasItem, CommandComparison, ConceptComparison, ShellType } from "./types";
 import { INITIAL_SANDBOX_RESULT, INITIAL_CONCEPT_RESULT } from "./data/mockResponses";
+import { offlineTranslateCommand, offlineGetConcept } from "./utils/offlineTranslator";
 import TerminalWindow from "./components/TerminalWindow";
 
 export default function App() {
@@ -172,15 +173,20 @@ export default function App() {
       });
 
       if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.error || "Wystąpił błąd podczas komunikacji z serwerem.");
+        throw new Error("Błąd sieci lub brak serwera.");
       }
 
       const data = await response.json();
       setSandboxResult(data);
     } catch (err: any) {
-      console.error(err);
-      setSandboxError(err.message || "Nie udało się przetłumaczyć polecenia.");
+      console.warn("Serwer niedostępny, przełączanie na tłumaczenie offline (lokalne)...", err);
+      // Seamless static fallback for GitHub Pages / static environments
+      try {
+        const localData = offlineTranslateCommand(inputToUse, sourceToUse);
+        setSandboxResult(localData);
+      } catch (fallbackErr) {
+        setSandboxError("Nie udało się przetłumaczyć polecenia.");
+      }
     } finally {
       setIsSandboxLoading(false);
     }
@@ -200,15 +206,20 @@ export default function App() {
       });
 
       if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.error || "Nie udało się pobrać opisu koncepcji.");
+        throw new Error("Błąd sieci lub brak serwera.");
       }
 
       const data = await response.json();
       setConceptResult(data);
     } catch (err: any) {
-      console.error(err);
-      setConceptError(err.message || "Błąd podczas ładowania pojęcia teoretycznego.");
+      console.warn("Serwer niedostępny, ładowanie pojęcia z lokalnej bazy...", err);
+      // Seamless static fallback for GitHub Pages / static environments
+      try {
+        const localData = offlineGetConcept(conceptName);
+        setConceptResult(localData);
+      } catch (fallbackErr) {
+        setConceptError("Błąd podczas ładowania pojęcia teoretycznego.");
+      }
     } finally {
       setIsConceptLoading(false);
     }
