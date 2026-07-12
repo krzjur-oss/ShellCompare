@@ -6,7 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig(() => {
   return {
-    base: '/',
+    base: './',
     plugins: [
       react(), 
       tailwindcss(),
@@ -30,35 +30,34 @@ export default defineConfig(() => {
           theme_color: '#0f172a',
           background_color: '#0f172a',
           display: 'standalone',
-          start_url: '/',
-          scope: '/',
+          start_url: '.',
           icons: [
             {
-              src: '/icon-192.png',
+              src: 'icon-192.png',
               sizes: '192x192',
               type: 'image/png',
               purpose: 'any'
             },
             {
-              src: '/icon-192.png',
+              src: 'icon-192.png',
               sizes: '192x192',
               type: 'image/png',
               purpose: 'maskable'
             },
             {
-              src: '/icon-512.png',
+              src: 'icon-512.png',
               sizes: '512x512',
               type: 'image/png',
               purpose: 'any'
             },
             {
-              src: '/icon-512.png',
+              src: 'icon-512.png',
               sizes: '512x512',
               type: 'image/png',
               purpose: 'maskable'
             },
             {
-              src: '/icon.svg',
+              src: 'icon.svg',
               sizes: '512x512',
               type: 'image/svg+xml',
               purpose: 'any'
