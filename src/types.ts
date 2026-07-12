@@ -8,6 +8,7 @@ export interface CommandComparison {
   bash: ShellDetails;
   cmd: ShellDetails;
   powershell: ShellDetails;
+  zsh: ShellDetails;
   detectedSource: string;
   comparisonMarkdown: string;
 }
@@ -18,6 +19,7 @@ export interface ConceptComparison {
   bashExplanation: string;
   cmdExplanation: string;
   powershellExplanation: string;
+  zshExplanation: string;
   comparisonMarkdown: string;
   proTips: string[];
 }
@@ -30,9 +32,10 @@ export interface AtlasItem {
   bash: string;
   cmd: string;
   powershell: string;
+  zsh: string;
   explanation: string;
   detailedComparison?: string;
 }
 
 export type ActiveTab = "atlas" | "sandbox" | "concepts" | "help";
-export type ShellType = "bash" | "cmd" | "powershell";
+export type ShellType = "bash" | "cmd" | "powershell" | "zsh";

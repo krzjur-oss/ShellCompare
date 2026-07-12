@@ -19,10 +19,12 @@ export function offlineTranslateCommand(input: string, sourceShell: string): Com
       normalizeText(item.bash) === normalized ||
       normalizeText(item.cmd) === normalized ||
       normalizeText(item.powershell) === normalized ||
+      normalizeText(item.zsh) === normalized ||
       normalizeText(item.title) === normalized ||
       normalized.includes(normalizeText(item.bash)) ||
       normalized.includes(normalizeText(item.cmd)) ||
-      normalized.includes(normalizeText(item.powershell))
+      normalized.includes(normalizeText(item.powershell)) ||
+      normalized.includes(normalizeText(item.zsh))
     );
   });
 
@@ -32,7 +34,12 @@ export function offlineTranslateCommand(input: string, sourceShell: string): Com
       bash: {
         command: matchedItem.bash,
         output: `$ ${matchedItem.bash}\n# Wykonano pomyślnie w trybie offline.\n# Wynik symulowany:\n(Zadanie: ${matchedItem.title})`,
-        explanation: `${matchedItem.explanation} (Uruchomiono z bazy lokalnej Atlasu)`
+        explanation: `${matchedItem.explanation} (Uruchomiono z bazy lokalnej Atlasu - Bash)`
+      },
+      zsh: {
+        command: matchedItem.zsh,
+        output: `% ${matchedItem.zsh}\n# Wykonano w środowisku macOS / Zsh.\n# Wynik symulowany:\n(Zadanie: ${matchedItem.title})`,
+        explanation: `${matchedItem.explanation} (Uruchomiono z bazy lokalnej Atlasu - Zsh)`
       },
       cmd: {
         command: matchedItem.cmd,
@@ -44,7 +51,7 @@ export function offlineTranslateCommand(input: string, sourceShell: string): Com
         output: `PS C:\\> ${matchedItem.powershell}\n\nSuccess: True\nType: SimulatedOfflineResult\nName: ${matchedItem.id}`,
         explanation: `Obiektowy odpowiednik PowerShell: ${matchedItem.explanation}`
       },
-      comparisonMarkdown: `### 🌐 Analiza Offline: ${matchedItem.title}\n\nAplikacja działa obecnie w **trybie statycznym (np. GitHub Pages)**. Wykryto polecenie z wbudowanej bazy danych Atlasu!\n\n**Różnice między środowiskami:**\n* **Bash**: Tradycyjne środowisko UNIX-owe, oparte o strumienie znakowe.\n* **CMD**: Wiersz poleceń systemów Windows, o ograniczonej składni i kompatybilności wstecznej.\n* **PowerShell**: Zaawansowane narzędzie obiektowe oparte o .NET Core.\n\n*Wskazówka: Cała baza ponad dwudziestu poleceń i tryb Quizu są w pełni interaktywne w wersji statycznej!*`
+      comparisonMarkdown: `### 🌐 Analiza Offline: ${matchedItem.title}\n\nAplikacja działa obecnie w **trybie statycznym (np. GitHub Pages)**. Wykryto polecenie z wbudowanej bazy danych Atlasu!\n\n**Różnice między środowiskami:**\n* **Bash**: Tradycyjne środowisko UNIX-owe, oparte o strumienie znakowe.\n* **Zsh**: Domyślna, nowoczesna powłoka systemów macOS oraz niektórych dystrybucji Linux, ze świetnym autouzupełnianiem.\n* **CMD**: Wiersz poleceń systemów Windows, o ograniczonej składni i kompatybilności wstecznej.\n* **PowerShell**: Zaawansowane narzędzie obiektowe oparte o .NET Core.\n\n*Wskazówka: Cała baza ponad dwudziestu poleceń i tryb Quizu są w pełni interaktywne w wersji statycznej!*`
     };
   }
 
@@ -57,6 +64,11 @@ export function offlineTranslateCommand(input: string, sourceShell: string): Com
         output: "total 8\ndrwxr-xr-x 2 user staff 64 Jul 12 11:30 .\n-rw-r--r-- 1 user staff 424 Jul 12 11:30 index.html",
         explanation: "Listuje wszystkie pliki (również ukryte) w formacie długim."
       },
+      zsh: {
+        command: "ls -la",
+        output: "total 8\ndrwxr-xr-x 2 macuser staff 64 Jul 12 11:30 .\n-rw-r--r-- 1 macuser staff 424 Jul 12 11:30 index.html",
+        explanation: "Listuje pliki w formacie długim. Zsh na macOS standardowo obsługuje też flagi BSD dla kolorów."
+      },
       cmd: {
         command: "dir /a",
         output: " Directory of C:\\\n12/07/2026  11:30 AM               424 index.html",
@@ -67,7 +79,7 @@ export function offlineTranslateCommand(input: string, sourceShell: string): Com
         output: "    Directory: C:\\\nMode                 LastWriteTime         Length Name\n----                 -------------         ------ ----\n-a----        12/07/2026  11:30 AM            424 index.html",
         explanation: "Pobiera pliki z uwzględnieniem ukrytych za pomocą parametru -Force."
       },
-      comparisonMarkdown: "### Różnice w listowaniu plików\n\n* **Bash** używa prostej konwencji kropek dla ukrytych plików.\n* **Windows (CMD/PowerShell)** odczytuje fizyczne atrybuty systemu plików NTFS."
+      comparisonMarkdown: "### Różnice w listowaniu plików\n\n* **Bash i Zsh** używają prostej konwencji kropek dla ukrytych plików (np. `.gitignore`).\n* **Windows (CMD/PowerShell)** odczytuje fizyczne atrybuty systemu plików NTFS."
     };
   }
 
@@ -80,6 +92,11 @@ export function offlineTranslateCommand(input: string, sourceShell: string): Com
         output: `$ mkdir ${folderName}\n# Utworzono katalog pomyślnie.`,
         explanation: "Tworzy nowy katalog w ścieżce roboczej."
       },
+      zsh: {
+        command: `mkdir ${folderName}`,
+        output: `% mkdir ${folderName}\n# Utworzono katalog w Zsh.`,
+        explanation: "Tworzy nowy katalog w ścieżce roboczej (kompatybilne z Bash)."
+      },
       cmd: {
         command: `mkdir ${folderName}`,
         output: `C:\\> mkdir ${folderName}\n[Katalog utworzony]`,
@@ -90,7 +107,7 @@ export function offlineTranslateCommand(input: string, sourceShell: string): Com
         output: `    Directory: C:\\\nMode                 LastWriteTime         Length Name\n----                 -------------         ------ ----\nd-----        12/07/2026  11:30 AM                ${folderName}`,
         explanation: "Używa elastycznego polecenia New-Item o typie Directory."
       },
-      comparisonMarkdown: "### Różnice w tworzeniu katalogów\n\nBash i CMD korzystają z prostego `mkdir`. PowerShell faworyzuje silnie typowane polecenie `New-Item`, ale posiada alias `mkdir`."
+      comparisonMarkdown: "### Różnice w tworzeniu katalogów\n\nBash, Zsh i CMD korzystają z prostego `mkdir`. PowerShell faworyzuje silnie typowane polecenie `New-Item`, ale posiada alias `mkdir`."
     };
   }
 
@@ -103,6 +120,11 @@ export function offlineTranslateCommand(input: string, sourceShell: string): Com
         output: `$ rm ${fileName}\n# Usunięto.`,
         explanation: "Usuwa plik."
       },
+      zsh: {
+        command: `rm ${fileName}`,
+        output: `% rm ${fileName}\n# Usunięto plik w powłoce Zsh.`,
+        explanation: "Usuwa plik."
+      },
       cmd: {
         command: `del ${fileName}`,
         output: `C:\\> del ${fileName}`,
@@ -113,7 +135,7 @@ export function offlineTranslateCommand(input: string, sourceShell: string): Com
         output: `PS C:\\> Remove-Item ${fileName}`,
         explanation: "Usuwa plik (lub inny zasób) za pomocą Remove-Item."
       },
-      comparisonMarkdown: "### Różnice w usuwaniu plików\n\n`rm` (Bash), `del` (CMD) oraz `Remove-Item` (PowerShell)."
+      comparisonMarkdown: "### Różnice w usuwaniu plików\n\n`rm` (Bash, Zsh), `del` (CMD) oraz `Remove-Item` (PowerShell)."
     };
   }
 
@@ -126,6 +148,11 @@ export function offlineTranslateCommand(input: string, sourceShell: string): Com
         output: `PING ${host} (142.250.186.46) 56(84) bytes of data.\n64 bytes from ${host}: icmp_seq=1 ttl=116 time=14.2 ms\n64 bytes from ${host}: icmp_seq=2 ttl=116 time=14.5 ms\n\n--- ${host} ping statistics ---\n4 packets transmitted, 4 received, 0% packet loss, time 3004ms`,
         explanation: "Wysyła 4 pakiety testowe ICMP (flaga -c określa liczbę powtórzeń)."
       },
+      zsh: {
+        command: `ping -c 4 ${host}`,
+        output: `PING ${host} (142.250.186.46): 56 data bytes\n64 bytes from 142.250.186.46: icmp_seq=0 ttl=116 time=14.2 ms\n64 bytes from 142.250.186.46: icmp_seq=1 ttl=116 time=14.5 ms\n\n--- ${host} ping statistics ---\n4 packets transmitted, 4 packets received, 0.0% packet loss`,
+        explanation: "Wysyła 4 pakiety testowe ICMP. Podobnie jak Bash, domyślnie pingowałby bez końca bez flagi -c."
+      },
       cmd: {
         command: `ping -n 4 ${host}`,
         output: `Pinging ${host} with 32 bytes of data:\nReply from 142.250.186.46: bytes=32 time=14ms TTL=116\nReply from 142.250.186.46: bytes=32 time=15ms TTL=116\n\nPing statistics for 142.250.186.46:\n    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)`,
@@ -136,7 +163,7 @@ export function offlineTranslateCommand(input: string, sourceShell: string): Com
         output: `Source        Destination     IPV4Address      Answering        RTT(ms)\n------        -----------     -----------      ---------        -------\nDESKTOP-ABC   ${host}      142.250.186.46   True                  14`,
         explanation: "Nowoczesne cmdlet testujące połączenie sieciowe. Zwraca obiekty pomiarów połączenia."
       },
-      comparisonMarkdown: "### Narzędzia sieciowe i diagnostyka\n\n* **Bash i CMD** korzystają z tradycyjnych binarek `ping` o nieco innych flagach (`-c` vs `-n`).\n* **PowerShell** posiada cmdlet `Test-Connection`, który w przeciwieństwie do zwykłego pingowania zwraca sformatowaną tabelę obiektów diagnostycznych."
+      comparisonMarkdown: "### Narzędzia sieciowe i diagnostyka\n\n* **Bash, Zsh i CMD** korzystają z tradycyjnych binarek `ping` o nieco innych flagach (`-c` vs `-n`).\n* **PowerShell** posiada cmdlet `Test-Connection`, który w przeciwieństwie do zwykłego pingowania zwraca sformatowaną tabelę obiektów diagnostycznych."
     };
   }
 
@@ -147,6 +174,11 @@ export function offlineTranslateCommand(input: string, sourceShell: string): Com
       command: `# Kliknij w zakładkę "Atlas Komend" po lewej stronie, aby wybrać z gotowej bazy.\n# Przykładowe polecenie:\necho "${input}"`,
       output: `Hello from static client mode!\nInput: ${input}`,
       explanation: "Wersja demonstracyjna offline. Cały Atlas i Quiz są w 100% dostępne i responsywne offline!"
+    },
+    zsh: {
+      command: `echo "${input}"`,
+      output: `${input}`,
+      explanation: "Zsh echo polecenie wypisujące tekst do konsoli."
     },
     cmd: {
       command: `echo ${input}`,
@@ -176,11 +208,12 @@ export function offlineGetConcept(conceptName: string): ConceptComparison {
       conceptName: "Zmienne środowiskowe",
       summary: "Zmienne środowiskowe to dynamiczne wartości przechowywane w systemie operacyjnym, które mogą wpływać na zachowanie uruchomionych procesów i programów (np. ścieżka wyszukiwania PATH).",
       bashExplanation: "W Bashu zmienne definiuje się bez spacji, a odczytuje ze znakiem '$'. Zmienne lokalne stają się środowiskowe po użyciu 'export'.\n\n```bash\nMOJA_ZMIENNA=\"wartość\"\nexport MOJA_ZMIENNA\necho $MOJA_ZMIENNA\n```",
+      zshExplanation: "W Zsh deklaracja i odczyt zmiennych środowiskowych wygląda identycznie jak w Bashu (`export VAR=\"val\"`). Jednak Zsh oferuje zaawansowane tablice asocjacyjne typu `typeset -A` oraz precyzyjne sterowanie lokalnym zakresem zmiennych za pomocą funkcji.",
       cmdExplanation: "W CMD zmienne są globalne dla sesji terminala. Definiuje się je za pomocą 'set', a odczytuje otaczając znakami '%'.\n\n```cmd\nset MOJA_ZMIENNA=wartość\necho %MOJA_ZMIENNA%\n```",
       powershellExplanation: "W PowerShellu zmienne środowiskowe są dostępne poprzez specjalny dostawca (provider) 'env:'.\n\n```powershell\n$env:MOJA_ZMIENNA = \"wartość\"\nWrite-Output $env:MOJA_ZMIENNA\n```",
-      comparisonMarkdown: "### Porównanie Zmiennych Środowiskowych:\n\n| Cecha | Bash (Linux) | CMD (Windows) | PowerShell |\n| :--- | :--- | :--- | :--- |\n| **Deklaracja** | `VAR=val` (potem `export VAR`) | `set VAR=val` | `$env:VAR = 'val'` |\n| **Odczyt** | `$VAR` | `%VAR%` | `$env:VAR` |\n| **Zakres** | Lokalny (wymaga export dla podprocesów) | Globalny w sesji CMD | Globalny w sesji poprzez provider Env |\n| **Usuwanie** | `unset VAR` | `set VAR=` | `Remove-Item env:VAR` |",
+      comparisonMarkdown: "### Porównanie Zmiennych Środowiskowych:\n\n| Cecha | Bash (Linux) | Zsh (macOS) | CMD (Windows) | PowerShell |\n| :--- | :--- | :--- | :--- | :--- |\n| **Deklaracja** | `VAR=val` (potem `export VAR`) | `export VAR=val` | `set VAR=val` | `$env:VAR = 'val'` |\n| **Odczyt** | `$VAR` | `$VAR` | `%VAR%` | `$env:VAR` |\n| **Zakres** | Lokalny (wymaga export) | Lokalny (wymaga export) | Globalny w sesji CMD | Globalny poprzez Env |\n| **Usuwanie** | `unset VAR` | `unset VAR` | `set VAR=` | `Remove-Item env:VAR` |",
       proTips: [
-        "W Bashu pamiętaj, aby nie stawiać spacji wokół znaku '=' podczas przypisywania wartości.",
+        "W Zsh i Bashu pamiętaj, aby nie stawiać spacji wokół znaku '=' podczas przypisywania wartości.",
         "W CMD przypisanie 'set VAR= ' ze spacją na końcu przypisze tę spację jako część wartości zmiennej!",
         "W PowerShellu zmienne środowiskowe i standardowe zmienne skryptowe ($mojaZmienna) to dwa różne obszary pamięci."
       ]
@@ -192,13 +225,14 @@ export function offlineGetConcept(conceptName: string): ConceptComparison {
       conceptName: "Skryptowanie i Pętle",
       summary: "Pozwalają na automatyzację powtarzalnych czynności poprzez sekwencyjne wykonywanie poleceń oraz iterowanie po plikach, liczbach lub elementach list.",
       bashExplanation: "Pętla 'for' w Bashu często współpracuje z podstawieniem poleceń lub sekwencjami nawiasowymi.\n\n```bash\nfor i in {1..5}; do\n  echo \"Iteracja $i\"\ndone\n```",
+      zshExplanation: "Zsh ułatwia pisanie pętli, pozwalając na krótszy zapis bez słów kluczowych `do` i `done` (tzw. short loops), np. `for i in {1..5} echo Iteracja $i`, oraz wbudowane potężne dopasowania plików bez używania `find`.",
       cmdExplanation: "Pętle 'for' w CMD mają skomplikowaną składnię z różnymi przełącznikami (np. /L dla liczb, /F dla plików).\n\n```cmd\nfor /L %i in (1,1,5) do (\n  echo Iteracja %i\n)\n```",
       powershellExplanation: "PowerShell korzysta z obiektowych struktur znanych z języków C# oraz elastycznego potoku ForEach-Object.\n\n```powershell\n1..5 | ForEach-Object {\n  Write-Output \"Iteracja $_\"\n}\n```",
-      comparisonMarkdown: "### Składnia pętli iteracyjnych:\n\n* **Bash**: Bardzo intuicyjna, wzorowana na powłokach POSIX. Bezproblemowe przetwarzanie kolekcji plików tekstowych.\n* **CMD**: Trudna w opanowaniu, przestarzała składnia z wieloma ograniczeniami w blokach wielolinijkowych.\n* **PowerShell**: W pełni programistyczna składnia. Możliwość stosowania zarówno tradycyjnych pętli `foreach ($i in $kolekcja)`, jak i potoku dynamicznego `$_`.",
+      comparisonMarkdown: "### Składnia pętli iteracyjnych:\n\n* **Bash**: Bardzo intuicyjna, wzorowana na powłokach POSIX. Bezproblemowe przetwarzanie kolekcji plików.\n* **Zsh**: Jeszcze bardziej elastyczna niż Bash, wspiera zwięzły jednolinijkowy zapis pętli.\n* **CMD**: Trudna w opanowaniu, przestarzała składnia z wieloma ograniczeniami.\n* **PowerShell**: W pełni programistyczna składnia. Możliwość stosowania zarówno tradycyjnych pętli, jak i potoku dynamicznego.",
       proTips: [
-        "Pisząc skrypty w CMD, pamiętaj, że zmienne pętli w plikach wsadowych .bat wymagają podwójnego znaku procenta (np. %%i zamiast %i).",
-        "W PowerShellu zmienna `$_` reprezentuje aktualnie przetwarzany obiekt w potoku.",
-        "W Bashu zawsze umieszczaj zmienne w cudzysłowach `\"$i\"`, aby zapobiec rozbiciu wyrazów (word splitting) przy spacjach."
+        "W Zsh domyślne indeksowanie tablic zaczyna się od 1, w przeciwieństwie do Basha, gdzie indeksowanie zaczyna się od 0!",
+        "Pisząc skrypty w CMD, pamiętaj, że zmienne pętli w plikach wsadowych .bat wymagają podwójnego znaku procenta (%%i).",
+        "W PowerShellu zmienna `$_` reprezentuje aktualnie przetwarzany obiekt w potoku."
       ]
     };
   }
@@ -208,13 +242,13 @@ export function offlineGetConcept(conceptName: string): ConceptComparison {
       conceptName: "Przekierowania strumieni (stdout/stderr)",
       summary: "Umożliwiają przekierowanie standardowego wyjścia (stdout - 1) lub standardowego strumienia błędów (stderr - 2) do pliku zamiast wyświetlania ich w konsoli.",
       bashExplanation: "Bash pozwala na precyzyjne przekierowania i łączenie strumieni.\n\n```bash\n# Zapis wyjścia i błędów do osobnych plików\ncommand > wynik.log 2> bledy.log\n# Połączenie obu strumieni\ncommand > wynik.log 2>&1\n```",
+      zshExplanation: "Zsh obsługuje wszystkie standardowe operatory POSIX oraz ma domyślnie włączoną funkcję 'MULTIOS', co pozwala na łatwe potrójne przekierowanie: `command > plik1 > plik2` kopiuje stdout do obu plików jednocześnie bez używania `tee`.",
       cmdExplanation: "CMD obsługuje podstawowe operatory przekierowania, podobnie do systemów Unix.\n\n```cmd\n# Nadpisanie pliku wynikami\ncommand > wynik.log 2> bledy.log\n# Dopisywanie do pliku (operator >>)\ncommand >> wynik.log 2>&1\n```",
       powershellExplanation: "PowerShell rozszerza tradycyjne strumienie o strumienie specyficzne (np. Information, Warning, Verbose). Do zapisu pliku poleca się Out-File.\n\n```powershell\n# Przekierowanie strumienia błędów do pliku\nGet-ChildItem 2> bledy.log\n# Przekierowanie wszystkich strumieni (*)\nGet-ChildItem *> wszystko.log\n```",
-      comparisonMarkdown: "### Podsumowanie przekierowań strumieni:\n\n* **Operator `>`**: Nadpisuje plik docelowy we wszystkich trzech powłokach.\n* **Operator `>>`**: Dopisuja treść na końcu pliku we wszystkich trzech powłokach.\n* **PowerShell** obsługuje unikalne przekierowanie `*>` oznaczające połączenie absolutnie wszystkich typów strumieni danych wyjściowych (wyjściowe, ostrzeżenia, błędy, debug, verbose).",
+      comparisonMarkdown: "### Podsumowanie przekierowań strumieni:\n\n* **Operator `>`**: Nadpisuje plik docelowy we wszystkich powłokach.\n* **Operator `>>`**: Dopisuja treść na końcu pliku we wszystkich powłokach.\n* **Zsh** wyróżnia się wbudowaną obsługą MULTIOS dla łatwego, wielokrotnego zapisu.",
       proTips: [
-        "Aby uciszyć błędy w Bashu, przekieruj je do czarnej dziury: `command 2> /dev/null`.",
-        "W Windows (CMD i PowerShell) odpowiednikiem czarnej dziury /dev/null jest urządzenie `NUL` (np. `command > NUL`).",
-        "W PowerShellu standardowe kodowanie przy użyciu operatora `>` to często UTF-16. Jeśli wolisz UTF-8, użyj `command | Out-File -Encoding utf8 plik.txt`."
+        "Aby uciszyć błędy w Bashu i Zsh, przekieruj je do czarnej dziury: `command 2> /dev/null`.",
+        "W Windows (CMD i PowerShell) odpowiednikiem czarnej dziury /dev/null jest urządzenie `NUL` (np. `command > NUL`)."
       ]
     };
   }
@@ -222,13 +256,14 @@ export function offlineGetConcept(conceptName: string): ConceptComparison {
   // General fallback for other concepts
   return {
     conceptName: conceptName,
-    summary: `Porównanie koncepcyjne pojęcia "${conceptName}" w systemach Linux i Windows.`,
+    summary: `Porównanie koncepcyjne pojęcia "${conceptName}" w systemach Linux, macOS i Windows.`,
     bashExplanation: `W Bashu pojęcie "${conceptName}" opiera się na klasycznym podejściu POSIX/Unix. Narzędzia i procesy współdziałają ze sobą bez zbędnego narzutu warstw pośrednich.`,
-    cmdExplanation: `W CMD obsługa "${conceptName}" jest determinowana dziedzictwem historycznym MS-DOS. Rozwiązania są proste, ale mają mniejszą elastyczność strukturalną.`,
-    powershellExplanation: `W PowerShellu "${conceptName}" jest w pełni zaimplementowane w architekturze obiektowej .NET, co ułatwia zarządzanie i automatyzację w systemach Windows i Linux (PowerShell Core).`,
+    zshExplanation: `W Zsh "${conceptName}" jest w pełni kompatybilne z Bashem, ale wzbogacone o elastyczność i nowoczesne opcje powłoki macOS.`,
+    cmdExplanation: `W CMD obsługa "${conceptName}" jest determinowana dziedzictwem historycznym MS-DOS. Rozwiązania są proste, ale mają mniejszą elastyczność.`,
+    powershellExplanation: `W PowerShellu "${conceptName}" jest w pełni zaimplementowane w architekturze obiektowej .NET, co ułatwia zarządzanie i automatyzację.`,
     comparisonMarkdown: `### ℹ️ Informacje o pojęciu: ${conceptName}\n\nPrezentowana karta została załadowana w trybie offline/statycznym.\n\nWięcej powiązanych pojęć i pełne porównania live są dostępne bezpośrednio z bazy danych aplikacji!`,
     proTips: [
-      "Przeanalizuj filozofię projektową: tekst vs obiekty.",
+      "Zsh jest domyślną powłoką na macOS od macOS Catalina i oferuje ogromną produktywność.",
       "Zwracaj uwagę na różnice w obsłudze wielkości liter (case-sensitivity) między powłokami.",
       "Większość nowoczesnych systemów wspiera standardy wieloplatformowe."
     ]

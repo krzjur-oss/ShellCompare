@@ -586,13 +586,22 @@ export default function App() {
                   )}
 
                   {/* Terminal Windows Comparison Grid */}
-                  <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
                     <TerminalWindow 
                       key={`${selectedAtlasItem.id}-${flashcardResetKey}-bash`}
                       type="bash" 
                       command={selectedAtlasItem.bash} 
                       output={`$ ${selectedAtlasItem.bash}\n# Wykonano pomyślnie. Plik/operacja przetworzona w środowisku POSIX.\n# Wynik symulowany:\n(Operacja wykonana w katalogu /home/user)`} 
                       explanation={`${selectedAtlasItem.title} w Bashu: Standard POSIX / Linux. Bardzo wydajne przetwarzanie tekstowe przy pomocy narzędzi systemowych.`} 
+                      isFlashcardMode={isFlashcardMode}
+                    />
+
+                    <TerminalWindow 
+                      key={`${selectedAtlasItem.id}-${flashcardResetKey}-zsh`}
+                      type="zsh" 
+                      command={selectedAtlasItem.zsh} 
+                      output={`% ${selectedAtlasItem.zsh}\n# Wykonano pomyślnie w macOS / Zsh.\n# Środowisko zoptymalizowane pod macOS.\n# Wynik symulowany:\n(Operacja wykonana w katalogu /Users/macuser)`} 
+                      explanation={`${selectedAtlasItem.title} w Zsh: Domyślna powłoka macOS (od Catalina). W pełni kompatybilna z Bashem, wzbogacona o ulepszenia interaktywne i zaawansowane autouzupełnianie.`} 
                       isFlashcardMode={isFlashcardMode}
                     />
 
@@ -868,8 +877,8 @@ export default function App() {
                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
                       Wybierz wejście:
                     </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {["Bash", "CMD", "PowerShell", "Opis słowny"].map((src) => (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 gap-2">
+                      {["Bash", "Zsh", "CMD", "PowerShell", "Opis słowny"].map((src) => (
                         <button
                           key={src}
                           onClick={() => setSandboxSource(src)}
@@ -877,7 +886,7 @@ export default function App() {
                             sandboxSource === src
                               ? "bg-blue-600/20 text-blue-300 border-blue-500/60"
                               : "bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700"
-                          }`}
+                          } ${src === "Opis słowny" ? "col-span-2 sm:col-span-1 md:col-span-2" : ""}`}
                         >
                           {src}
                         </button>
@@ -980,12 +989,19 @@ export default function App() {
               )}
 
               {/* Live Terminal outputs */}
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
                 <TerminalWindow
                   type="bash"
                   command={sandboxResult?.bash.command || ""}
                   output={sandboxResult?.bash.output || ""}
                   explanation={sandboxResult?.bash.explanation}
+                  isLoading={isSandboxLoading}
+                />
+                <TerminalWindow
+                  type="zsh"
+                  command={sandboxResult?.zsh?.command || ""}
+                  output={sandboxResult?.zsh?.output || ""}
+                  explanation={sandboxResult?.zsh?.explanation}
                   isLoading={isSandboxLoading}
                 />
                 <TerminalWindow
@@ -1097,38 +1113,57 @@ export default function App() {
                     </p>
                   </div>
 
-                  {/* Three pillars explanations */}
-                  <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                  {/* Four pillars explanations */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
                     {/* Bash block */}
-                    <div className="bg-[#0b0f19] border border-emerald-950/50 rounded-xl p-5 space-y-3 shadow-md">
-                      <div className="flex items-center justify-between border-b border-emerald-950/40 pb-2">
-                        <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest font-mono">BASH</span>
-                        <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <div className="bg-[#0b0f19] border border-emerald-950/50 rounded-xl p-5 space-y-3 shadow-md flex flex-col justify-between">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between border-b border-emerald-950/40 pb-2">
+                          <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest font-mono">BASH (Linux)</span>
+                          <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        </div>
+                        <div className="prose prose-sm prose-invert text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
+                          {conceptResult.bashExplanation}
+                        </div>
                       </div>
-                      <div className="prose prose-sm prose-invert text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
-                        {conceptResult.bashExplanation}
+                    </div>
+
+                    {/* Zsh block */}
+                    <div className="bg-[#0b0f19] border border-violet-950/50 rounded-xl p-5 space-y-3 shadow-md flex flex-col justify-between">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between border-b border-violet-950/40 pb-2">
+                          <span className="text-xs font-bold text-violet-400 uppercase tracking-widest font-mono">ZSH (macOS)</span>
+                          <span className="w-2 h-2 rounded-full bg-violet-500"></span>
+                        </div>
+                        <div className="prose prose-sm prose-invert text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
+                          {conceptResult.zshExplanation}
+                        </div>
                       </div>
                     </div>
 
                     {/* CMD block */}
-                    <div className="bg-[#0b0f19] border border-zinc-800 rounded-xl p-5 space-y-3 shadow-md">
-                      <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
-                        <span className="text-xs font-bold text-zinc-300 uppercase tracking-widest font-mono">CMD (Windows)</span>
-                        <span className="w-2 h-2 rounded-full bg-zinc-500"></span>
-                      </div>
-                      <div className="prose prose-sm prose-invert text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
-                        {conceptResult.cmdExplanation}
+                    <div className="bg-[#0b0f19] border border-zinc-800 rounded-xl p-5 space-y-3 shadow-md flex flex-col justify-between">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+                          <span className="text-xs font-bold text-zinc-300 uppercase tracking-widest font-mono">CMD (Windows)</span>
+                          <span className="w-2 h-2 rounded-full bg-zinc-500"></span>
+                        </div>
+                        <div className="prose prose-sm prose-invert text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
+                          {conceptResult.cmdExplanation}
+                        </div>
                       </div>
                     </div>
 
                     {/* PowerShell block */}
-                    <div className="bg-[#0b0f19] border border-blue-900/40 rounded-xl p-5 space-y-3 shadow-md">
-                      <div className="flex items-center justify-between border-b border-blue-900/30 pb-2">
-                        <span className="text-xs font-bold text-blue-400 uppercase tracking-widest font-mono">POWERSHELL</span>
-                        <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                      </div>
-                      <div className="prose prose-sm prose-invert text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
-                        {conceptResult.powershellExplanation}
+                    <div className="bg-[#0b0f19] border border-blue-900/40 rounded-xl p-5 space-y-3 shadow-md flex flex-col justify-between">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between border-b border-blue-900/30 pb-2">
+                          <span className="text-xs font-bold text-blue-400 uppercase tracking-widest font-mono">POWERSHELL</span>
+                          <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                        </div>
+                        <div className="prose prose-sm prose-invert text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
+                          {conceptResult.powershellExplanation}
+                        </div>
                       </div>
                     </div>
                   </div>

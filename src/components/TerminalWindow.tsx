@@ -72,6 +72,18 @@ export default function TerminalWindow({
       glow: "terminal-glow-powershell",
       badge: "bg-blue-500/10 text-blue-400 border-blue-500/20",
     },
+    zsh: {
+      name: "Zsh (macOS)",
+      prompt: "macuser@macbook ~ % ",
+      bg: "bg-[#0a0f1d]",
+      text: "text-violet-400",
+      accentText: "text-violet-500",
+      commandColor: "text-white font-semibold",
+      outputColor: "text-zinc-300",
+      border: "border-violet-900/60 focus-within:border-violet-500/50",
+      glow: "terminal-glow-zsh",
+      badge: "bg-violet-500/10 text-violet-400 border-violet-500/20",
+    },
   }[type];
 
   const showContent = !isFlashcardMode || isRevealed;

@@ -19,7 +19,8 @@ export const ATLAS_ITEMS: AtlasItem[] = [
     bash: "mkdir projekty",
     cmd: "mkdir projekty",
     powershell: "New-Item -ItemType Directory -Name \"projekty\"",
-    explanation: "Bash i CMD współdzielą proste polecenie 'mkdir'. W PowerShellu kanonicznym poleceniem jest 'New-Item' z typem 'Directory', chociaż PowerShell udostępnia również skrót (alias) 'mkdir', który pod maską wywołuje funkcję opakowującą."
+    zsh: "mkdir projekty",
+    explanation: "Bash, Zsh i CMD współdzielą proste polecenie 'mkdir'. W PowerShellu kanonicznym poleceniem jest 'New-Item' z typem 'Directory', chociaż PowerShell udostępnia również skrót (alias) 'mkdir', który pod maską wywołuje funkcję opakowującą."
   },
   {
     id: "list-dir",
@@ -29,7 +30,8 @@ export const ATLAS_ITEMS: AtlasItem[] = [
     bash: "ls -la",
     cmd: "dir",
     powershell: "Get-ChildItem",
-    explanation: "W Bashu 'ls -la' wyświetla listę (l) ze wszystkimi plikami ukrytymi (a). W CMD 'dir' to klasyczne polecenie DOS pokazujące pliki, rozmiary i wolną przestrzeń. W PowerShellu 'Get-ChildItem' zwraca tablicę obiektów reprezentujących elementy systemu plików. PowerShell ma wbudowane aliasy 'ls' i 'dir' kierujące do Get-ChildItem."
+    zsh: "ls -la",
+    explanation: "W Bashu i Zsh 'ls -la' wyświetla szczegółową listę (l) ze wszystkimi plikami ukrytymi (a). W CMD 'dir' to klasyczne polecenie DOS pokazujące pliki, rozmiary i wolną przestrzeń. W PowerShellu 'Get-ChildItem' zwraca tablicę obiektów reprezentujących elementy systemu plików. PowerShell ma wbudowane aliasy 'ls' i 'dir' kierujące do Get-ChildItem."
   },
   {
     id: "current-path",
@@ -39,7 +41,8 @@ export const ATLAS_ITEMS: AtlasItem[] = [
     bash: "pwd",
     cmd: "cd",
     powershell: "Get-Location",
-    explanation: "W Bashu 'pwd' oznacza 'print working directory'. W CMD wywołanie 'cd' bez parametrów zwraca aktualną ścieżkę. W PowerShellu oficjalnym poleceniem cmdlet jest 'Get-Location' (aliasy: pwd, gl)."
+    zsh: "pwd",
+    explanation: "Zarówno w Bashu, jak i w Zsh 'pwd' oznacza 'print working directory'. W CMD wywołanie 'cd' bez parametrów zwraca aktualną ścieżkę. W PowerShellu oficjalnym poleceniem cmdlet jest 'Get-Location' (aliasy: pwd, gl)."
   },
   {
     id: "copy-file",
@@ -49,7 +52,8 @@ export const ATLAS_ITEMS: AtlasItem[] = [
     bash: "cp zrodlo.txt kopia.txt",
     cmd: "copy zrodlo.txt kopia.txt",
     powershell: "Copy-Item zrodlo.txt kopia.txt",
-    explanation: "W Bashu skrót 'cp' służy do kopiowania. CMD posiada polecenie 'copy' (lub 'xcopy' dla folderów). PowerShell oferuje 'Copy-Item' (aliasy: cp, copy), który potrafi kopiować pliki, foldery i inne obiekty (np. klucze rejestru)."
+    zsh: "cp zrodlo.txt kopia.txt",
+    explanation: "W systemach Unix (Bash i Zsh) skrót 'cp' służy do kopiowania. CMD posiada polecenie 'copy' (lub 'xcopy' dla folderów). PowerShell oferuje 'Copy-Item' (aliasy: cp, copy), który potrafi kopiować pliki, foldery i inne obiekty (np. klucze rejestru)."
   },
   {
     id: "move-rename",
@@ -59,7 +63,8 @@ export const ATLAS_ITEMS: AtlasItem[] = [
     bash: "mv stary.txt nowy.txt",
     cmd: "move stary.txt nowy.txt",
     powershell: "Move-Item stary.txt nowy.txt",
-    explanation: "Zarówno przenoszenie do innego katalogu, jak i zwykła zmiana nazwy (rename) są w systemach operacyjnych tą samą operacją. Bash używa 'mv', CMD 'move' (oraz 'ren' tylko do zmiany nazwy w tym samym folderze), a PowerShell 'Move-Item' (aliasy: mv, move)."
+    zsh: "mv stary.txt nowy.txt",
+    explanation: "Zarówno przenoszenie do innego katalogu, jak i zwykła zmiana nazwy (rename) są w systemach operacyjnych tą samą operacją. Bash i Zsh używają 'mv', CMD 'move' (oraz 'ren' tylko do zmiany nazwy w tym samym folderze), a PowerShell 'Move-Item' (aliasy: mv, move)."
   },
   {
     id: "delete-file",
@@ -69,7 +74,19 @@ export const ATLAS_ITEMS: AtlasItem[] = [
     bash: "rm dane.csv",
     cmd: "del dane.csv",
     powershell: "Remove-Item dane.csv",
-    explanation: "Bash używa 'rm' (remove). CMD używa 'del' (delete) lub 'erase'. PowerShell używa 'Remove-Item' (aliasy: rm, del, erase, rmdir)."
+    zsh: "rm dane.csv",
+    explanation: "Bash i Zsh używają standardowego 'rm' (remove). CMD używa 'del' (delete) lub 'erase'. PowerShell używa 'Remove-Item' (aliasy: rm, del, erase, rmdir)."
+  },
+  {
+    id: "open-default",
+    title: "Otwieranie plików/URL w domyślnym programie",
+    category: "files",
+    description: "Otwiera plik, folder w Finderze/Eksploratorze lub stronę WWW w domyślnej aplikacji.",
+    bash: "xdg-open index.html",
+    cmd: "start index.html",
+    powershell: "Start-Process \"index.html\"",
+    zsh: "open index.html",
+    explanation: "Na macOS (powłoka Zsh) polecenie 'open' to absolutny fundament ułatwiający pracę (np. 'open .' otwiera bieżący katalog w Finderze). Linux w Bashu używa zazwyczaj 'xdg-open'. W systemie Windows CMD opiera się na słowie kluczowym 'start', a PowerShell na cmdlet 'Start-Process' (który pod maską również ma alias 'start')."
   },
 
   // TEXT PROCESSING
@@ -81,7 +98,8 @@ export const ATLAS_ITEMS: AtlasItem[] = [
     bash: "cat logi.txt",
     cmd: "type logi.txt",
     powershell: "Get-Content logi.txt",
-    explanation: "W Bashu 'cat' (concatenate) to uniwersalne narzędzie. W CMD polecenie 'type' wypisuje zawartość pliku na ekran. W PowerShellu używa się 'Get-Content' (aliasy: cat, gc, type), które wczytuje plik jako tablicę ciągów tekstowych (linii)."
+    zsh: "cat logi.txt",
+    explanation: "W Bashu i Zsh 'cat' (concatenate) to uniwersalne narzędzie. W CMD polecenie 'type' wypisuje zawartość pliku na ekran. W PowerShellu używa się 'Get-Content' (aliasy: cat, gc, type), które wczytuje plik jako tablicę ciągów tekstowych (linii)."
   },
   {
     id: "search-text",
@@ -91,7 +109,8 @@ export const ATLAS_ITEMS: AtlasItem[] = [
     bash: "grep \"ERROR\" serwer.log",
     cmd: "findstr \"ERROR\" serwer.log",
     powershell: "Select-String -Pattern \"ERROR\" serwer.log",
-    explanation: "Bash używa potężnego narzędzia 'grep'. CMD ma archaiczne, ale sprawne 'findstr'. PowerShell bazuje na 'Select-String', który wspiera zaawansowane dopasowania wyrażeń regularnych (RegEx) i zwraca obiekty dopasowania zawierające m.in. numer linii."
+    zsh: "grep \"ERROR\" serwer.log",
+    explanation: "Zarówno Bash, jak i Zsh używają potężnego narzędzia 'grep'. CMD ma archaiczne, ale sprawne 'findstr'. PowerShell bazuje na 'Select-String', który wspiera zaawansowane dopasowania wyrażeń regularnych (RegEx) i zwraca obiekty dopasowania zawierające m.in. numer linii."
   },
   {
     id: "write-text",
@@ -101,6 +120,7 @@ export const ATLAS_ITEMS: AtlasItem[] = [
     bash: "echo \"Witaj Swiecie\" > info.txt",
     cmd: "echo Witaj Swiecie > info.txt",
     powershell: "\"Witaj Swiecie\" | Out-File info.txt",
+    zsh: "echo \"Witaj Swiecie\" > info.txt",
     explanation: "We wszystkich powłokach operator '>' służy do przekierowania standardowego wyjścia i nadpisania pliku. W PowerShellu zalecanym, w pełni bezpiecznym dla kodowania znaków (UTF-8) sposobem jest potok do 'Out-File' lub 'Set-Content'."
   },
   {
@@ -111,7 +131,19 @@ export const ATLAS_ITEMS: AtlasItem[] = [
     bash: "wc -l plik.txt",
     cmd: "find /c /v \"\" plik.txt",
     powershell: "(Get-Content plik.txt).Length",
-    explanation: "W Bashu 'wc -l' (word count - lines) to standardowy program. W CMD nie ma bezpośredniego odpowiednika, więc stosuje się trik z 'find /c' (count) z wyszukiwaniem linii, które NIE są puste (/v \"\"). W PowerShellu odczytujemy plik do tablicy za pomocą Get-Content w nawiasach i sprawdzamy właściwość '.Length' lub '.Count'."
+    zsh: "wc -l plik.txt",
+    explanation: "W systemach Unix (Bash i Zsh) 'wc -l' (word count - lines) to standardowy program. W CMD nie ma bezpośredniego odpowiednika, więc stosuje się trik z 'find /c' (count) z wyszukiwaniem linii, które NIE są puste (/v \"\"). W PowerShellu odczytujemy plik do tablicy za pomocą Get-Content w nawiasach i sprawdzamy właściwość '.Length' lub '.Count'."
+  },
+  {
+    id: "clipboard-copy",
+    title: "Kopiowanie do schowka (Clipboard)",
+    category: "text",
+    description: "Kopiuje strumień tekstu bezpośrednio do schowka systemowego, by móc go wkleić w innym programie.",
+    bash: "echo \"tekst\" | xclip -sel clip",
+    cmd: "echo tekst | clip",
+    powershell: "echo \"tekst\" | Set-Clipboard",
+    zsh: "echo \"tekst\" | pbcopy",
+    explanation: "System macOS (domyślny dla Zsh) oferuje rewelacyjne narzędzia konsolowe 'pbcopy' (pasteboard copy) oraz 'pbpaste'. Pod Linuksem najczęstszym wyborem w Bashu jest 'xclip' lub 'xsel'. Na Windowsie CMD ma proste polecenie 'clip', a PowerShell obiektowe 'Set-Clipboard'."
   },
 
   // SYSTEM & PROCESSES
@@ -123,7 +155,8 @@ export const ATLAS_ITEMS: AtlasItem[] = [
     bash: "ps aux",
     cmd: "tasklist",
     powershell: "Get-Process",
-    explanation: "W systemach Unix/Linux 'ps aux' daje szczegółowy podgląd procesów wszystkich użytkowników. CMD w Windowsie oferuje 'tasklist'. PowerShell ma cmdlet 'Get-Process' (alias: ps), zwracający bogate obiekty procesów ze statystykami pamięci i CPU."
+    zsh: "ps aux",
+    explanation: "W systemach Unix (Linux z Bashem oraz macOS z Zsh) 'ps aux' daje szczegółowy podgląd procesów wszystkich użytkowników. CMD w Windowsie oferuje 'tasklist'. PowerShell ma cmdlet 'Get-Process' (alias: ps), zwracający bogate obiekty procesów ze statystykami pamięci i CPU."
   },
   {
     id: "kill-process",
@@ -133,7 +166,8 @@ export const ATLAS_ITEMS: AtlasItem[] = [
     bash: "kill -9 1234",
     cmd: "taskkill /F /PID 1234",
     powershell: "Stop-Process -Id 1234 -Force",
-    explanation: "W Linuxie 'kill -9' wysyła sygnał SIGKILL natychmiastowo zamykający proces o ID 1234. W CMD Windowsa służy do tego 'taskkill' z flagą wymuszenia '/F'. W PowerShellu służy do tego 'Stop-Process' (aliasy: kill, spps)."
+    zsh: "kill -9 1234",
+    explanation: "W środowiskach POSIX (Bash i Zsh) 'kill -9' wysyła sygnał SIGKILL natychmiastowo zamykający proces o ID 1234. W CMD Windowsa służy do tego 'taskkill' z flagą wymuszenia '/F'. W PowerShellu służy do tego 'Stop-Process' (aliasy: kill, spps)."
   },
   {
     id: "system-info",
@@ -143,7 +177,19 @@ export const ATLAS_ITEMS: AtlasItem[] = [
     bash: "uname -a",
     cmd: "systeminfo",
     powershell: "Get-ComputerInfo",
-    explanation: "W Linuxie 'uname -a' podaje typ systemu, wersję jądra i architektury. W CMD 'systeminfo' generuje raport o wersji Windows, pamięci RAM, poprawkach KB i BIOSie. PowerShell ma nowoczesny 'Get-ComputerInfo', zbierający gigantyczną listę właściwości systemowych."
+    zsh: "uname -a",
+    explanation: "W systemach Unix-like (Bash/Linux i Zsh/macOS) 'uname -a' podaje ogólny typ systemu, wersję jądra i architektury. W CMD 'systeminfo' generuje raport o wersji Windows, pamięci RAM, poprawkach KB i BIOSie. PowerShell ma nowoczesny 'Get-ComputerInfo', zbierający gigantyczną listę właściwości systemowych."
+  },
+  {
+    id: "macos-version",
+    title: "Wersja systemu macOS",
+    category: "system",
+    description: "Wyświetla dokładne informacje o zainstalowanej wersji systemu macOS przy użyciu narzędzia sw_vers.",
+    bash: "uname -a",
+    cmd: "ver",
+    powershell: "[System.Environment]::OSVersion",
+    zsh: "sw_vers",
+    explanation: "System macOS (domyślny dla Zsh) wykorzystuje wbudowane narzędzie systemowe 'sw_vers' do pobierania nazwy i wersji macOS. Na Linuxie standardem jest 'uname -a' lub czytanie '/etc/os-release', w CMD systemu Windows używa się 'ver', a w PowerShellu klasy [System.Environment] lub Get-ComputerInfo."
   },
 
   // NETWORK
@@ -155,7 +201,8 @@ export const ATLAS_ITEMS: AtlasItem[] = [
     bash: "ping -c 4 google.com",
     cmd: "ping google.com",
     powershell: "Test-Connection google.com",
-    explanation: "W Linuxie 'ping' działa domyślnie w nieskończoność, stąd flaga '-c 4' ograniczająca liczbę pakietów. W CMD Windows domyślnie wysyłane są 4 pakiety. W PowerShellu oficjalnym, obiektowym ekwiwalentem jest 'Test-Connection', zwracający obiekty statusu połączenia."
+    zsh: "ping -c 4 google.com",
+    explanation: "W Linuxie i macOS 'ping' działa domyślnie w nieskończoność, stąd flaga '-c 4' ograniczająca liczbę pakietów. W CMD Windows domyślnie wysyłane są 4 pakiety. W PowerShellu oficjalnym, obiektowym ekwiwalentem jest 'Test-Connection', zwracający obiekty statusu połączenia."
   },
   {
     id: "ip-config",
@@ -165,7 +212,8 @@ export const ATLAS_ITEMS: AtlasItem[] = [
     bash: "ip addr show",
     cmd: "ipconfig",
     powershell: "Get-NetIPAddress",
-    explanation: "W nowoczesnym Linuxie standardem jest 'ip addr show' (dawniej używano 'ifconfig'). W CMD Windowsa nieustannie króluje 'ipconfig'. PowerShell oferuje cmdlety 'Get-NetIPAddress' lub 'Get-NetIPConfiguration' (aliasy: gip), dające pełny obiektowy podgląd połączeń."
+    zsh: "ifconfig",
+    explanation: "W nowoczesnym Linuxie standardem jest 'ip addr show' (dawniej 'ifconfig'). W systemie macOS (Zsh) podstawowym narzędziem niskopoziomowym do odczytu stanu kart sieciowych wciąż pozostaje 'ifconfig'. W CMD Windowsa króluje 'ipconfig', a w PowerShellu 'Get-NetIPAddress' lub 'Get-NetIPConfiguration'."
   },
   {
     id: "download-file",
@@ -175,7 +223,8 @@ export const ATLAS_ITEMS: AtlasItem[] = [
     bash: "curl -O https://example.com/plik.zip",
     cmd: "curl -O https://example.com/plik.zip",
     powershell: "Invoke-WebRequest -Uri \"https://example.com/plik.zip\" -OutFile \"plik.zip\"",
-    explanation: "W Bashu najczęściej używa się 'curl' lub 'wget'. Nowe wersje CMD w Windows 10/11 mają wbudowany port 'curl'. W PowerShellu podstawą jest 'Invoke-WebRequest' (aliasy: iwr, wget, curl) lub szybszy 'Start-BitsTransfer' dla dużych plików."
+    zsh: "curl -O https://example.com/plik.zip",
+    explanation: "Zarówno w Bashu jak i Zsh najczęściej używa się 'curl' lub 'wget'. Nowe wersje CMD w Windows 10/11 mają wbudowany port 'curl'. W PowerShellu podstawą jest 'Invoke-WebRequest' (aliasy: iwr, wget, curl) lub szybszy 'Start-BitsTransfer' dla dużych plików."
   },
 
   // VARIABLES & ENVIRONMENT
@@ -187,7 +236,8 @@ export const ATLAS_ITEMS: AtlasItem[] = [
     bash: "export API_KEY=\"secret123\"",
     cmd: "set API_KEY=secret123",
     powershell: "$env:API_KEY = \"secret123\"",
-    explanation: "W Bashu 'export' sprawia, że zmienna staje się dostępna dla procesów potomnych. W CMD 'set' przypisuje wartość natychmiastowo. W PowerShellu środowisko traktowane jest jako dedykowany napęd 'env:', stąd zapis '$env:ZMIENNA = wartość'."
+    zsh: "export API_KEY=\"secret123\"",
+    explanation: "Zarówno w Bashu, jak i w Zsh 'export' sprawia, że zmienna staje się dostępna dla procesów potomnych. W CMD 'set' przypisuje wartość natychmiastowo. W PowerShellu środowisko traktowane jest jako dedykowany napęd 'env:', stąd zapis '$env:ZMIENNA = wartość'."
   },
   {
     id: "get-variable",
@@ -197,6 +247,7 @@ export const ATLAS_ITEMS: AtlasItem[] = [
     bash: "echo $API_KEY",
     cmd: "echo %API_KEY%",
     powershell: "$env:API_KEY",
-    explanation: "Sposób odwoływania się do zmiennych silnie definiuje składnię powłoki: Bash używa prefixu '$', CMD otacza nazwę znakami procenta '%', a PowerShell korzysta z przestrzeni nazw '$env:'."
+    zsh: "echo $API_KEY",
+    explanation: "Sposób odwoływania się do zmiennych silnie definiuje składnię powłoki: Bash i Zsh używają prefixu '$', CMD otacza nazwę znakami procenta '%', a PowerShell korzysta z przestrzeni nazw '$env:'."
   }
 ];

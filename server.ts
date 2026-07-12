@@ -54,15 +54,15 @@ app.post("/api/translate-command", async (req, res) => {
 
     const ai = getGeminiClient();
 
-    const systemInstruction = `Jesteś ekspertem systemów operacyjnych (Linux, Windows) oraz powłok systemowych: Bash (Linux/macOS), CMD (klasyczny wiersz poleceń Windows) oraz PowerShell (nowoczesny shell obiektowy).
-Twoim zadaniem jest przetłumaczenie podanego polecenia lub opisu intencji użytkownika na odpowiedniki we wszystkich trzech systemach (Bash, CMD, PowerShell), wyjaśnienie składni oraz wygenerowanie wysoce realistycznej symulacji wyniku tekstowego (stdout/stderr) dla każdego z tych terminali.
+    const systemInstruction = `Jesteś ekspertem systemów operacyjnych (Linux, macOS, Windows) oraz powłok systemowych: Bash (Linux), Zsh (domyślna w macOS), CMD (klasyczny wiersz poleceń Windows) oraz PowerShell (nowoczesny shell obiektowy).
+Twoim zadaniem jest przetłumaczenie podanego polecenia lub opisu intencji użytkownika na odpowiedniki we wszystkich czterech systemach (Bash, Zsh, CMD, PowerShell), wyjaśnienie składni oraz wygenerowanie wysoce realistycznej symulacji wyniku tekstowego (stdout/stderr) dla każdego z tych terminali.
 
 Dla każdego terminala wygeneruj:
 1. 'command': dokładne, działające polecenie realizujące tę czynność.
-2. 'output': realistyczną symulację wyniku tekstowego, jakby polecenie zostało rzeczywiście wykonane w danej powłoce. Dbaj o detale (np. 'dir' w CMD ma inny format, kolumny, podsumowanie wolnego miejsca niż 'ls -la' w Bashu z prawami rwx, a 'Get-ChildItem' w PowerShellu ma charakterystyczne kolumny Mode, LastWriteTime, Length, Name).
+2. 'output': realistyczną symulację wyniku tekstowego, jakby polecenie zostało rzeczywiście wykonane w danej powłoce. Dbaj o detale (np. 'dir' w CMD ma inny format niż 'ls -la' w Bashu/Zsh, a 'Get-ChildItem' w PowerShellu ma charakterystyczne kolumny).
 3. 'explanation': zwięzłe wyjaśnienie po polsku (użyte flagi, parametry, specyfika powłoki).
 
-Dodatkowo określ 'detectedSource' (np. 'Bash', 'CMD', 'PowerShell', 'Opis słowny') oraz stwórz 'comparisonMarkdown' zawierający rzetelne porównanie różnic w składni, filozofii (np. obiekty vs strumienie tekstowe), obsłudze błędów lub potencjalnych pułapkach (np. wielkość liter, aliasy) dla tej konkretnej operacji.
+Dodatkowo określ 'detectedSource' (np. 'Bash', 'Zsh', 'CMD', 'PowerShell', 'Opis słowny') oraz stwórz 'comparisonMarkdown' zawierający rzetelne porównanie różnic w składni, filozofii (np. obiekty vs strumienie tekstowe), obsłudze błędów lub potencjalnych pułapkach dla tej konkretnej operacji.
 
 Mów wyłącznie w języku polskim.`;
 
@@ -88,6 +88,15 @@ Sugerowane źródło przez użytkownika (opcjonalnie): ${sourceShell || "Wykryj 
               },
               required: ["command", "output", "explanation"]
             },
+            zsh: {
+              type: Type.OBJECT,
+              properties: {
+                command: { type: Type.STRING, description: "Dokładne, działające polecenie w Zsh (domyślny macOS)" },
+                output: { type: Type.STRING, description: "Symulowany, realistyczny wynik tekstowy wykonania tego polecenia w konsoli Zsh" },
+                explanation: { type: Type.STRING, description: "Krótkie wyjaśnienie działania i użytych flag po polsku" }
+              },
+              required: ["command", "output", "explanation"]
+            },
             cmd: {
               type: Type.OBJECT,
               properties: {
@@ -106,10 +115,10 @@ Sugerowane źródło przez użytkownika (opcjonalnie): ${sourceShell || "Wykryj 
               },
               required: ["command", "output", "explanation"]
             },
-            detectedSource: { type: Type.STRING, description: "Automatycznie wykryte źródło (np. Bash, CMD, PowerShell, Opis słowny)" },
+            detectedSource: { type: Type.STRING, description: "Automatycznie wykryte źródło (np. Bash, Zsh, CMD, PowerShell, Opis słowny)" },
             comparisonMarkdown: { type: Type.STRING, description: "Rzetelne porównanie po polsku specyfiki tej operacji w różnych powłokach, różnice architektoniczne, potoki itp." }
           },
-          required: ["bash", "cmd", "powershell", "detectedSource", "comparisonMarkdown"]
+          required: ["bash", "zsh", "cmd", "powershell", "detectedSource", "comparisonMarkdown"]
         }
       }
     });
@@ -140,15 +149,16 @@ app.post("/api/compare-concept", async (req, res) => {
 
     const ai = getGeminiClient();
 
-    const systemInstruction = `Jesteś wybitnym pedagogiem i administratorem systemów operacyjnych. Wyjaśnij pojęcie techniczne/koncepcyjne podane przez użytkownika w kontekście trzech środowisk terminalowych: Bash, CMD i PowerShell.
+    const systemInstruction = `Jesteś wybitnym pedagogiem i administratorem systemów operacyjnych. Wyjaśnij pojęcie techniczne/koncepcyjne podane przez użytkownika w kontekście czterech środowisk terminalowych: Bash, Zsh, CMD i PowerShell.
 Porównaj te środowiska pod kątem danej koncepcji (np. Potoki, Przekierowania strumieni, Zmienne środowiskowe, Skryptowanie, Pętle, Obsługa błędów, Uprawnienia plików, Zarządzanie procesami).
 Zwróć odpowiedź w formacie JSON z następującymi polami:
 - conceptName: polska nazwa pojęcia
 - summary: ogólne zwięzłe podsumowanie pojęcia (po polsku)
 - bashExplanation: szczegółowe wyjaśnienie jak ta koncepcja działa w Bashu wraz z przykładem kodu
+- zshExplanation: szczegółowe wyjaśnienie jak ta koncepcja działa w Zsh wraz z przykładem kodu
 - cmdExplanation: szczegółowe wyjaśnienie jak ta koncepcja działa w CMD wraz z przykładem kodu
 - powershellExplanation: szczegółowe wyjaśnienie jak ta koncepcja działa w PowerShellu wraz z przykładem kodu
-- comparisonTable: obiekt z kluczami (kryterium porównawcze) i opisem różnic dla każdego systemu w formie zwięzłej tabeli lub punktów.
+- comparisonMarkdown: tabela lub punkty porównawcze wszystkich czterech powłok w formacie markdown.
 - proTips: 3 kluczowe wskazówki dla administratora/programisty przechodzącego między tymi powłokami.
 
 Mów wyłącznie w języku polskim.`;
@@ -165,6 +175,7 @@ Mów wyłącznie w języku polskim.`;
             conceptName: { type: Type.STRING },
             summary: { type: Type.STRING },
             bashExplanation: { type: Type.STRING },
+            zshExplanation: { type: Type.STRING },
             cmdExplanation: { type: Type.STRING },
             powershellExplanation: { type: Type.STRING },
             comparisonMarkdown: { type: Type.STRING, description: "Tabela lub punkty porównawcze w formacie markdown" },
@@ -174,7 +185,7 @@ Mów wyłącznie w języku polskim.`;
               description: "Dokładnie 3 przydatne wskazówki powiązane z tym pojęciem"
             }
           },
-          required: ["conceptName", "summary", "bashExplanation", "cmdExplanation", "powershellExplanation", "comparisonMarkdown", "proTips"]
+          required: ["conceptName", "summary", "bashExplanation", "zshExplanation", "cmdExplanation", "powershellExplanation", "comparisonMarkdown", "proTips"]
         }
       }
     });
