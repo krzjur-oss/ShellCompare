@@ -40,6 +40,112 @@ export default function App() {
   const [showInstallBtn, setShowInstallBtn] = useState(true);
   const [showInstallModal, setShowInstallModal] = useState(false);
   const [isInIframe, setIsInIframe] = useState(false);
+  
+  // Diagnostics state
+  const [diagnosticTab, setDiagnosticTab] = useState<"install" | "diagnostics">("install");
+  const [diagnosticResults, setDiagnosticResults] = useState({
+    swSupported: false,
+    swActive: false,
+    swStatusText: "Ładowanie...",
+    swScope: "",
+    isSecure: false,
+    isIframe: false,
+    hasDeferredPrompt: false,
+    isStandalone: false,
+    manifestLinked: false,
+    userAgent: "",
+    os: "Nieznany",
+    browser: "Nieznany",
+    isTabletOrMobile: false,
+  });
+
+  const runDiagnostics = async () => {
+    const swSupported = "serviceWorker" in navigator;
+    let swActive = false;
+    let swStatusText = "Brak rejestracji";
+    let swScope = "";
+
+    if (swSupported) {
+      try {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        if (regs.length > 0) {
+          const activeReg = regs.find(reg => reg.active || reg.installing || reg.waiting);
+          if (activeReg) {
+            swActive = true;
+            swStatusText = activeReg.active 
+              ? "Aktywny i działa" 
+              : (activeReg.installing ? "Instalowanie..." : "Oczekuje (waiting)");
+            swScope = activeReg.scope;
+          }
+        } else if (navigator.serviceWorker.controller) {
+          swActive = true;
+          swStatusText = "Aktywny (steruje stroną)";
+          swScope = "/";
+        }
+      } catch (err: any) {
+        swStatusText = "Błąd odczytu: " + err.message;
+      }
+    } else {
+      swStatusText = "Niewspierany przez przeglądarkę";
+    }
+
+    const isSecure = window.isSecureContext || 
+                     window.location.protocol === "https:" || 
+                     window.location.hostname === "localhost" || 
+                     window.location.hostname === "127.0.0.1";
+    const isIframe = window.self !== window.top;
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || 
+                         (window.navigator as any).standalone === true;
+
+    const manifestLink = document.querySelector('link[rel="manifest"]');
+    const manifestLinked = !!manifestLink;
+
+    const ua = navigator.userAgent;
+    let os = "Nieznany";
+    if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+      os = "iOS / iPadOS (Apple)";
+    } else if (/Android/.test(ua)) {
+      os = "Android";
+    } else if (/Windows/.test(ua)) {
+      os = "Windows";
+    } else if (/Macintosh/.test(ua)) {
+      os = "macOS";
+    } else if (/Linux/.test(ua)) {
+      os = "Linux";
+    }
+
+    let browser = "Inna / Nieznana";
+    if (/Chrome|CriOS/.test(ua) && !/Edge|Edg|OPR|Opera/.test(ua)) {
+      browser = "Google Chrome";
+    } else if (/Safari/.test(ua) && !/Chrome|CriOS|Edge|Edg/.test(ua)) {
+      browser = "Apple Safari";
+    } else if (/Firefox|FxiOS/.test(ua)) {
+      browser = "Mozilla Firefox";
+    } else if (/Edge|Edg/.test(ua)) {
+      browser = "Microsoft Edge";
+    } else if (/OPR|Opera/.test(ua)) {
+      browser = "Opera";
+    }
+
+    const isTabletOrMobile = /Mobi|Android|iPad|iPhone|Tablet/i.test(ua) || 
+                             (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    setDiagnosticResults({
+      swSupported,
+      swActive,
+      swStatusText,
+      swScope,
+      isSecure,
+      isIframe,
+      hasDeferredPrompt: !!deferredPrompt,
+      isStandalone,
+      manifestLinked,
+      userAgent: ua,
+      os,
+      browser,
+      isTabletOrMobile,
+    });
+  };
 
   useEffect(() => {
     setIsInIframe(window.self !== window.top);
@@ -57,10 +163,16 @@ export default function App() {
       setShowInstallBtn(false);
     }
 
+    runDiagnostics();
+
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     };
   }, []);
+
+  useEffect(() => {
+    runDiagnostics();
+  }, [deferredPrompt]);
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) {
@@ -1237,12 +1349,24 @@ export default function App() {
         <div className="flex gap-4 items-center">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-            <span>Systemy zsynchronizowane</span>
+            <span className="flex items-center gap-1.5">
+              <button
+                onClick={() => {
+                  setDiagnosticTab("diagnostics");
+                  runDiagnostics();
+                  setShowInstallModal(true);
+                }}
+                className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 hover:text-slate-200 border border-slate-700 transition-all text-slate-400 font-mono text-[9px] uppercase tracking-wider font-bold cursor-pointer mr-2 animate-pulse"
+                title="Kliknij, aby otworzyć diagnostykę instalacji PWA i kompatybilności"
+              >
+                <Settings size={10} className="text-blue-400 animate-spin-slow" />
+                <span>Diagnostyka PWA</span>
+              </button>
+              <span>Systemy zsynchronizowane</span>
+            </span>
           </div>
         </div>
       </footer>
-
-      {/* PWA MANUAL INSTALLATION MODAL */}
       {showInstallModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
           <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-lg w-full p-6 shadow-2xl space-y-5 relative">
@@ -1250,7 +1374,7 @@ export default function App() {
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
                 <Smartphone className="text-blue-400" size={18} />
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Instalacja Aplikacji</h3>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Instalacja i Diagnostyka</h3>
               </div>
               <button 
                 onClick={() => setShowInstallModal(false)}
@@ -1260,68 +1384,288 @@ export default function App() {
               </button>
             </div>
 
-            {/* Content */}
-            <div className="space-y-4 text-xs text-slate-300 leading-relaxed">
-              {isInIframe && (
-                <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 space-y-3">
-                  <div className="flex items-start gap-2.5">
-                    <span className="text-amber-400 text-lg">⚠️</span>
-                    <div className="space-y-1">
-                      <h4 className="font-bold text-amber-300 font-sans">Wykryto tryb podglądu (Iframe)</h4>
-                      <p className="text-[11px] text-slate-300 leading-relaxed">
-                        Przeglądarki internetowe blokują instalację aplikacji PWA bezpośrednio z okna podglądu AI Studio. Kliknij poniższy przycisk, aby otworzyć aplikację w osobnym oknie i natychmiast odblokować instalację:
-                      </p>
-                    </div>
-                  </div>
-                  <a
-                    href={window.location.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-lg font-bold text-xs shadow-md transition-all cursor-pointer"
-                  >
-                    <ExternalLink size={14} />
-                    Otwórz w nowej karcie i zainstaluj
-                  </a>
-                </div>
-              )}
-
-              <p>
-                Aplikacja <strong>ShellCompare</strong> wspiera technologię <strong>PWA (Progressive Web App)</strong>, umożliwiając działanie jako niezależny program na komputerze lub smartfonie (działa szybciej, bez pasków przeglądarki).
-              </p>
-
-              <div className="space-y-3">
-                {/* Desktop */}
-                <div className="bg-slate-950/50 p-3 rounded-lg border border-slate-800/60 space-y-1">
-                  <span className="font-semibold text-blue-400 font-mono text-[10px] uppercase tracking-wider">💻 KOMPUTERY (Chrome, Edge, Opera, Safari)</span>
-                  <p>W pasku adresu przeglądarki (po prawej stronie) kliknij ikonę instalacji <strong>(monitor ze strzałką)</strong> lub kliknij trzy kropki i wybierz <strong>"Zainstaluj aplikację ShellCompare"</strong>.</p>
-                </div>
-
-                {/* Android */}
-                <div className="bg-slate-950/50 p-3 rounded-lg border border-slate-800/60 space-y-1">
-                  <span className="font-semibold text-emerald-400 font-mono text-[10px] uppercase tracking-wider">🤖 SMARTFONY ANDROID</span>
-                  <p>Kliknij ikonę menu (trzy kropki) w prawym górnym rogu przeglądarki Chrome i wybierz <strong>"Zainstaluj aplikację"</strong> lub <strong>"Dodaj do ekranu głównego"</strong>.</p>
-                </div>
-
-                {/* iOS */}
-                <div className="bg-slate-950/50 p-3 rounded-lg border border-slate-800/60 space-y-1">
-                  <span className="font-semibold text-violet-400 font-mono text-[10px] uppercase tracking-wider">🍏 IPHONE & IPAD (Safari)</span>
-                  <p>Kliknij przycisk <strong>"Udostępnij"</strong> (kwadrat z pionową strzałką) na dolnym pasku Safari, przewiń listę w dół i wybierz opcję <strong>"Dodaj do ekranu początkowego"</strong>.</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 text-[10px] text-slate-500 bg-blue-500/5 p-2.5 rounded border border-blue-500/10">
-                <Info size={14} className="text-blue-400 shrink-0" />
-                <span>Jeśli przeglądasz aplikację wewnątrz podglądu AI Studio, otwórz ją w nowej karcie za pomocą przycisku w prawym górnym rogu, aby aktywować pełną instalację.</span>
-              </div>
+            {/* Tab Navigation */}
+            <div className="flex border-b border-slate-800 p-1 bg-slate-950 rounded-lg">
+              <button
+                onClick={() => setDiagnosticTab("install")}
+                className={`flex-1 text-center py-2 text-xs font-semibold rounded-md transition-all ${
+                  diagnosticTab === "install"
+                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/15"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                📥 Instrukcja
+              </button>
+              <button
+                onClick={() => {
+                  setDiagnosticTab("diagnostics");
+                  runDiagnostics();
+                }}
+                className={`flex-1 text-center py-2 text-xs font-semibold rounded-md transition-all flex items-center justify-center gap-1.5 ${
+                  diagnosticTab === "diagnostics"
+                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/15"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <Settings size={13} className={diagnosticTab === "diagnostics" ? "animate-spin-slow" : ""} />
+                Raport Diagnostyczny
+              </button>
             </div>
 
+            {/* Content Tab 1: Manual Installation Guide */}
+            {diagnosticTab === "install" && (
+              <div className="space-y-4 text-xs text-slate-300 leading-relaxed animate-fadeIn">
+                {isInIframe && (
+                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 space-y-3">
+                    <div className="flex items-start gap-2.5">
+                      <span className="text-amber-400 text-lg">⚠️</span>
+                      <div className="space-y-1">
+                        <h4 className="font-bold text-amber-300 font-sans">Wykryto tryb podglądu (Iframe)</h4>
+                        <p className="text-[11px] text-slate-300 leading-relaxed">
+                          Przeglądarki internetowe blokują instalację aplikacji PWA bezpośrednio z okna podglądu AI Studio. Kliknij poniższy przycisk, aby otworzyć aplikację w osobnym oknie i natychmiast odblokować instalację:
+                        </p>
+                      </div>
+                    </div>
+                    <a
+                      href={window.location.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-lg font-bold text-xs shadow-md transition-all cursor-pointer"
+                    >
+                      <ExternalLink size={14} />
+                      Otwórz w nowej karcie i zainstaluj
+                    </a>
+                  </div>
+                )}
+
+                <p>
+                  Aplikacja <strong>ShellCompare</strong> wspiera technologię <strong>PWA (Progressive Web App)</strong>, umożliwiając działanie jako niezależny program na komputerze lub smartfonie (działa szybciej, bez pasków przeglądarki).
+                </p>
+
+                <div className="space-y-3">
+                  {/* Desktop */}
+                  <div className="bg-slate-950/50 p-3 rounded-lg border border-slate-800/60 space-y-1">
+                    <span className="font-semibold text-blue-400 font-mono text-[10px] uppercase tracking-wider">💻 KOMPUTERY (Chrome, Edge, Opera, Safari)</span>
+                    <p>W pasku adresu przeglądarki (po prawej stronie) kliknij ikonę instalacji <strong>(monitor ze strzałką)</strong> lub kliknij trzy kropki i wybierz <strong>"Zainstaluj aplikację ShellCompare"</strong>.</p>
+                  </div>
+
+                  {/* Android */}
+                  <div className="bg-slate-950/50 p-3 rounded-lg border border-slate-800/60 space-y-1">
+                    <span className="font-semibold text-emerald-400 font-mono text-[10px] uppercase tracking-wider">🤖 SMARTFONY & TABLETY ANDROID</span>
+                    <p>Kliknij ikonę menu (trzy kropki) w prawym górnym rogu przeglądarki Chrome i wybierz <strong>"Zainstaluj aplikację"</strong> lub <strong>"Dodaj do ekranu głównego"</strong>.</p>
+                  </div>
+
+                  {/* iOS */}
+                  <div className="bg-slate-950/50 p-3 rounded-lg border border-slate-800/60 space-y-1">
+                    <span className="font-semibold text-violet-400 font-mono text-[10px] uppercase tracking-wider">🍏 IPHONE & IPAD (Safari)</span>
+                    <p>Kliknij przycisk <strong>"Udostępnij"</strong> (kwadrat z pionową strzałką) na dolnym/górnym pasku Safari, przewiń listę w dół i wybierz opcję <strong>"Dodaj do ekranu początkowego"</strong>.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 text-[10px] text-slate-500 bg-blue-500/5 p-2.5 rounded border border-blue-500/10">
+                  <Info size={14} className="text-blue-400 shrink-0" />
+                  <span>Jeśli przeglądasz aplikację wewnątrz podglądu AI Studio, otwórz ją w nowej karcie za pomocą przycisku w prawym górnym rogu, aby aktywować pełną instalację.</span>
+                </div>
+              </div>
+            )}
+
+            {/* Content Tab 2: PWA Diagnostics */}
+            {diagnosticTab === "diagnostics" && (
+              <div className="space-y-4 text-xs animate-fadeIn max-h-[60vh] overflow-y-auto pr-1">
+                <div className="flex items-center justify-between">
+                  <p className="text-[11px] text-slate-400 leading-tight">
+                    Ten panel analizuje parametry urządzenia i przeglądarki pod kątem kryteriów instalacji PWA.
+                  </p>
+                  <button
+                    onClick={runDiagnostics}
+                    className="flex items-center gap-1 px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[10px] font-mono border border-slate-700 cursor-pointer shrink-0"
+                    title="Uruchom ponownie testy diagnostyczne"
+                  >
+                    <RefreshCw size={10} className="animate-spin-once" />
+                    Odśwież
+                  </button>
+                </div>
+
+                {/* Service Worker Status */}
+                <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-3">
+                  <div className="flex items-center justify-between border-b border-slate-800/60 pb-1.5">
+                    <span className="font-bold text-white uppercase tracking-wider font-mono text-[10px]">1. Stan Service Worker (SW)</span>
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
+                      diagnosticResults.swActive ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400"
+                    }`}>
+                      {diagnosticResults.swActive ? "Zarejestrowany" : "Brak"}
+                    </span>
+                  </div>
+                  <div className="space-y-2 text-[11px]">
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-400">Wsparcie w przeglądarce:</span>
+                      <span className="flex items-center gap-1 font-semibold text-slate-200">
+                        {diagnosticResults.swSupported ? (
+                          <>
+                            <CheckCircle2 size={13} className="text-emerald-400 shrink-0" /> Wspierany
+                          </>
+                        ) : (
+                          <>
+                            <XCircle size={13} className="text-red-400 shrink-0" /> Brak wsparcia
+                          </>
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-400">Status techniczny SW:</span>
+                      <span className="text-slate-200 font-mono text-[10px] bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800/80">
+                        {diagnosticResults.swStatusText}
+                      </span>
+                    </div>
+                    {diagnosticResults.swScope && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-400">Zasięg (Scope):</span>
+                        <span className="text-slate-400 font-mono text-[10px] truncate max-w-[180px]" title={diagnosticResults.swScope}>
+                          {diagnosticResults.swScope}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Installability Criteria */}
+                <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-3">
+                  <div className="flex items-center justify-between border-b border-slate-800/60 pb-1.5">
+                    <span className="font-bold text-white uppercase tracking-wider font-mono text-[10px]">2. Kryteria Instalacji PWA</span>
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
+                      (diagnosticResults.isSecure && !diagnosticResults.isIframe && diagnosticResults.manifestLinked) 
+                        ? "bg-emerald-500/20 text-emerald-400" 
+                        : "bg-amber-500/20 text-amber-400"
+                    }`}>
+                      {(diagnosticResults.isSecure && !diagnosticResults.isIframe && diagnosticResults.manifestLinked) ? "Spełnione" : "Niespełnione"}
+                    </span>
+                  </div>
+                  <div className="space-y-2 text-[11px]">
+                    {/* Secure Context */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-400">Bezpieczne połączenie (HTTPS):</span>
+                      <span className="flex items-center gap-1 font-semibold">
+                        {diagnosticResults.isSecure ? (
+                          <span className="text-emerald-400 flex items-center gap-1"><CheckCircle2 size={13} className="shrink-0" /> HTTPS / localhost</span>
+                        ) : (
+                          <span className="text-red-400 flex items-center gap-1"><XCircle size={13} className="shrink-0" /> Wymaga HTTPS</span>
+                        )}
+                      </span>
+                    </div>
+
+                    {/* Iframe detection */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-400">Uruchomiono poza ramką:</span>
+                      <span className="flex items-center gap-1 font-semibold">
+                        {!diagnosticResults.isIframe ? (
+                          <span className="text-emerald-400 flex items-center gap-1"><CheckCircle2 size={13} className="shrink-0" /> Tak (Właściwy tryb)</span>
+                        ) : (
+                          <span className="text-red-400 flex items-center gap-1"><XCircle size={13} className="shrink-0" /> Nie (Wewnątrz Iframe!)</span>
+                        )}
+                      </span>
+                    </div>
+
+                    {/* Manifest linked */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-400">Plik manifestu w HTML:</span>
+                      <span className="flex items-center gap-1 font-semibold">
+                        {diagnosticResults.manifestLinked ? (
+                          <span className="text-emerald-400 flex items-center gap-1"><CheckCircle2 size={13} className="shrink-0" /> Wykryto link manifestu</span>
+                        ) : (
+                          <span className="text-red-400 flex items-center gap-1"><XCircle size={13} className="shrink-0" /> Brak tagu manifestu</span>
+                        )}
+                      </span>
+                    </div>
+
+                    {/* BeforeInstallPrompt Fired */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-400">Natywna instalacja (Prompt):</span>
+                      <span className="flex items-center gap-1 font-semibold">
+                        {diagnosticResults.hasDeferredPrompt ? (
+                          <span className="text-emerald-400 flex items-center gap-1"><CheckCircle2 size={13} className="shrink-0" /> Gotowy do wywołania</span>
+                        ) : (
+                          <span className="text-amber-400 flex items-center gap-1" title="Zdarzenie beforeinstallprompt nie zostało jeszcze wysłane przez przeglądarkę">
+                            <Info size={13} className="shrink-0 text-amber-400" /> Oczekuje na zdarzenie
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Frame Warning Alert */}
+                  {diagnosticResults.isIframe && (
+                    <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 space-y-1.5 mt-2">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-amber-400 font-bold text-[11px]">⚠️ Blokada Iframe:</span>
+                      </div>
+                      <p className="text-[10px] text-slate-300 leading-relaxed">
+                        Działasz w ramce podglądu AI Studio. Przeglądarki na tabletach i smartfonach <strong>zawsze blokują instalację PWA w ramkach iframe</strong> ze względów bezpieczeństwa. Kliknij przycisk poniżej, aby otworzyć aplikację w osobnym oknie:
+                      </p>
+                      <a
+                        href={window.location.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-1 w-full py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded font-bold text-[11px] shadow-sm transition-all"
+                      >
+                        <ExternalLink size={12} />
+                        Otwórz w nowej karcie i zainstaluj
+                      </a>
+                    </div>
+                  )}
+                </div>
+
+                {/* Device & Browser Notes */}
+                <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-2.5">
+                  <span className="font-bold text-white uppercase tracking-wider font-mono text-[10px] block border-b border-slate-800/60 pb-1.5">3. Analiza i Kompatybilność Systemowa</span>
+                  <div className="grid grid-cols-2 gap-2 text-[11px] pb-1 border-b border-slate-800/30">
+                    <div>
+                      <span className="text-slate-500">System operacyjny:</span>
+                      <p className="text-slate-300 font-semibold">{diagnosticResults.os}</p>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Przeglądarka:</span>
+                      <p className="text-slate-300 font-semibold">{diagnosticResults.browser}</p>
+                    </div>
+                  </div>
+
+                  {/* Contextual device-specific advice */}
+                  <div className="space-y-2 text-[11px]">
+                    <span className="font-semibold text-blue-400 block">Rekomendacje dotyczące tabletów i urządzeń mobilnych:</span>
+                    
+                    {diagnosticResults.os.includes("iOS") ? (
+                      <div className="bg-blue-950/30 p-2.5 rounded border border-blue-900/30 space-y-1.5 text-slate-300 leading-relaxed text-[10px]">
+                        <p className="font-semibold text-white">🍏 Urządzenia Apple iPadOS / iOS (Apple iPad):</p>
+                        <ul className="list-disc list-inside space-y-1">
+                          <li>Systemy Apple **nigdy** nie obsługują zdarzenia `beforeinstallprompt` - automatyczny przycisk instalacji nie zadziała.</li>
+                          <li>Instalacja na iPadzie jest możliwa **tylko ręcznie**: otwórz stronę w **Safari**, kliknij przycisk **Udostępnij** (kwadrat z pionową strzałką) i wybierz **Dodaj do ekranu początkowego**.</li>
+                          <li>Chrome, Firefox czy Opera na iPadzie nie wspierają instalacji PWA. Apple rezerwuje tę funkcję wyłącznie dla Safari.</li>
+                        </ul>
+                      </div>
+                    ) : (
+                      <div className="bg-emerald-950/30 p-2.5 rounded border border-emerald-900/30 space-y-1.5 text-slate-300 leading-relaxed text-[10px]">
+                        <p className="font-semibold text-white">🤖 Tablety z systemem Android (Chrome):</p>
+                        <ul className="list-disc list-inside space-y-1">
+                          <li>Upewnij się, że nie korzystasz z karty **Incognito (prywatnej)**. W tym trybie przeglądarka blokuje rejestrację Service Workerów, co uniemożliwia instalację PWA.</li>
+                          <li>Jeśli przycisk instalacji nadal jest wyszarzony lub oczekuje, otwórz menu Chrome (trzy kropki) i wybierz **Zainstaluj aplikację** lub **Dodaj do ekranu głównego** bezpośrednio z menu systemowego przeglądarki.</li>
+                          <li>Wbudowane przeglądarki w aplikacjach społecznościowych (np. wewnątrz Gmail, Slack, Facebook) blokują PWA. Zawsze otwieraj stronę bezpośrednio w przeglądarce Chrome.</li>
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Footer */}
-            <div className="flex justify-end pt-2">
+            <div className="flex justify-between items-center pt-2 border-t border-slate-800">
+              <span className="text-[10px] text-slate-500 font-mono">
+                Urządzenie: {diagnosticResults.isTabletOrMobile ? "Mobilne / Tablet" : "Desktop"}
+              </span>
               <button
                 onClick={() => setShowInstallModal(false)}
                 className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"
               >
-                Rozumiem
+                Zamknij
               </button>
             </div>
           </div>
