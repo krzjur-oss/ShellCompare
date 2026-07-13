@@ -1021,12 +1021,25 @@ export default function App() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-                      Twoje polecenie lub intencja:
-                    </label>
+                    <div className="flex justify-between items-center">
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                        Twoje polecenie lub intencja:
+                      </label>
+                      <span className="text-[9px] font-semibold text-slate-500 bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800/60 font-mono">
+                        Ctrl + Enter
+                      </span>
+                    </div>
                     <textarea
                       value={sandboxInput}
                       onChange={(e) => setSandboxInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+                          e.preventDefault();
+                          if (!isSandboxLoading && sandboxInput.trim()) {
+                            handleTranslate();
+                          }
+                        }
+                      }}
                       placeholder={
                         sandboxSource === "Opis słowny" 
                           ? "np. znajdź pliki większe niż 100MB i usuń je" 
