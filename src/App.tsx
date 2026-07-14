@@ -34,6 +34,7 @@ import { ActiveTab, AtlasItem, CommandComparison, ConceptComparison, ShellType, 
 import { INITIAL_SANDBOX_RESULT, INITIAL_CONCEPT_RESULT } from "./data/mockResponses";
 import { offlineTranslateCommand, offlineGetConcept } from "./utils/offlineTranslator";
 import TerminalWindow from "./components/TerminalWindow";
+import MarkdownRenderer from "./components/MarkdownRenderer";
 
 export default function App() {
   // Tab states
@@ -1286,8 +1287,8 @@ export default function App() {
                       Zasymulowane różnice architektoniczne i składniowe
                     </h3>
                   </div>
-                  <div className="prose prose-sm prose-invert max-w-none text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
-                    {sandboxResult.comparisonMarkdown}
+                  <div className="max-w-none">
+                    <MarkdownRenderer content={sandboxResult.comparisonMarkdown} />
                   </div>
                 </div>
               )}
@@ -1379,8 +1380,8 @@ export default function App() {
                           <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest font-mono">BASH (Linux)</span>
                           <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
                         </div>
-                        <div className="prose prose-sm prose-invert text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
-                          {conceptResult.bashExplanation}
+                        <div>
+                          <MarkdownRenderer content={conceptResult.bashExplanation} />
                         </div>
                       </div>
                     </div>
@@ -1392,8 +1393,8 @@ export default function App() {
                           <span className="text-xs font-bold text-violet-400 uppercase tracking-widest font-mono">ZSH (macOS)</span>
                           <span className="w-2 h-2 rounded-full bg-violet-500"></span>
                         </div>
-                        <div className="prose prose-sm prose-invert text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
-                          {conceptResult.zshExplanation}
+                        <div>
+                          <MarkdownRenderer content={conceptResult.zshExplanation} />
                         </div>
                       </div>
                     </div>
@@ -1405,8 +1406,8 @@ export default function App() {
                           <span className="text-xs font-bold text-zinc-300 uppercase tracking-widest font-mono">CMD (Windows)</span>
                           <span className="w-2 h-2 rounded-full bg-zinc-500"></span>
                         </div>
-                        <div className="prose prose-sm prose-invert text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
-                          {conceptResult.cmdExplanation}
+                        <div>
+                          <MarkdownRenderer content={conceptResult.cmdExplanation} />
                         </div>
                       </div>
                     </div>
@@ -1418,8 +1419,8 @@ export default function App() {
                           <span className="text-xs font-bold text-blue-400 uppercase tracking-widest font-mono">POWERSHELL</span>
                           <span className="w-2 h-2 rounded-full bg-blue-500"></span>
                         </div>
-                        <div className="prose prose-sm prose-invert text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
-                          {conceptResult.powershellExplanation}
+                        <div>
+                          <MarkdownRenderer content={conceptResult.powershellExplanation} />
                         </div>
                       </div>
                     </div>
@@ -1433,8 +1434,8 @@ export default function App() {
                         Tabela porównawcza mechanizmów
                       </h4>
                     </div>
-                    <div className="prose prose-sm prose-invert text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
-                      {conceptResult.comparisonMarkdown}
+                    <div>
+                      <MarkdownRenderer content={conceptResult.comparisonMarkdown} />
                     </div>
                   </div>
 
