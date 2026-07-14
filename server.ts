@@ -204,6 +204,69 @@ Mów wyłącznie w języku polskim.`;
   }
 });
 
+/**
+ * Evaluate user's challenge command
+ */
+app.post("/api/evaluate-challenge", async (req, res) => {
+  try {
+    const { challengeGoal, shell, userCommand } = req.body;
+    if (!challengeGoal || !shell || !userCommand) {
+      res.status(400).json({ error: "Brak wymaganych parametrów (challengeGoal, shell, userCommand)." });
+      return;
+    }
+
+    const ai = getGeminiClient();
+
+    const systemInstruction = `Jesteś surowym, ale sprawiedliwym i bardzo pomocnym nauczycielem systemów operacyjnych oraz administratorem systemów. 
+Oceniasz odpowiedź ucznia na praktyczne zadanie (wyzwanie) w określonej powłoce systemowej.
+
+Zasady oceny:
+1. Sprawdź, czy komenda wpisana przez użytkownika poprawnie realizuje postawiony cel w wybranej powłoce.
+2. Weź pod uwagę, że istnieje wiele poprawnych sposobów (np. aliasy, alternatywne komendy).
+3. Wyjaśnij szczegółowo w języku polskim, dlaczego komenda jest poprawna lub błędna. Wskaż ewentualne brakujące flagi lub parametry, albo napisz, jak komenda zachowa się w rzeczywistości.
+4. Zwróć odpowiedź w formacie JSON zawierającym:
+   - isCorrect: boolean (czy komenda poprawnie i bezpiecznie wykonuje zadanie)
+   - feedback: szczegółowa informacja zwrotna i edukacyjne uzasadnienie po polsku
+   - alternative: najbardziej eleganckie, zalecane, kanoniczne polecenie realizujące ten cel w tej powłoce.
+
+Mów wyłącznie w języku polskim.`;
+
+    const prompt = `Oceń rozwiązanie wyzwania:
+Cel zadania: "${challengeGoal}"
+Wybrana powłoka: "${shell}"
+Wpisane polecenie użytkownika: "${userCommand}"`;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3.5-flash",
+      contents: prompt,
+      config: {
+        systemInstruction,
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            isCorrect: { type: Type.BOOLEAN, description: "Czy polecenie użytkownika jest w pełni poprawne i realizuje cel" },
+            feedback: { type: Type.STRING, description: "Szczegółowa ocena, pochwała lub wytłumaczenie błędów i różnic po polsku" },
+            alternative: { type: Type.STRING, description: "Kanoniczna, wzorcowa komenda dla tego shella" }
+          },
+          required: ["isCorrect", "feedback", "alternative"]
+        }
+      }
+    });
+
+    const responseText = response.text;
+    if (!responseText) {
+      throw new Error("Model Gemini nie zwrócił odpowiedzi.");
+    }
+
+    const data = JSON.parse(responseText);
+    res.json(data);
+  } catch (error: any) {
+    console.error("Error in /api/evaluate-challenge:", error);
+    res.status(500).json({ error: error.message || "Błąd podczas oceny wyzwania." });
+  }
+});
+
 
 // Serve PWA assets from dist directory directly with correct MIME types
 app.get("/sw.js", (req, res, next) => {

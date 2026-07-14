@@ -38,6 +38,29 @@ export interface AtlasItem {
   level?: "podstawowa" | "ponadpodstawowa";
 }
 
-export type ActiveTab = "atlas" | "sandbox" | "concepts" | "help";
+export type ActiveTab = "atlas" | "sandbox" | "concepts" | "help" | "scenarios";
 export type ShellType = "bash" | "cmd" | "powershell" | "zsh";
 export type TerminalTheme = "dark" | "monokai" | "solarized";
+
+export interface Challenge {
+  id: string;
+  title: string;
+  goal: string;
+  description: string;
+  level: "podstawowa" | "ponadpodstawowa";
+  solutions: {
+    bash: string[];
+    cmd: string[];
+    powershell: string[];
+    zsh: string[];
+  };
+  tips: string;
+}
+
+export interface ChallengeEvaluationResult {
+  isCorrect: boolean;
+  feedback: string;
+  alternative: string;
+  isOffline?: boolean;
+}
+

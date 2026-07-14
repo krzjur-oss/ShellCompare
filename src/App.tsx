@@ -35,6 +35,7 @@ import { INITIAL_SANDBOX_RESULT, INITIAL_CONCEPT_RESULT } from "./data/mockRespo
 import { offlineTranslateCommand, offlineGetConcept } from "./utils/offlineTranslator";
 import TerminalWindow from "./components/TerminalWindow";
 import MarkdownRenderer from "./components/MarkdownRenderer";
+import ScenariosView from "./components/ScenariosView";
 
 export default function App() {
   // Tab states
@@ -408,6 +409,18 @@ export default function App() {
           >
             <Layers size={14} />
             <span className="hidden sm:inline">Różnice Architektoniczne</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("scenarios")}
+            className={`flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+              activeTab === "scenarios"
+                ? "bg-blue-600 text-white shadow-md shadow-blue-500/15"
+                : "text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            <Cpu size={14} />
+            <span className="hidden sm:inline">Scenariusze</span>
+            <span className="bg-amber-500/20 text-amber-400 text-[9px] px-1 rounded font-mono">Wyzwania</span>
           </button>
         </div>
 
@@ -1527,6 +1540,11 @@ export default function App() {
               )}
             </section>
           </div>
+        )}
+
+        {/* TAB 4: SCENARIUSZE */}
+        {activeTab === "scenarios" && (
+          <ScenariosView terminalTheme={terminalTheme} />
         )}
       </main>
 
