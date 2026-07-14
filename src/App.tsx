@@ -1803,7 +1803,7 @@ export default function App() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               
               {/* Opis programu (Col span 7) */}
-              <div className={`border rounded-xl p-6 md:p-8 space-y-5 shadow-lg relative overflow-hidden flex flex-col justify-between transition-all duration-200 ${t.cardBg} ${t.border}`}>
+              <div className={`lg:col-span-7 border rounded-xl p-6 md:p-8 space-y-5 shadow-lg relative overflow-hidden flex flex-col justify-between transition-all duration-200 ${t.cardBg} ${t.border}`}>
                 <div className="space-y-4">
                   <div className={`flex items-center gap-3 border-b pb-3 ${t.border}`}>
                     <BookOpen size={18} className="text-blue-400" />
@@ -1845,7 +1845,7 @@ export default function App() {
               </div>
 
               {/* Informacje o Autorze (Col span 5) */}
-              <div className={`border rounded-xl p-6 md:p-8 space-y-5 shadow-lg relative overflow-hidden flex flex-col justify-between transition-all duration-200 ${t.cardBg} ${t.border}`}>
+              <div className={`lg:col-span-5 border rounded-xl p-6 md:p-8 space-y-5 shadow-lg relative overflow-hidden flex flex-col justify-between transition-all duration-200 ${t.cardBg} ${t.border}`}>
                 <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
                 <div className="space-y-4">
@@ -1891,7 +1891,7 @@ export default function App() {
               </div>
 
               {/* Regulamin (Col span 6) */}
-              <div className={`border rounded-xl p-6 md:p-8 space-y-4 shadow-lg transition-all duration-200 ${t.cardBg} ${t.border}`}>
+              <div className={`lg:col-span-6 border rounded-xl p-6 md:p-8 space-y-4 shadow-lg transition-all duration-200 ${t.cardBg} ${t.border}`}>
                 <div className={`flex items-center gap-3 border-b pb-3 ${t.border}`}>
                   <Code size={18} className="text-emerald-400" />
                   <h3 className="text-sm font-bold text-white uppercase tracking-wider font-display">
@@ -1924,7 +1924,7 @@ export default function App() {
               </div>
 
               {/* Licencja (Col span 6) */}
-              <div className={`border rounded-xl p-6 md:p-8 space-y-4 shadow-lg relative overflow-hidden transition-all duration-200 ${t.cardBg} ${t.border}`}>
+              <div className={`lg:col-span-6 border rounded-xl p-6 md:p-8 space-y-4 shadow-lg relative overflow-hidden transition-all duration-200 ${t.cardBg} ${t.border}`}>
                 <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/[0.02] rounded-full blur-2xl pointer-events-none"></div>
 
                 <div className={`flex items-center gap-3 border-b pb-3 ${t.border}`}>
