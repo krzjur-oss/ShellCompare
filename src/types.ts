@@ -39,3 +39,4 @@ export interface AtlasItem {
 
 export type ActiveTab = "atlas" | "sandbox" | "concepts" | "help";
 export type ShellType = "bash" | "cmd" | "powershell" | "zsh";
+export type TerminalTheme = "dark" | "monokai" | "solarized";

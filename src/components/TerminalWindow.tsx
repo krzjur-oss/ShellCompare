@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Terminal, Copy, Check, Info, Maximize2, Minimize2, Eye, EyeOff, HelpCircle } from "lucide-react";
-import { ShellType } from "../types";
+import { ShellType, TerminalTheme } from "../types";
 
 interface TerminalWindowProps {
   key?: string;
@@ -10,6 +10,7 @@ interface TerminalWindowProps {
   explanation?: string;
   isLoading?: boolean;
   isFlashcardMode?: boolean;
+  theme?: TerminalTheme;
 }
 
 export default function TerminalWindow({
@@ -19,6 +20,7 @@ export default function TerminalWindow({
   explanation,
   isLoading = false,
   isFlashcardMode = false,
+  theme = "dark",
 }: TerminalWindowProps) {
   const [copied, setCopied] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -34,57 +36,161 @@ export default function TerminalWindow({
     }
   };
 
-  // Theme-specific settings
-  const shellTheme = {
-    bash: {
-      name: "Bash (GNU/Linux)",
-      prompt: "user@linux:~$ ",
-      bg: "bg-[#0c0c0c]",
-      text: "text-emerald-400",
-      accentText: "text-emerald-500",
-      commandColor: "text-white",
-      outputColor: "text-zinc-300",
-      border: "border-emerald-950/40 focus-within:border-emerald-500/50",
-      glow: "terminal-glow-bash",
-      badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+  // Theme-specific settings for all shells and theme profiles
+  const themesData = {
+    dark: {
+      bash: {
+        name: "Bash (GNU/Linux)",
+        prompt: "user@linux:~$ ",
+        bg: "bg-[#0c0c0c]",
+        text: "text-emerald-400",
+        accentText: "text-emerald-500",
+        commandColor: "text-white",
+        outputColor: "text-zinc-300",
+        border: "border-emerald-950/40 focus-within:border-emerald-500/50",
+        glow: "terminal-glow-bash",
+        badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+      },
+      cmd: {
+        name: "CMD (Wiersz poleceń Windows)",
+        prompt: "C:\\Users\\Admin> ",
+        bg: "bg-[#010101]",
+        text: "text-zinc-100",
+        accentText: "text-zinc-400",
+        commandColor: "text-zinc-100 font-medium",
+        outputColor: "text-zinc-300",
+        border: "border-zinc-800 focus-within:border-zinc-400/50",
+        glow: "terminal-glow-cmd",
+        badge: "bg-zinc-800 text-zinc-300 border-zinc-700",
+      },
+      powershell: {
+        name: "PowerShell",
+        prompt: "PS C:\\Users\\Admin> ",
+        bg: "bg-[#01172f]",
+        text: "text-cyan-400",
+        accentText: "text-yellow-400",
+        commandColor: "text-white font-semibold",
+        outputColor: "text-zinc-200",
+        border: "border-blue-900/60 focus-within:border-blue-500/50",
+        glow: "terminal-glow-powershell",
+        badge: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+      },
+      zsh: {
+        name: "Zsh (macOS)",
+        prompt: "macuser@macbook ~ % ",
+        bg: "bg-[#0a0f1d]",
+        text: "text-violet-400",
+        accentText: "text-violet-500",
+        commandColor: "text-white font-semibold",
+        outputColor: "text-zinc-300",
+        border: "border-violet-900/60 focus-within:border-violet-500/50",
+        glow: "terminal-glow-zsh",
+        badge: "bg-violet-500/10 text-violet-400 border-violet-500/20",
+      },
     },
-    cmd: {
-      name: "CMD (Wiersz poleceń Windows)",
-      prompt: "C:\\Users\\Admin> ",
-      bg: "bg-[#010101]",
-      text: "text-zinc-100",
-      accentText: "text-zinc-400",
-      commandColor: "text-zinc-100 font-medium",
-      outputColor: "text-zinc-300",
-      border: "border-zinc-800 focus-within:border-zinc-400/50",
-      glow: "terminal-glow-cmd",
-      badge: "bg-zinc-800 text-zinc-300 border-zinc-700",
+    monokai: {
+      bash: {
+        name: "Bash (GNU/Linux)",
+        prompt: "user@linux:~$ ",
+        bg: "bg-[#272822]",
+        text: "text-[#a6e22e]",
+        accentText: "text-[#f92672]",
+        commandColor: "text-[#e6db74]",
+        outputColor: "text-[#f8f8f2]",
+        border: "border-[#49483e] focus-within:border-[#a6e22e]/40",
+        glow: "shadow-lg shadow-yellow-500/5",
+        badge: "bg-[#a6e22e]/10 text-[#a6e22e] border-[#a6e22e]/20",
+      },
+      cmd: {
+        name: "CMD (Wiersz poleceń Windows)",
+        prompt: "C:\\Users\\Admin> ",
+        bg: "bg-[#272822]",
+        text: "text-[#66d9ef]",
+        accentText: "text-[#a6e22e]",
+        commandColor: "text-[#e6db74]",
+        outputColor: "text-[#f8f8f2]",
+        border: "border-[#49483e] focus-within:border-[#66d9ef]/40",
+        glow: "shadow-lg shadow-cyan-500/5",
+        badge: "bg-[#66d9ef]/10 text-[#66d9ef] border-[#66d9ef]/20",
+      },
+      powershell: {
+        name: "PowerShell",
+        prompt: "PS C:\\Users\\Admin> ",
+        bg: "bg-[#272822]",
+        text: "text-[#ae81ff]",
+        accentText: "text-[#f92672]",
+        commandColor: "text-[#e6db74]",
+        outputColor: "text-[#f8f8f2]",
+        border: "border-[#49483e] focus-within:border-[#ae81ff]/40",
+        glow: "shadow-lg shadow-purple-500/5",
+        badge: "bg-[#ae81ff]/10 text-[#ae81ff] border-[#ae81ff]/20",
+      },
+      zsh: {
+        name: "Zsh (macOS)",
+        prompt: "macuser@macbook ~ % ",
+        bg: "bg-[#272822]",
+        text: "text-[#f92672]",
+        accentText: "text-[#66d9ef]",
+        commandColor: "text-[#e6db74]",
+        outputColor: "text-[#f8f8f2]",
+        border: "border-[#49483e] focus-within:border-[#f92672]/40",
+        glow: "shadow-lg shadow-pink-500/5",
+        badge: "bg-[#f92672]/10 text-[#f92672] border-[#f92672]/20",
+      },
     },
-    powershell: {
-      name: "PowerShell",
-      prompt: "PS C:\\Users\\Admin> ",
-      bg: "bg-[#01172f]",
-      text: "text-cyan-400",
-      accentText: "text-yellow-400",
-      commandColor: "text-white font-semibold",
-      outputColor: "text-zinc-200",
-      border: "border-blue-900/60 focus-within:border-blue-500/50",
-      glow: "terminal-glow-powershell",
-      badge: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+    solarized: {
+      bash: {
+        name: "Bash (GNU/Linux)",
+        prompt: "user@linux:~$ ",
+        bg: "bg-[#002b36]",
+        text: "text-[#859900]",
+        accentText: "text-[#b58900]",
+        commandColor: "text-[#93a1a1]",
+        outputColor: "text-[#2aa198]",
+        border: "border-[#073642] focus-within:border-[#859900]/40",
+        glow: "shadow-lg shadow-emerald-500/5",
+        badge: "bg-[#859900]/10 text-[#859900] border-[#859900]/20",
+      },
+      cmd: {
+        name: "CMD (Wiersz poleceń Windows)",
+        prompt: "C:\\Users\\Admin> ",
+        bg: "bg-[#002b36]",
+        text: "text-[#cb4b16]",
+        accentText: "text-[#b58900]",
+        commandColor: "text-[#93a1a1]",
+        outputColor: "text-[#2aa198]",
+        border: "border-[#073642] focus-within:border-[#cb4b16]/40",
+        glow: "shadow-lg shadow-orange-500/5",
+        badge: "bg-[#cb4b16]/10 text-[#cb4b16] border-[#cb4b16]/20",
+      },
+      powershell: {
+        name: "PowerShell",
+        prompt: "PS C:\\Users\\Admin> ",
+        bg: "bg-[#002b36]",
+        text: "text-[#268bd2]",
+        accentText: "text-[#b58900]",
+        commandColor: "text-[#93a1a1]",
+        outputColor: "text-[#2aa198]",
+        border: "border-[#073642] focus-within:border-[#268bd2]/40",
+        glow: "shadow-lg shadow-blue-500/5",
+        badge: "bg-[#268bd2]/10 text-[#268bd2] border-[#268bd2]/20",
+      },
+      zsh: {
+        name: "Zsh (macOS)",
+        prompt: "macuser@macbook ~ % ",
+        bg: "bg-[#002b36]",
+        text: "text-[#b58900]",
+        accentText: "text-[#268bd2]",
+        commandColor: "text-[#93a1a1]",
+        outputColor: "text-[#2aa198]",
+        border: "border-[#073642] focus-within:border-[#b58900]/40",
+        glow: "shadow-lg shadow-yellow-500/5",
+        badge: "bg-[#b58900]/10 text-[#b58900] border-[#b58900]/20",
+      },
     },
-    zsh: {
-      name: "Zsh (macOS)",
-      prompt: "macuser@macbook ~ % ",
-      bg: "bg-[#0a0f1d]",
-      text: "text-violet-400",
-      accentText: "text-violet-500",
-      commandColor: "text-white font-semibold",
-      outputColor: "text-zinc-300",
-      border: "border-violet-900/60 focus-within:border-violet-500/50",
-      glow: "terminal-glow-zsh",
-      badge: "bg-violet-500/10 text-violet-400 border-violet-500/20",
-    },
-  }[type];
+  };
+
+  const shellTheme = themesData[theme][type];
 
   const showContent = !isFlashcardMode || isRevealed;
 

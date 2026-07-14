@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import { ATLAS_CATEGORIES, ATLAS_ITEMS } from "./data/atlasData";
 import { SYNTAX_COMPARISON_DATA, getDetailedRowData } from "./data/syntaxComparison";
-import { ActiveTab, AtlasItem, CommandComparison, ConceptComparison, ShellType } from "./types";
+import { ActiveTab, AtlasItem, CommandComparison, ConceptComparison, ShellType, TerminalTheme } from "./types";
 import { INITIAL_SANDBOX_RESULT, INITIAL_CONCEPT_RESULT } from "./data/mockResponses";
 import { offlineTranslateCommand, offlineGetConcept } from "./utils/offlineTranslator";
 import TerminalWindow from "./components/TerminalWindow";
@@ -64,6 +64,7 @@ export default function App() {
   const [isQuizMode, setIsQuizMode] = useState(false);
   const [isFlashcardMode, setIsFlashcardMode] = useState(false);
   const [flashcardResetKey, setFlashcardResetKey] = useState(0);
+  const [terminalTheme, setTerminalTheme] = useState<TerminalTheme>("dark");
 
   const [quizQuestion, setQuizQuestion] = useState<AtlasItem | null>(null);
 
@@ -401,7 +402,22 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-3 text-xs font-semibold text-slate-400">
-          <div className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded bg-slate-950 border border-slate-800">
+          {/* Terminal Theme Toggle */}
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 focus-within:border-blue-500/50 transition-all">
+            <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">Motyw:</span>
+            <select
+              value={terminalTheme}
+              onChange={(e) => setTerminalTheme(e.target.value as TerminalTheme)}
+              className="bg-transparent text-[10px] font-mono text-white focus:outline-none cursor-pointer border-none py-0.5"
+              title="Zmień motyw terminali (Dark, Monokai, Solarized)"
+            >
+              <option value="dark" className="bg-slate-900 text-slate-200">Dark</option>
+              <option value="monokai" className="bg-slate-900 text-slate-200">Monokai</option>
+              <option value="solarized" className="bg-slate-900 text-slate-200">Solarized</option>
+            </select>
+          </div>
+
+          <div className="hidden lg:flex items-center gap-2 px-2.5 py-1.5 rounded bg-slate-950 border border-slate-800">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span className="text-[10px] text-emerald-400 font-mono">Gemini 3.5 Flash Active</span>
           </div>
@@ -652,6 +668,7 @@ export default function App() {
                       output={`$ ${selectedAtlasItem.bash}\n# Wykonano pomyślnie. Plik/operacja przetworzona w środowisku POSIX.\n# Wynik symulowany:\n(Operacja wykonana w katalogu /home/user)`} 
                       explanation={`${selectedAtlasItem.title} w Bashu: Standard POSIX / Linux. Bardzo wydajne przetwarzanie tekstowe przy pomocy narzędzi systemowych.`} 
                       isFlashcardMode={isFlashcardMode}
+                      theme={terminalTheme}
                     />
 
                     <TerminalWindow 
@@ -661,6 +678,7 @@ export default function App() {
                       output={`% ${selectedAtlasItem.zsh}\n# Wykonano pomyślnie w macOS / Zsh.\n# Środowisko zoptymalizowane pod macOS.\n# Wynik symulowany:\n(Operacja wykonana w katalogu /Users/macuser)`} 
                       explanation={`${selectedAtlasItem.title} w Zsh: Domyślna powłoka macOS (od Catalina). W pełni kompatybilna z Bashem, wzbogacona o ulepszenia interaktywne i zaawansowane autouzupełnianie.`} 
                       isFlashcardMode={isFlashcardMode}
+                      theme={terminalTheme}
                     />
 
                     <TerminalWindow 
@@ -670,6 +688,7 @@ export default function App() {
                       output={`C:\\Users\\Admin> ${selectedAtlasItem.cmd}\n\n[CMD System Executed]\nMicrosoft Windows [Version 10.0.22631]`} 
                       explanation={`${selectedAtlasItem.title} w CMD: Klasyczny interpreter poleceń MS-DOS / Windows. Posiada ograniczoną składnię i słabe wsparcie dla typów.`} 
                       isFlashcardMode={isFlashcardMode}
+                      theme={terminalTheme}
                     />
 
                     <TerminalWindow 
@@ -679,6 +698,7 @@ export default function App() {
                       output={`PS C:\\Users\\Admin> ${selectedAtlasItem.powershell}\n\nDirectory: C:\\Users\\Admin\\projekty\nMode                 LastWriteTime         Length Name\n----                 -------------         ------ ----`} 
                       explanation={`${selectedAtlasItem.title} w PowerShell: Nowoczesny interpreter oparty o obiekty .NET Core. Zwraca bogate dane zamiast czystego tekstu.`} 
                       isFlashcardMode={isFlashcardMode}
+                      theme={terminalTheme}
                     />
                   </div>
 
@@ -1229,6 +1249,7 @@ export default function App() {
                   output={sandboxResult?.bash.output || ""}
                   explanation={sandboxResult?.bash.explanation}
                   isLoading={isSandboxLoading}
+                  theme={terminalTheme}
                 />
                 <TerminalWindow
                   type="zsh"
@@ -1236,6 +1257,7 @@ export default function App() {
                   output={sandboxResult?.zsh?.output || ""}
                   explanation={sandboxResult?.zsh?.explanation}
                   isLoading={isSandboxLoading}
+                  theme={terminalTheme}
                 />
                 <TerminalWindow
                   type="cmd"
@@ -1243,6 +1265,7 @@ export default function App() {
                   output={sandboxResult?.cmd.output || ""}
                   explanation={sandboxResult?.cmd.explanation}
                   isLoading={isSandboxLoading}
+                  theme={terminalTheme}
                 />
                 <TerminalWindow
                   type="powershell"
@@ -1250,6 +1273,7 @@ export default function App() {
                   output={sandboxResult?.powershell.output || ""}
                   explanation={sandboxResult?.powershell.explanation}
                   isLoading={isSandboxLoading}
+                  theme={terminalTheme}
                 />
               </div>
 
