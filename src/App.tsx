@@ -26,7 +26,9 @@ import {
   RotateCcw,
   Download,
   Smartphone,
-  X
+  X,
+  Wifi,
+  WifiOff
 } from "lucide-react";
 import { ATLAS_CATEGORIES, ATLAS_ITEMS } from "./data/atlasData";
 import { SYNTAX_COMPARISON_DATA, getDetailedRowData } from "./data/syntaxComparison";
@@ -34,12 +36,56 @@ import { ActiveTab, AtlasItem, CommandComparison, ConceptComparison, ShellType, 
 import { INITIAL_SANDBOX_RESULT, INITIAL_CONCEPT_RESULT } from "./data/mockResponses";
 import { offlineTranslateCommand, offlineGetConcept } from "./utils/offlineTranslator";
 import TerminalWindow from "./components/TerminalWindow";
+import HighlightedInput from "./components/HighlightedInput";
 import MarkdownRenderer from "./components/MarkdownRenderer";
 import ScenariosView from "./components/ScenariosView";
 
 export default function App() {
   // Tab states
   const [activeTab, setActiveTab] = useState<ActiveTab>("atlas");
+  
+  // Connection status (Online/Offline)
+  const [isOnline, setIsOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  // Global Keyboard Shortcuts for tab navigation (Alt+A, Alt+S, Alt+C, Alt+W)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.altKey && !e.ctrlKey && !e.metaKey) {
+        const key = e.key.toLowerCase();
+        if (key === "a") {
+          e.preventDefault();
+          setActiveTab("atlas");
+        } else if (key === "s") {
+          e.preventDefault();
+          setActiveTab("sandbox");
+        } else if (key === "c") {
+          e.preventDefault();
+          setActiveTab("concepts");
+        } else if (key === "w") {
+          e.preventDefault();
+          setActiveTab("scenarios");
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
   
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
@@ -375,10 +421,11 @@ export default function App() {
         </div>
 
         {/* Global Tab Navigation */}
-        <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800">
+        <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800 gap-1">
           <button
             onClick={() => setActiveTab("atlas")}
-            className={`flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+            title="Atlas Komend [Alt+A]"
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all group ${
               activeTab === "atlas"
                 ? "bg-blue-600 text-white shadow-md shadow-blue-500/15"
                 : "text-slate-400 hover:text-slate-200"
@@ -386,10 +433,14 @@ export default function App() {
           >
             <BookOpen size={14} />
             <span className="hidden sm:inline">Atlas Komend</span>
+            <kbd className="hidden lg:inline-block px-1 text-[9px] font-mono bg-slate-900/60 text-slate-400 rounded border border-slate-800 group-hover:text-white transition-colors">
+              Alt+A
+            </kbd>
           </button>
           <button
             onClick={() => setActiveTab("sandbox")}
-            className={`flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+            title="Komparator Live [Alt+S]"
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all group ${
               activeTab === "sandbox"
                 ? "bg-blue-600 text-white shadow-md shadow-blue-500/15"
                 : "text-slate-400 hover:text-slate-200"
@@ -398,10 +449,14 @@ export default function App() {
             <TerminalIcon size={14} />
             <span className="hidden sm:inline">Komparator Live</span>
             <span className="bg-emerald-500/20 text-emerald-400 text-[9px] px-1 rounded font-mono">AI</span>
+            <kbd className="hidden lg:inline-block px-1 text-[9px] font-mono bg-slate-900/60 text-slate-400 rounded border border-slate-800 group-hover:text-white transition-colors">
+              Alt+S
+            </kbd>
           </button>
           <button
             onClick={() => setActiveTab("concepts")}
-            className={`flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+            title="Różnice Architektoniczne [Alt+C]"
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all group ${
               activeTab === "concepts"
                 ? "bg-blue-600 text-white shadow-md shadow-blue-500/15"
                 : "text-slate-400 hover:text-slate-200"
@@ -409,10 +464,14 @@ export default function App() {
           >
             <Layers size={14} />
             <span className="hidden sm:inline">Różnice Architektoniczne</span>
+            <kbd className="hidden lg:inline-block px-1 text-[9px] font-mono bg-slate-900/60 text-slate-400 rounded border border-slate-800 group-hover:text-white transition-colors">
+              Alt+C
+            </kbd>
           </button>
           <button
             onClick={() => setActiveTab("scenarios")}
-            className={`flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-md transition-all ${
+            title="Scenariusze i Wyzwania [Alt+W]"
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all group ${
               activeTab === "scenarios"
                 ? "bg-blue-600 text-white shadow-md shadow-blue-500/15"
                 : "text-slate-400 hover:text-slate-200"
@@ -421,6 +480,9 @@ export default function App() {
             <Cpu size={14} />
             <span className="hidden sm:inline">Scenariusze</span>
             <span className="bg-amber-500/20 text-amber-400 text-[9px] px-1 rounded font-mono">Wyzwania</span>
+            <kbd className="hidden lg:inline-block px-1 text-[9px] font-mono bg-slate-900/60 text-slate-400 rounded border border-slate-800 group-hover:text-white transition-colors">
+              Alt+W
+            </kbd>
           </button>
         </div>
 
@@ -440,10 +502,22 @@ export default function App() {
             </select>
           </div>
 
-          <div className="hidden lg:flex items-center gap-2 px-2.5 py-1.5 rounded bg-slate-950 border border-slate-800">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="text-[10px] text-emerald-400 font-mono">Gemini 3.5 Flash Active</span>
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-slate-950 border border-slate-800 text-slate-400">
+            <Wifi size={11} className="text-blue-400" />
+            <span className="text-[10px] font-mono text-blue-400 font-medium">Atlas Offline Ready</span>
           </div>
+
+          {isOnline ? (
+            <div className="hidden lg:flex items-center gap-2 px-2.5 py-1.5 rounded bg-slate-950 border border-slate-800">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="text-[10px] text-emerald-400 font-mono">Gemini 3.5 Flash Active</span>
+            </div>
+          ) : (
+            <div className="hidden lg:flex items-center gap-2 px-2.5 py-1.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400">
+              <WifiOff size={11} className="text-amber-400 animate-pulse" />
+              <span className="text-[10px] font-mono">Tryb Offline: Silnik Lokalny</span>
+            </div>
+          )}
         </div>
       </header>
 
@@ -1215,9 +1289,9 @@ export default function App() {
                         Ctrl + Enter
                       </span>
                     </div>
-                    <textarea
+                    <HighlightedInput
                       value={sandboxInput}
-                      onChange={(e) => setSandboxInput(e.target.value)}
+                      onChange={setSandboxInput}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
                           e.preventDefault();
@@ -1231,7 +1305,7 @@ export default function App() {
                           ? "np. znajdź pliki większe niż 100MB i usuń je" 
                           : "np. ping -c 5 google.com"
                       }
-                      className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs text-white font-mono placeholder-slate-600 focus:outline-none focus:border-blue-500/60 transition-colors resize-none h-28 leading-relaxed"
+                      isPolish={sandboxSource === "Opis słowny"}
                     />
                   </div>
 
