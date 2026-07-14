@@ -28,7 +28,8 @@ import {
   Smartphone,
   X,
   Wifi,
-  WifiOff
+  WifiOff,
+  Github
 } from "lucide-react";
 import { ATLAS_CATEGORIES, ATLAS_ITEMS } from "./data/atlasData";
 import { SYNTAX_COMPARISON_DATA, getDetailedRowData } from "./data/syntaxComparison";
@@ -1724,8 +1725,16 @@ export default function App() {
                 </div>
 
                 <div className="pt-4 border-t border-slate-800/40 mt-6 text-[10px] text-slate-500 font-mono flex justify-between items-center">
-                  <span>Kontakt akademicki</span>
-                  <span className="text-slate-400 font-semibold">KrzJur@gmail.com</span>
+                  <span>Profil GitHub</span>
+                  <a 
+                    href="https://github.com/KrzJur" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1.5 transition-colors"
+                  >
+                    <Github size={12} />
+                    github.com/KrzJur
+                  </a>
                 </div>
               </div>
 
