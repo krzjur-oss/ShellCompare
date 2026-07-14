@@ -60,7 +60,7 @@ export default function App() {
     };
   }, []);
 
-  // Global Keyboard Shortcuts for tab navigation (Alt+A, Alt+S, Alt+C, Alt+W)
+  // Global Keyboard Shortcuts for tab navigation (Alt+A, Alt+S, Alt+C, Alt+W, Alt+I)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.altKey && !e.ctrlKey && !e.metaKey) {
@@ -77,6 +77,9 @@ export default function App() {
         } else if (key === "w") {
           e.preventDefault();
           setActiveTab("scenarios");
+        } else if (key === "i") {
+          e.preventDefault();
+          setActiveTab("about");
         }
       }
     };
@@ -421,11 +424,11 @@ export default function App() {
         </div>
 
         {/* Global Tab Navigation */}
-        <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800 gap-1">
+        <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800 gap-1 flex-wrap md:flex-nowrap">
           <button
             onClick={() => setActiveTab("atlas")}
             title="Atlas Komend [Alt+A]"
-            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all group ${
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap group ${
               activeTab === "atlas"
                 ? "bg-blue-600 text-white shadow-md shadow-blue-500/15"
                 : "text-slate-400 hover:text-slate-200"
@@ -433,14 +436,11 @@ export default function App() {
           >
             <BookOpen size={14} />
             <span className="hidden sm:inline">Atlas Komend</span>
-            <kbd className="hidden lg:inline-block px-1 text-[9px] font-mono bg-slate-900/60 text-slate-400 rounded border border-slate-800 group-hover:text-white transition-colors">
-              Alt+A
-            </kbd>
           </button>
           <button
             onClick={() => setActiveTab("sandbox")}
             title="Komparator Live [Alt+S]"
-            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all group ${
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap group ${
               activeTab === "sandbox"
                 ? "bg-blue-600 text-white shadow-md shadow-blue-500/15"
                 : "text-slate-400 hover:text-slate-200"
@@ -449,14 +449,11 @@ export default function App() {
             <TerminalIcon size={14} />
             <span className="hidden sm:inline">Komparator Live</span>
             <span className="bg-emerald-500/20 text-emerald-400 text-[9px] px-1 rounded font-mono">AI</span>
-            <kbd className="hidden lg:inline-block px-1 text-[9px] font-mono bg-slate-900/60 text-slate-400 rounded border border-slate-800 group-hover:text-white transition-colors">
-              Alt+S
-            </kbd>
           </button>
           <button
             onClick={() => setActiveTab("concepts")}
             title="Różnice Architektoniczne [Alt+C]"
-            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all group ${
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap group ${
               activeTab === "concepts"
                 ? "bg-blue-600 text-white shadow-md shadow-blue-500/15"
                 : "text-slate-400 hover:text-slate-200"
@@ -464,14 +461,11 @@ export default function App() {
           >
             <Layers size={14} />
             <span className="hidden sm:inline">Różnice Architektoniczne</span>
-            <kbd className="hidden lg:inline-block px-1 text-[9px] font-mono bg-slate-900/60 text-slate-400 rounded border border-slate-800 group-hover:text-white transition-colors">
-              Alt+C
-            </kbd>
           </button>
           <button
             onClick={() => setActiveTab("scenarios")}
             title="Scenariusze i Wyzwania [Alt+W]"
-            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all group ${
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap group ${
               activeTab === "scenarios"
                 ? "bg-blue-600 text-white shadow-md shadow-blue-500/15"
                 : "text-slate-400 hover:text-slate-200"
@@ -480,9 +474,18 @@ export default function App() {
             <Cpu size={14} />
             <span className="hidden sm:inline">Scenariusze</span>
             <span className="bg-amber-500/20 text-amber-400 text-[9px] px-1 rounded font-mono">Wyzwania</span>
-            <kbd className="hidden lg:inline-block px-1 text-[9px] font-mono bg-slate-900/60 text-slate-400 rounded border border-slate-800 group-hover:text-white transition-colors">
-              Alt+W
-            </kbd>
+          </button>
+          <button
+            onClick={() => setActiveTab("about")}
+            title="O programie i Regulamin [Alt+I]"
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap group ${
+              activeTab === "about"
+                ? "bg-blue-600 text-white shadow-md shadow-blue-500/15"
+                : "text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            <Info size={14} />
+            <span className="hidden sm:inline">O programie</span>
           </button>
         </div>
 
@@ -1619,6 +1622,188 @@ export default function App() {
         {/* TAB 4: SCENARIUSZE */}
         {activeTab === "scenarios" && (
           <ScenariosView terminalTheme={terminalTheme} />
+        )}
+
+        {/* TAB 5: O PROGRAMIE */}
+        {activeTab === "about" && (
+          <div className="flex-1 w-full min-w-0 p-6 md:p-8 overflow-y-auto bg-slate-950/10 space-y-8">
+            {/* Header section with elegant gradients */}
+            <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 p-6 md:p-8 space-y-4">
+              <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+              <div className="space-y-2">
+                <span className="text-xs font-mono text-blue-500 uppercase font-bold tracking-widest">
+                  Dokumentacja i Informacje Prawne
+                </span>
+                <h2 className="text-2xl md:text-3xl font-display font-bold text-white tracking-tight flex items-center gap-3">
+                  <Info className="text-blue-500 shrink-0" size={28} />
+                  O programie ShellCompare
+                </h2>
+                <p className="text-slate-400 text-sm max-w-4xl leading-relaxed">
+                  Interaktywna platforma edukacyjna dedykowana pasjonatom technologii, studentom oraz profesjonalistom pragnącym zgłębić tajniki wieloplatformowej administracji systemami.
+                </p>
+              </div>
+            </div>
+
+            {/* Bento Grid layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              
+              {/* Opis programu (Col span 7) */}
+              <div className="lg:col-span-7 bg-[#0b0f19]/80 border border-slate-800 rounded-xl p-6 md:p-8 space-y-5 shadow-lg relative overflow-hidden flex flex-col justify-between">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 border-b border-slate-800/80 pb-3">
+                    <BookOpen size={18} className="text-blue-400" />
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider font-display">
+                      Opis Projektu
+                    </h3>
+                  </div>
+                  <div className="text-slate-300 text-xs md:text-sm leading-relaxed space-y-4">
+                    <p>
+                      <strong>ShellCompare</strong> to zaawansowane narzędzie edukacyjne, którego celem jest ułatwienie zrozumienia różnic i podobieństw między najpopularniejszymi interpreterami poleceń. Aplikacja zestawia ze sobą powłoki z różnych środowisk operacyjnych: <strong>Bash (Linux)</strong>, <strong>Zsh (macOS)</strong>, klasyczny wiersz poleceń <strong>CMD (Windows)</strong> oraz obiektowy <strong>PowerShell</strong>.
+                    </p>
+                    <p>
+                      Platforma została zaprojektowana w architekturze hybrydowej. Wykorzystuje zaawansowany serwerowy model sztucznej inteligencji (<strong>Gemini 3.5 Flash</strong>) do dynamicznego tłumaczenia intencji słownych na gotowe skrypty oraz dogłębnej analizy architektonicznej. Jednocześnie posiada pełen <strong>lokalny silnik oceny offline</strong>, który działa bez dostępu do sieci internetowej, gwarantując ciągłość nauki w każdych warunkach.
+                    </p>
+                    <p>
+                      Dzięki połączeniu interaktywnego atlasu komend, komparatora live, bazy różnic koncepcyjnych oraz praktycznych wyzwań i scenariuszy z systemem nagród (streaków), użytkownicy mogą krok po kroku opanować trudną sztukę administrowania różnorodnymi systemami.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-slate-800/60 mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                  <div className="p-2 bg-slate-950/50 rounded-lg border border-slate-800/40">
+                    <span className="block text-xs font-bold text-blue-400 font-mono">100%</span>
+                    <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Offline Ready</span>
+                  </div>
+                  <div className="p-2 bg-slate-950/50 rounded-lg border border-slate-800/40">
+                    <span className="block text-xs font-bold text-emerald-400 font-mono">PWA</span>
+                    <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Instalowalne</span>
+                  </div>
+                  <div className="p-2 bg-slate-950/50 rounded-lg border border-slate-800/40">
+                    <span className="block text-xs font-bold text-amber-400 font-mono">Gemini</span>
+                    <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">AI Powered</span>
+                  </div>
+                  <div className="p-2 bg-slate-950/50 rounded-lg border border-slate-800/40">
+                    <span className="block text-xs font-bold text-violet-400 font-mono">Bash/Zsh/CMD/PS</span>
+                    <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Multi-Shell</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Informacje o Autorze (Col span 5) */}
+              <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 to-indigo-950/20 border border-slate-800 rounded-xl p-6 md:p-8 space-y-5 shadow-lg relative overflow-hidden flex flex-col justify-between">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 border-b border-slate-800/80 pb-3">
+                    <Award size={18} className="text-yellow-400" />
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider font-display">
+                      O Autorze
+                    </h3>
+                  </div>
+
+                  <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-950/40 border border-slate-800/50">
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-bold text-white text-lg font-display shrink-0 border-2 border-slate-700 shadow-inner">
+                      KJ
+                    </div>
+                    <div>
+                      <h4 className="text-base font-bold text-white font-display">mgr Krzysztof Jureczek</h4>
+                      <p className="text-[11px] text-blue-400 font-mono">Nauczyciel, Dydaktyk & Pasjonat Systemów</p>
+                    </div>
+                  </div>
+
+                  <div className="text-slate-300 text-xs md:text-sm leading-relaxed space-y-3">
+                    <p>
+                      Inżynier, starszy wykładowca i doświadczony pedagog z wieloletnim stażem dydaktycznym. Specjalizuje się w architekturze systemów operacyjnych, teorii powłok systemowych oraz metodologii efektywnego nauczania technologii informatycznych.
+                    </p>
+                    <p>
+                      Projekt <strong>ShellCompare</strong> powstał jako autorska inicjatywa edukacyjna mająca na celu uproszczenie procesu przyswajania wiedzy o komendach i ujednolicenie nauki systemów Linux oraz Windows.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-slate-800/40 mt-6 text-[10px] text-slate-500 font-mono flex justify-between items-center">
+                  <span>Kontakt akademicki</span>
+                  <span className="text-slate-400 font-semibold">KrzJur@gmail.com</span>
+                </div>
+              </div>
+
+              {/* Regulamin (Col span 6) */}
+              <div className="lg:col-span-6 bg-[#0b0f19]/80 border border-slate-800 rounded-xl p-6 md:p-8 space-y-4 shadow-lg">
+                <div className="flex items-center gap-3 border-b border-slate-800/80 pb-3">
+                  <Code size={18} className="text-emerald-400" />
+                  <h3 className="text-sm font-bold text-white uppercase tracking-wider font-display">
+                    Regulamin Korzystania
+                  </h3>
+                </div>
+
+                <div className="text-slate-300 text-xs md:text-sm leading-relaxed">
+                  <p className="mb-3 text-slate-400 text-xs font-semibold">
+                    Zasady i warunki użytkowania platformy edukacyjnej ShellCompare:
+                  </p>
+                  <ol className="list-decimal list-inside space-y-2.5 text-slate-300 text-xs">
+                    <li>
+                      <span className="font-semibold text-white">Cel edukacyjny:</span> Aplikacja służy wyłącznie celom szkoleniowym, naukowym oraz osobistemu rozwojowi wiedzy w dziedzinie technologii IT.
+                    </li>
+                    <li>
+                      <span className="font-semibold text-white">Dobrowolność i brak opłat:</span> Korzystanie z wszelkich zasobów platformy (atlasu komend, wyzwań oraz symulatora sandbox) jest w pełni darmowe.
+                    </li>
+                    <li>
+                      <span className="font-semibold text-white">Symulacja działania:</span> Wyniki poleceń oraz opisy zachowania systemów generowane są w celach poglądowych. Autor dokłada wszelkich starań, aby były rzetelne, ale nie gwarantuje identycznego zachowania na fizycznych systemach produkcyjnych.
+                    </li>
+                    <li>
+                      <span className="font-semibold text-white">Bezpieczeństwo i odpowiedzialność:</span> Autor platformy nie ponosi odpowiedzialności za ewentualne szkody, utratę danych bądź awarie sprzętowe powstałe w wyniku samodzielnego uruchomienia przedstawionych poleceń na rzeczywistych serwerach lub stacjach roboczych użytkownika.
+                    </li>
+                    <li>
+                      <span className="font-semibold text-white">Poszanowanie integralności:</span> Zabrania się podejmowania działań mających na celu przeciążenie, uszkodzenie bądź zakłócenie działania infrastruktury serwerowej aplikacji.
+                    </li>
+                  </ol>
+                </div>
+              </div>
+
+              {/* Licencja (Col span 6) */}
+              <div className="lg:col-span-6 bg-[#0b0f19]/80 border border-slate-800 rounded-xl p-6 md:p-8 space-y-4 shadow-lg relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/[0.02] rounded-full blur-2xl pointer-events-none"></div>
+
+                <div className="flex items-center gap-3 border-b border-slate-800/80 pb-3">
+                  <XCircle size={18} className="text-rose-400" />
+                  <h3 className="text-sm font-bold text-white uppercase tracking-wider font-display">
+                    Licencja i Prawa Autorskie
+                  </h3>
+                </div>
+
+                <div className="text-slate-300 text-xs md:text-sm leading-relaxed space-y-3.5">
+                  <div className="p-3 bg-rose-500/5 rounded-lg border border-rose-500/10 text-rose-300 text-xs flex items-start gap-2.5">
+                    <XCircle size={16} className="text-rose-400 shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="text-white block mb-0.5">Ścisła Licencja Dydaktyczna (Ograniczona):</strong>
+                      Wszystkie materiały, baza wiedzy, opisy, kody źródłowe oraz interfejs graficzny aplikacji ShellCompare stanowią wyłączną własność intelektualną autora.
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-slate-300">
+                    Oprogramowanie udostępniane jest <strong>wyłącznie do osobistego użytku edukacyjnego</strong>.
+                  </p>
+
+                  <div className="bg-slate-950/60 p-3 rounded-lg border border-slate-800 text-xs text-slate-400 space-y-1.5 font-mono">
+                    <p className="text-rose-400 font-semibold text-[10px] uppercase tracking-wider">Kategorycznie zabrania się:</p>
+                    <ul className="list-disc list-inside space-y-1 text-[11px]">
+                      <li>Kopiowania, powielania bądź dekompilacji kodu źródłowego,</li>
+                      <li>Modyfikowania kodu lub tworzenia na jego bazie dzieł zależnych,</li>
+                      <li>Wykorzystywania komercyjnego, odsprzedaży lub dystrybucji,</li>
+                      <li>Używania w płatnych szkoleniach i kursach bez zgody.</li>
+                    </ul>
+                  </div>
+
+                  <p className="text-xs text-slate-400 italic">
+                    Naruszenie powyższych warunków bez uprzedniej, jednoznacznej i <strong>pisemnej zgody autora (mgr. Krzysztofa Jureczka)</strong> pociąga za sobą pełną odpowiedzialność cywilną oraz karną.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
         )}
       </main>
 

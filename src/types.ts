@@ -38,7 +38,7 @@ export interface AtlasItem {
   level?: "podstawowa" | "ponadpodstawowa";
 }
 
-export type ActiveTab = "atlas" | "sandbox" | "concepts" | "help" | "scenarios";
+export type ActiveTab = "atlas" | "sandbox" | "concepts" | "help" | "scenarios" | "about";
 export type ShellType = "bash" | "cmd" | "powershell" | "zsh";
 export type TerminalTheme = "dark" | "monokai" | "solarized";
 
