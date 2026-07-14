@@ -14,11 +14,19 @@ import {
   ChevronRight,
   Terminal as TerminalIcon,
   Flame,
-  ArrowRight
+  ArrowRight,
+  X
 } from "lucide-react";
 import { CHALLENGES, localEvaluateChallenge } from "../data/scenariosData";
 import { Challenge, ChallengeEvaluationResult, ShellType } from "../types";
 import MarkdownRenderer from "./MarkdownRenderer";
+
+interface Toast {
+  id: string;
+  type: "success" | "error" | "info";
+  title: string;
+  message: string;
+}
 
 interface ScenariosViewProps {
   terminalTheme: "dark" | "monokai" | "solarized";
@@ -34,6 +42,23 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
   const [showSolution, setShowSolution] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [levelFilter, setLevelFilter] = useState<"all" | "podstawowa" | "ponadpodstawowa">("all");
+
+  // Toast notifications state
+  const [toasts, setToasts] = useState<Toast[]>([]);
+
+  const addToast = (type: "success" | "error" | "info", title: string, message: string) => {
+    const id = Math.random().toString(36).substring(2, 9);
+    setToasts((prev) => [...prev, { id, type, title, message }]);
+    
+    // Auto remove after 4.5 seconds
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 4500);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
 
   // Streak & Completed list (stored in localStorage)
   const [completedChallenges, setCompletedChallenges] = useState<string[]>([]);
@@ -97,17 +122,36 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
         const data = await response.json();
         setEvaluationResult(data);
         handleCompletedState(data.isCorrect);
+
+        if (data.isCorrect) {
+          addToast("success", "Sukces! 🎉", `Zadanie '${selectedChallenge.title}' zostało zaliczone dla powłoki ${selectedShell.toUpperCase()}!`);
+        } else {
+          addToast("error", "Błędne polecenie ❌", "Twoje polecenie nie wykonuje poprawnie celu wyzwania.");
+        }
       } else {
         // Fallback locally if server returns an error
         const localData = localEvaluateChallenge(selectedChallenge, selectedShell, userCommand.trim());
         setEvaluationResult(localData);
         handleCompletedState(localData.isCorrect);
+
+        if (localData.isCorrect) {
+          addToast("success", "Sukces (offline)! 🎉", `Zadanie '${selectedChallenge.title}' zostało zaliczone offline dla powłoki ${selectedShell.toUpperCase()}!`);
+        } else {
+          addToast("error", "Błędne polecenie ❌", "Twoje polecenie nie wykonuje poprawnie celu wyzwania.");
+        }
       }
     } catch (error) {
       // Fallback locally if network fails
       const localData = localEvaluateChallenge(selectedChallenge, selectedShell, userCommand.trim());
       setEvaluationResult(localData);
       handleCompletedState(localData.isCorrect);
+
+      addToast("info", "Tryb lokalny 🔌", "Użyto lokalnego silnika oceny z powodu problemów z siecią.");
+      if (localData.isCorrect) {
+        addToast("success", "Sukces (offline)! 🎉", `Zadanie '${selectedChallenge.title}' zostało zaliczone offline dla powłoki ${selectedShell.toUpperCase()}!`);
+      } else {
+        addToast("error", "Błędne polecenie ❌", "Twoje polecenie nie wykonuje poprawnie celu wyzwania.");
+      }
     } finally {
       setIsEvaluating(false);
     }
@@ -136,6 +180,7 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
       setStreak(0);
       localStorage.removeItem("shellcompare_completed_challenges");
       localStorage.removeItem("shellcompare_challenge_streak");
+      addToast("info", "Postępy zresetowane 🔄", "Twoje postępy w wyzwaniach zostały pomyślnie zresetowane.");
     }
   };
 
@@ -145,6 +190,7 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
       // Grab a correct command and insert it with slight variations or guide them
       const sample = selectedChallenge.solutions[selectedShell][0];
       setUserCommand(sample);
+      addToast("info", "Wskazówka wprowadzona 💡", `Wpisano przykładową komendę dla powłoki ${selectedShell.toUpperCase()}.`);
     }
   };
 
@@ -525,6 +571,52 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
           </div>
 
         </div>
+      </div>
+
+      {/* Toast Notification Area */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none">
+        <AnimatePresence>
+          {toasts.map((toast) => (
+            <motion.div
+              key={toast.id}
+              initial={{ opacity: 0, y: 50, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.85, transition: { duration: 0.2 } }}
+              className={`pointer-events-auto flex items-start gap-3 p-4 rounded-xl border shadow-xl backdrop-blur-md transition-all ${
+                toast.type === "success"
+                  ? "bg-slate-900/95 border-emerald-500/30 shadow-emerald-500/5 text-slate-100"
+                  : toast.type === "error"
+                  ? "bg-slate-900/95 border-rose-500/30 shadow-rose-500/5 text-slate-100"
+                  : "bg-slate-900/95 border-blue-500/30 shadow-blue-500/5 text-slate-100"
+              }`}
+            >
+              {/* Icon */}
+              <div className="flex-shrink-0 mt-0.5">
+                {toast.type === "success" && <CheckCircle2 className="w-5 h-5 text-emerald-400" />}
+                {toast.type === "error" && <XCircle className="w-5 h-5 text-rose-400" />}
+                {toast.type === "info" && <Info className="w-5 h-5 text-blue-400" />}
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 space-y-0.5">
+                <h4 className="text-xs font-bold font-sans tracking-tight text-slate-200">
+                  {toast.title}
+                </h4>
+                <p className="text-[11px] text-slate-400 font-sans leading-relaxed">
+                  {toast.message}
+                </p>
+              </div>
+
+              {/* Close Button */}
+              <button
+                onClick={() => removeToast(toast.id)}
+                className="flex-shrink-0 text-slate-500 hover:text-slate-200 p-0.5 rounded transition-colors"
+              >
+                <X size={14} />
+              </button>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   );
