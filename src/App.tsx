@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { 
   BookOpen, 
   Terminal as TerminalIcon, 
@@ -15,6 +16,8 @@ import {
   Info,
   ExternalLink,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   Code,
   Trophy,
   Award,
@@ -26,6 +29,7 @@ import {
   X
 } from "lucide-react";
 import { ATLAS_CATEGORIES, ATLAS_ITEMS } from "./data/atlasData";
+import { SYNTAX_COMPARISON_DATA, getDetailedRowData } from "./data/syntaxComparison";
 import { ActiveTab, AtlasItem, CommandComparison, ConceptComparison, ShellType } from "./types";
 import { INITIAL_SANDBOX_RESULT, INITIAL_CONCEPT_RESULT } from "./data/mockResponses";
 import { offlineTranslateCommand, offlineGetConcept } from "./utils/offlineTranslator";
@@ -198,6 +202,7 @@ export default function App() {
 
   // Selected item in Atlas
   const [selectedAtlasItem, setSelectedAtlasItem] = useState<AtlasItem>(ATLAS_ITEMS[0]);
+  const [expandedSyntaxRow, setExpandedSyntaxRow] = useState<'command' | 'flags' | 'args' | 'returnValue' | null>(null);
 
   // Sandbox states
   const [sandboxInput, setSandboxInput] = useState("ls -la");
@@ -222,6 +227,7 @@ export default function App() {
   // Auto-reset flashcards state when changing atlas item or flashcard mode toggled
   useEffect(() => {
     setFlashcardResetKey(prev => prev + 1);
+    setExpandedSyntaxRow(null); // Reset expanded table row on change
   }, [selectedAtlasItem, isFlashcardMode]);
   const [quizSourceShell, setQuizSourceShell] = useState<ShellType>("bash");
   const [quizTargetShell, setQuizTargetShell] = useState<ShellType>("powershell");
@@ -290,6 +296,99 @@ export default function App() {
     } else {
       setQuizStreak(0);
     }
+  };
+
+  // Helper to render detailed collapsible panels for the comparison table
+  const renderRowDetails = (rowType: 'command' | 'flags' | 'args' | 'returnValue') => {
+    const details = getDetailedRowData(selectedAtlasItem.id, rowType);
+    
+    const platforms = [
+      {
+        key: 'bash',
+        name: 'Bash (POSIX)',
+        colorClass: 'text-emerald-400',
+        bgClass: 'bg-emerald-950/20 border-emerald-500/15',
+        badgeClass: 'bg-emerald-950/40 text-emerald-300 border-emerald-800/40',
+        btnClass: 'bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-300 border-emerald-800/40',
+        data: details.bash
+      },
+      {
+        key: 'cmd',
+        name: 'CMD (Windows DOS)',
+        colorClass: 'text-zinc-300',
+        bgClass: 'bg-slate-900/40 border-slate-800/80',
+        badgeClass: 'bg-slate-900/50 text-slate-300 border-slate-700/50',
+        btnClass: 'bg-slate-900/60 hover:bg-slate-800/60 text-slate-200 border-slate-700/50',
+        data: details.cmd
+      },
+      {
+        key: 'powershell',
+        name: 'PowerShell (.NET)',
+        colorClass: 'text-cyan-400',
+        bgClass: 'bg-cyan-950/20 border-cyan-500/15',
+        badgeClass: 'bg-cyan-950/40 text-cyan-300 border-cyan-800/40',
+        btnClass: 'bg-cyan-950/60 hover:bg-cyan-900/60 text-cyan-300 border-cyan-800/40',
+        data: details.powershell
+      }
+    ];
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, height: 0 }}
+        animate={{ opacity: 1, height: "auto" }}
+        exit={{ opacity: 0, height: 0 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className="overflow-hidden"
+      >
+        <div className="py-3 px-4 bg-slate-950/70 rounded-lg border border-slate-800/60 space-y-3">
+          <div className="text-[10px] font-bold text-slate-400 flex items-center justify-between gap-2 border-b border-slate-800 pb-2">
+            <div className="flex items-center gap-1.5">
+              <Info size={12} className="text-blue-400" />
+              <span>SZCZEGÓŁOWA ANALIZA ELEMENTU:</span>
+              <span className="text-slate-200 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800/60 font-mono text-[9px]">
+                {selectedAtlasItem.title} &rarr; {
+                  rowType === 'command' ? 'Polecenie bazowe' :
+                  rowType === 'flags' ? 'Flagi i przełączniki' :
+                  rowType === 'args' ? 'Przekazywane argumenty' : 'Zwracana wartość / Efekt'
+                }
+              </span>
+            </div>
+            <span className="text-[9px] text-slate-500 font-medium">Kliknij wiersz ponownie, aby zwinąć</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {platforms.map((platform) => (
+              <div key={platform.key} className={`rounded-md border p-3 flex flex-col justify-between space-y-3 transition-colors ${platform.bgClass}`}>
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className={`text-[10px] font-bold tracking-wide ${platform.colorClass}`}>
+                      {platform.name}
+                    </span>
+                    <span className={`text-[8.5px] font-semibold px-1 py-0.2 rounded border font-mono ${platform.badgeClass}`}>
+                      {platform.key.toUpperCase()}
+                    </span>
+                  </div>
+                  <p className="text-[10.5px] leading-relaxed text-slate-300 font-normal">
+                    {platform.data.desc}
+                  </p>
+                </div>
+
+                <a 
+                  href={platform.data.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  referrerPolicy="no-referrer"
+                  className={`w-full py-1 px-2 rounded text-[9.5px] font-semibold flex items-center justify-center gap-1.5 border transition-all ${platform.btnClass}`}
+                >
+                  <ExternalLink size={10.5} />
+                  <span>Dokumentacja zewnętrzna</span>
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+    );
   };
 
   // Quick suggestions for Sandbox
@@ -785,6 +884,168 @@ export default function App() {
                         </div>
                       </div>
                     </div>
+
+                    {/* Visual Comparison Table for Flags and Arguments */}
+                    {SYNTAX_COMPARISON_DATA[selectedAtlasItem.id] && (
+                      <div className="pt-4 border-t border-slate-800/60 space-y-3">
+                        <div className="flex justify-between items-center flex-wrap gap-2 pb-1">
+                          <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                            <Code size={13} className="text-blue-400" />
+                            <span>Zestawienie flag i argumentów polecenia</span>
+                          </div>
+                          <span className="text-[9.5px] text-slate-500 font-semibold flex items-center gap-1 bg-slate-950 px-2 py-0.5 rounded border border-slate-900">
+                            <Sparkles size={10} className="text-yellow-500 animate-pulse" />
+                            Kliknij dowolny wiersz tabeli, aby rozwinąć szczegóły i dokumentację!
+                          </span>
+                        </div>
+                        
+                        <div className="overflow-x-auto rounded-lg border border-slate-800 bg-slate-950/40">
+                          <table className="w-full text-left border-collapse text-[11px] min-w-[600px]">
+                            <thead>
+                              <tr className="bg-slate-900/80 border-b border-slate-800 text-slate-400 font-bold uppercase tracking-wider text-[10px]">
+                                <th className="p-2.5 w-1/5 border-r border-slate-800/60">Element</th>
+                                <th className="p-2.5 w-[26%] text-emerald-400 border-r border-slate-800/60 font-mono">Bash (POSIX)</th>
+                                <th className="p-2.5 w-[26%] text-zinc-300 border-r border-slate-800/60 font-mono">CMD (DOS)</th>
+                                <th className="p-2.5 w-[28%] text-cyan-400 font-mono">PowerShell (.NET)</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-800/40 text-slate-300">
+                              {/* Row 1: Command */}
+                              <tr 
+                                className={`cursor-pointer select-none transition-colors hover:bg-slate-900/35 group ${expandedSyntaxRow === 'command' ? 'bg-slate-900/15' : ''}`}
+                                onClick={() => setExpandedSyntaxRow(expandedSyntaxRow === 'command' ? null : 'command')}
+                              >
+                                <td className="p-2.5 font-semibold text-slate-400 border-r border-slate-800/60 bg-slate-900/10">
+                                  <div className="flex items-center justify-between gap-1.5">
+                                    <span>Polecenie bazowe</span>
+                                    {expandedSyntaxRow === 'command' ? (
+                                      <ChevronUp size={12} className="text-blue-400 shrink-0" />
+                                    ) : (
+                                      <ChevronDown size={12} className="text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" />
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="p-2.5 font-mono text-emerald-300 border-r border-slate-800/60 bg-emerald-950/5">
+                                  {SYNTAX_COMPARISON_DATA[selectedAtlasItem.id].bash.command}
+                                </td>
+                                <td className="p-2.5 font-mono text-slate-200 border-r border-slate-800/60 bg-slate-950/10">
+                                  {SYNTAX_COMPARISON_DATA[selectedAtlasItem.id].cmd.command}
+                                </td>
+                                <td className="p-2.5 font-mono text-cyan-300 bg-cyan-950/5">
+                                  {SYNTAX_COMPARISON_DATA[selectedAtlasItem.id].powershell.command}
+                                </td>
+                              </tr>
+                              {expandedSyntaxRow === 'command' && (
+                                <tr className="bg-slate-950/30 border-b border-slate-800/80">
+                                  <td colSpan={4} className="p-2.5">
+                                    {renderRowDetails('command')}
+                                  </td>
+                                </tr>
+                              )}
+
+                              {/* Row 2: Flags */}
+                              <tr 
+                                className={`cursor-pointer select-none transition-colors hover:bg-slate-900/35 group ${expandedSyntaxRow === 'flags' ? 'bg-slate-900/15' : ''}`}
+                                onClick={() => setExpandedSyntaxRow(expandedSyntaxRow === 'flags' ? null : 'flags')}
+                              >
+                                <td className="p-2.5 font-semibold text-slate-400 border-r border-slate-800/60 bg-slate-900/10">
+                                  <div className="flex items-center justify-between gap-1.5">
+                                    <span>Flagi i przełączniki</span>
+                                    {expandedSyntaxRow === 'flags' ? (
+                                      <ChevronUp size={12} className="text-blue-400 shrink-0" />
+                                    ) : (
+                                      <ChevronDown size={12} className="text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" />
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="p-2.5 text-slate-300 border-r border-slate-800/60 font-mono text-[10.5px]">
+                                  {SYNTAX_COMPARISON_DATA[selectedAtlasItem.id].bash.flags}
+                                </td>
+                                <td className="p-2.5 text-slate-300 border-r border-slate-800/60 font-mono text-[10.5px]">
+                                  {SYNTAX_COMPARISON_DATA[selectedAtlasItem.id].cmd.flags}
+                                </td>
+                                <td className="p-2.5 text-slate-300 font-mono text-[10.5px]">
+                                  {SYNTAX_COMPARISON_DATA[selectedAtlasItem.id].powershell.flags}
+                                </td>
+                              </tr>
+                              {expandedSyntaxRow === 'flags' && (
+                                <tr className="bg-slate-950/30 border-b border-slate-800/80">
+                                  <td colSpan={4} className="p-2.5">
+                                    {renderRowDetails('flags')}
+                                  </td>
+                                </tr>
+                              )}
+
+                              {/* Row 3: Args */}
+                              <tr 
+                                className={`cursor-pointer select-none transition-colors hover:bg-slate-900/35 group ${expandedSyntaxRow === 'args' ? 'bg-slate-900/15' : ''}`}
+                                onClick={() => setExpandedSyntaxRow(expandedSyntaxRow === 'args' ? null : 'args')}
+                              >
+                                <td className="p-2.5 font-semibold text-slate-400 border-r border-slate-800/60 bg-slate-900/10">
+                                  <div className="flex items-center justify-between gap-1.5">
+                                    <span>Przekazywane argumenty</span>
+                                    {expandedSyntaxRow === 'args' ? (
+                                      <ChevronUp size={12} className="text-blue-400 shrink-0" />
+                                    ) : (
+                                      <ChevronDown size={12} className="text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" />
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="p-2.5 text-slate-300 border-r border-slate-800/60 font-mono text-[10.5px]">
+                                  {SYNTAX_COMPARISON_DATA[selectedAtlasItem.id].bash.args}
+                                </td>
+                                <td className="p-2.5 text-slate-300 border-r border-slate-800/60 font-mono text-[10.5px]">
+                                  {SYNTAX_COMPARISON_DATA[selectedAtlasItem.id].cmd.args}
+                                </td>
+                                <td className="p-2.5 text-slate-300 font-mono text-[10.5px]">
+                                  {SYNTAX_COMPARISON_DATA[selectedAtlasItem.id].powershell.args}
+                                </td>
+                              </tr>
+                              {expandedSyntaxRow === 'args' && (
+                                <tr className="bg-slate-950/30 border-b border-slate-800/80">
+                                  <td colSpan={4} className="p-2.5">
+                                    {renderRowDetails('args')}
+                                  </td>
+                                </tr>
+                              )}
+
+                              {/* Row 4: ReturnValue */}
+                              <tr 
+                                className={`cursor-pointer select-none transition-colors hover:bg-slate-900/35 group ${expandedSyntaxRow === 'returnValue' ? 'bg-slate-900/15' : ''}`}
+                                onClick={() => setExpandedSyntaxRow(expandedSyntaxRow === 'returnValue' ? null : 'returnValue')}
+                              >
+                                <td className="p-2.5 font-semibold text-slate-400 border-r border-slate-800/60 bg-slate-900/10">
+                                  <div className="flex items-center justify-between gap-1.5">
+                                    <span>Zwracana wartość / Efekt</span>
+                                    {expandedSyntaxRow === 'returnValue' ? (
+                                      <ChevronUp size={12} className="text-blue-400 shrink-0" />
+                                    ) : (
+                                      <ChevronDown size={12} className="text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" />
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="p-2.5 text-slate-300 border-r border-slate-800/60 leading-relaxed text-[10.5px]">
+                                  {SYNTAX_COMPARISON_DATA[selectedAtlasItem.id].bash.returnValue}
+                                </td>
+                                <td className="p-2.5 text-slate-300 border-r border-slate-800/60 leading-relaxed text-[10.5px]">
+                                  {SYNTAX_COMPARISON_DATA[selectedAtlasItem.id].cmd.returnValue}
+                                </td>
+                                <td className="p-2.5 text-slate-300 leading-relaxed text-[10.5px]">
+                                  {SYNTAX_COMPARISON_DATA[selectedAtlasItem.id].powershell.returnValue}
+                                </td>
+                              </tr>
+                              {expandedSyntaxRow === 'returnValue' && (
+                                <tr className="bg-slate-950/30 border-b border-slate-800/80">
+                                  <td colSpan={4} className="p-2.5">
+                                    {renderRowDetails('returnValue')}
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </>
               ) : (
