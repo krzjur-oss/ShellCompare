@@ -196,6 +196,59 @@ M\xF3w wy\u0142\u0105cznie w j\u0119zyku polskim.`;
     res.status(500).json({ error: error.message || "B\u0142\u0105d wewn\u0119trzny serwera." });
   }
 });
+app.post("/api/evaluate-challenge", async (req, res) => {
+  try {
+    const { challengeGoal, shell, userCommand } = req.body;
+    if (!challengeGoal || !shell || !userCommand) {
+      res.status(400).json({ error: "Brak wymaganych parametr\xF3w (challengeGoal, shell, userCommand)." });
+      return;
+    }
+    const ai = getGeminiClient();
+    const systemInstruction = `Jeste\u015B surowym, ale sprawiedliwym i bardzo pomocnym nauczycielem system\xF3w operacyjnych oraz administratorem system\xF3w. 
+Oceniasz odpowied\u017A ucznia na praktyczne zadanie (wyzwanie) w okre\u015Blonej pow\u0142oce systemowej.
+
+Zasady oceny:
+1. Sprawd\u017A, czy komenda wpisana przez u\u017Cytkownika poprawnie realizuje postawiony cel w wybranej pow\u0142oce.
+2. We\u017A pod uwag\u0119, \u017Ce istnieje wiele poprawnych sposob\xF3w (np. aliasy, alternatywne komendy).
+3. Wyja\u015Bnij szczeg\xF3\u0142owo w j\u0119zyku polskim, dlaczego komenda jest poprawna lub b\u0142\u0119dna. Wska\u017C ewentualne brakuj\u0105ce flagi lub parametry, albo napisz, jak komenda zachowa si\u0119 w rzeczywisto\u015Bci.
+4. Zwr\xF3\u0107 odpowied\u017A w formacie JSON zawieraj\u0105cym:
+   - isCorrect: boolean (czy komenda poprawnie i bezpiecznie wykonuje zadanie)
+   - feedback: szczeg\xF3\u0142owa informacja zwrotna i edukacyjne uzasadnienie po polsku
+   - alternative: najbardziej eleganckie, zalecane, kanoniczne polecenie realizuj\u0105ce ten cel w tej pow\u0142oce.
+
+M\xF3w wy\u0142\u0105cznie w j\u0119zyku polskim.`;
+    const prompt = `Oce\u0144 rozwi\u0105zanie wyzwania:
+Cel zadania: "${challengeGoal}"
+Wybrana pow\u0142oka: "${shell}"
+Wpisane polecenie u\u017Cytkownika: "${userCommand}"`;
+    const response = await ai.models.generateContent({
+      model: "gemini-3.5-flash",
+      contents: prompt,
+      config: {
+        systemInstruction,
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: import_genai.Type.OBJECT,
+          properties: {
+            isCorrect: { type: import_genai.Type.BOOLEAN, description: "Czy polecenie u\u017Cytkownika jest w pe\u0142ni poprawne i realizuje cel" },
+            feedback: { type: import_genai.Type.STRING, description: "Szczeg\xF3\u0142owa ocena, pochwa\u0142a lub wyt\u0142umaczenie b\u0142\u0119d\xF3w i r\xF3\u017Cnic po polsku" },
+            alternative: { type: import_genai.Type.STRING, description: "Kanoniczna, wzorcowa komenda dla tego shella" }
+          },
+          required: ["isCorrect", "feedback", "alternative"]
+        }
+      }
+    });
+    const responseText = response.text;
+    if (!responseText) {
+      throw new Error("Model Gemini nie zwr\xF3ci\u0142 odpowiedzi.");
+    }
+    const data = JSON.parse(responseText);
+    res.json(data);
+  } catch (error) {
+    console.error("Error in /api/evaluate-challenge:", error);
+    res.status(500).json({ error: error.message || "B\u0142\u0105d podczas oceny wyzwania." });
+  }
+});
 app.get("/sw.js", (req, res, next) => {
   if (process.env.NODE_ENV === "production") {
     const filePath = import_path.default.join(process.cwd(), "dist", "sw.js");
