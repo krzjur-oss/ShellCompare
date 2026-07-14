@@ -24,6 +24,7 @@ export default defineConfig(() => {
           type: 'module'
         },
         manifest: {
+          lang: 'pl',
           name: 'ShellCompare - Atlas i Komparator Terminali',
           short_name: 'ShellCompare',
           description: 'Interaktywny atlas komend oraz komparator terminali Bash, CMD i PowerShell w czasie rzeczywistym z symulacją działania i asystentem AI.',
