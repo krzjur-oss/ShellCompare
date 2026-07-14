@@ -35,6 +35,7 @@ export interface AtlasItem {
   zsh: string;
   explanation: string;
   detailedComparison?: string;
+  level?: "podstawowa" | "ponadpodstawowa";
 }
 
 export type ActiveTab = "atlas" | "sandbox" | "concepts" | "help";

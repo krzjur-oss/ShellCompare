@@ -43,6 +43,7 @@ export default function App() {
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedLevel, setSelectedLevel] = useState<"all" | "podstawowa" | "ponadpodstawowa">("all");
 
   // Selected item in Atlas
   const [selectedAtlasItem, setSelectedAtlasItem] = useState<AtlasItem>(ATLAS_ITEMS[0]);
@@ -255,17 +256,25 @@ export default function App() {
     "Zarządzanie procesami i sygnały"
   ];
 
-  // Filter atlas items based on search and category
+  // Filter atlas items based on search, category and school level
   const filteredAtlasItems = ATLAS_ITEMS.filter((item) => {
     const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
+    const matchesLevel = selectedLevel === "all" || item.level === selectedLevel;
     const matchesSearch = 
       item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.bash.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.cmd.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.powershell.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+    return matchesCategory && matchesLevel && matchesSearch;
   });
+
+  // Auto-select first item when filtered list changes and current item is not in it
+  useEffect(() => {
+    if (filteredAtlasItems.length > 0 && !filteredAtlasItems.some(i => i.id === selectedAtlasItem.id)) {
+      setSelectedAtlasItem(filteredAtlasItems[0]);
+    }
+  }, [filteredAtlasItems, selectedAtlasItem]);
 
   // Handle live translation inside Sandbox
   const handleTranslate = async (overrideInput?: string, overrideSource?: string) => {
@@ -458,7 +467,7 @@ export default function App() {
                   <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-2 mb-1">
                     Kategorie Atlasu
                   </h3>
-                  <div className="space-y-1 max-h-[180px] overflow-y-auto pr-1">
+                  <div className="space-y-1 max-h-[140px] overflow-y-auto pr-1">
                     {ATLAS_CATEGORIES.map((cat) => (
                       <button
                         key={cat.id}
@@ -476,6 +485,33 @@ export default function App() {
                             : ATLAS_ITEMS.filter(i => i.category === cat.id).length
                           }
                         </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Educational Level selector */}
+                <div className="space-y-1.5 pt-2.5 border-t border-slate-800/60">
+                  <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-2 mb-1">
+                    Poziom Edukacyjny
+                  </h3>
+                  <div className="grid grid-cols-3 gap-1 px-1">
+                    {[
+                      { id: "all", label: "Wszystkie" },
+                      { id: "podstawowa", label: "Podst." },
+                      { id: "ponadpodstawowa", label: "Ponadp." }
+                    ].map((lvl) => (
+                      <button
+                        key={lvl.id}
+                        onClick={() => setSelectedLevel(lvl.id as any)}
+                        title={lvl.id === "all" ? "Wszystkie poziomy" : lvl.id === "podstawowa" ? "Szkoła Podstawowa" : "Szkoła Ponadpodstawowa"}
+                        className={`px-1.5 py-1.5 rounded-lg text-[10px] font-semibold tracking-tight transition-all text-center border ${
+                          selectedLevel === lvl.id
+                            ? "bg-blue-600/15 border-blue-500/50 text-blue-300 font-bold"
+                            : "bg-slate-950/40 border-slate-800/80 text-slate-400 hover:bg-slate-800/40 hover:text-slate-200"
+                        }`}
+                      >
+                        {lvl.label}
                       </button>
                     ))}
                   </div>
@@ -504,16 +540,24 @@ export default function App() {
                       <p className="text-[11px] text-slate-400 line-clamp-1">
                         {item.description}
                       </p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-[9px] font-mono bg-[#0c0c0c] text-emerald-400 px-1 py-0.2 rounded border border-emerald-950/40">
-                          {item.bash.split(" ")[0]}
-                        </span>
-                        <span className="text-[9px] font-mono bg-[#010101] text-zinc-300 px-1 py-0.2 rounded border border-zinc-800">
-                          {item.cmd.split(" ")[0]}
-                        </span>
-                        <span className="text-[9px] font-mono bg-[#01172f] text-cyan-400 px-1 py-0.2 rounded border border-blue-950/50">
-                          {item.powershell.split(" ")[0]}
-                        </span>
+                      <div className="flex items-center justify-between gap-1 mt-1 pt-1 border-t border-slate-800/30">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[9px] font-mono bg-[#0c0c0c] text-emerald-400 px-1 py-0.2 rounded border border-emerald-950/40">
+                            {item.bash.split(" ")[0]}
+                          </span>
+                          <span className="text-[9px] font-mono bg-[#010101] text-zinc-300 px-1 py-0.2 rounded border border-zinc-800">
+                            {item.cmd.split(" ")[0]}
+                          </span>
+                        </div>
+                        {item.level && (
+                          <span className={`text-[8px] px-1 py-0.2 rounded font-bold uppercase tracking-wider ${
+                            item.level === "podstawowa"
+                              ? "bg-emerald-950/60 text-emerald-400 border border-emerald-800/40"
+                              : "bg-purple-950/60 text-purple-400 border border-purple-800/40"
+                          }`}>
+                            {item.level === "podstawowa" ? "Podst." : "Ponadp."}
+                          </span>
+                        )}
                       </div>
                     </button>
                   ))
@@ -623,9 +667,23 @@ export default function App() {
                 <>
                   <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800/40 pb-6">
                     <div className="space-y-1.5">
-                      <span className="text-xs font-mono text-blue-500 uppercase tracking-widest font-bold">
-                        Atlas Komend › {ATLAS_CATEGORIES.find(c => c.id === selectedAtlasItem.category)?.name.replace(/[^A-Za-z0-9óóóęąśłżźń ]/g, "").trim() || selectedAtlasItem.category}
-                      </span>
+                      <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+                        <span className="text-blue-500 uppercase tracking-widest font-bold">
+                          Atlas Komend › {ATLAS_CATEGORIES.find(c => c.id === selectedAtlasItem.category)?.name.replace(/[^A-Za-z0-9óóóęąśłżźń ]/g, "").trim() || selectedAtlasItem.category}
+                        </span>
+                        {selectedAtlasItem.level && (
+                          <>
+                            <span className="text-slate-600 font-normal">&bull;</span>
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                              selectedAtlasItem.level === "podstawowa"
+                                ? "bg-emerald-950/70 text-emerald-400 border border-emerald-800/40"
+                                : "bg-purple-950/70 text-purple-400 border border-purple-800/40"
+                            }`}>
+                              Poziom: {selectedAtlasItem.level === "podstawowa" ? "Szkoła Podstawowa" : "Szkoła Ponadpodstawowa"}
+                            </span>
+                          </>
+                        )}
+                      </div>
                       <h2 className="text-2xl md:text-3xl font-display font-bold text-white tracking-tight">
                         {selectedAtlasItem.title}
                       </h2>
