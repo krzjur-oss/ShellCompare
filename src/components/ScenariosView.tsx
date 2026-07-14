@@ -32,7 +32,59 @@ interface ScenariosViewProps {
   terminalTheme: "dark" | "monokai" | "solarized";
 }
 
+const appThemes = {
+  dark: {
+    bg: "bg-slate-950",
+    textTitle: "text-slate-100",
+    textMuted: "text-slate-400",
+    border: "border-slate-800",
+    dashedBorder: "border-slate-800/60",
+    sidebarBg: "bg-slate-900/40",
+    cardBg: "bg-slate-900/60",
+    innerCard: "bg-[#0b0f19]/60 border-slate-800/60",
+    inputBg: "bg-slate-950",
+    subBgSolid: "bg-slate-950/10",
+    badgeGeneral: "bg-blue-950/20 border-blue-900/30 text-slate-400",
+    tabActive: "bg-blue-600/20 text-blue-300 border-blue-500/60",
+    activeCategory: "bg-blue-600/10 border-blue-500/40 text-white",
+    accentHover: "hover:bg-slate-800/20",
+  },
+  monokai: {
+    bg: "bg-[#1e1e1e]",
+    textTitle: "text-[#f8f8f2]",
+    textMuted: "text-[#a0a0a0]",
+    border: "border-[#383830]",
+    dashedBorder: "border-[#383830]/80",
+    sidebarBg: "bg-[#272822]/40",
+    cardBg: "bg-[#272822]/60",
+    innerCard: "bg-[#1e1e1e]/60 border-[#383830]/60",
+    inputBg: "bg-[#1e1e1e]",
+    subBgSolid: "bg-[#1e1e1e]/10",
+    badgeGeneral: "bg-[#75715e]/15 border-[#75715e]/30 text-[#f8f8f2]/70",
+    tabActive: "bg-[#a6e22e]/15 text-[#a6e22e] border-[#a6e22e]/40",
+    activeCategory: "bg-[#a6e22e]/10 border-[#a6e22e]/30 text-[#f8f8f2]",
+    accentHover: "hover:bg-[#272822]/30",
+  },
+  solarized: {
+    bg: "bg-[#fdf6e3]",
+    textTitle: "text-[#073642]",
+    textMuted: "text-[#657b83]",
+    border: "border-[#eee8d5]",
+    dashedBorder: "border-[#93a1a1]/40",
+    sidebarBg: "bg-[#eee8d5]/30",
+    cardBg: "bg-[#eee8d5]/50",
+    innerCard: "bg-[#fdf6e3]/80 border-[#93a1a1]/30",
+    inputBg: "bg-[#fdf6e3]",
+    subBgSolid: "bg-[#fdf6e3]/30",
+    badgeGeneral: "bg-[#b58900]/10 border-[#b58900]/30 text-[#073642]/80",
+    tabActive: "bg-[#268bd2]/15 text-[#268bd2] border-[#268bd2]/40",
+    activeCategory: "bg-[#268bd2]/10 border-[#268bd2]/30 text-[#073642]",
+    accentHover: "hover:bg-[#eee8d5]/45",
+  },
+};
+
 export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
+  const t = appThemes[terminalTheme || "dark"] || appThemes.dark;
   // State for challenges
   const [selectedChallenge, setSelectedChallenge] = useState<Challenge>(CHALLENGES[0]);
   const [selectedShell, setSelectedShell] = useState<ShellType>("bash");
@@ -223,10 +275,10 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
   return (
     <div className="flex-1 flex overflow-hidden">
       {/* Sidebar - Challenge List */}
-      <aside className="w-80 border-r border-slate-800 bg-slate-900/40 flex flex-col flex-shrink-0">
-        <div className="p-4 border-b border-slate-800 space-y-3">
+      <aside className={`w-80 border-r ${t.border} ${t.sidebarBg} flex flex-col flex-shrink-0 transition-all duration-200`}>
+        <div className={`p-4 border-b ${t.border} space-y-3`}>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">
+            <span className={`text-xs font-mono ${t.textMuted} uppercase tracking-wider`}>
               Wyzwania i Scenariusze
             </span>
             <div className="flex items-center gap-1.5 text-xs text-amber-400 font-bold bg-amber-950/40 px-2 py-0.5 rounded border border-amber-900/30">
@@ -241,7 +293,7 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
               placeholder="Filtruj wyzwania..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-950/70 text-xs text-slate-200 placeholder-slate-500 pl-8 pr-3 py-2 rounded-lg border border-slate-800 focus:border-blue-500/50 focus:outline-none transition-all"
+              className={`w-full ${t.inputBg} text-xs ${t.textTitle} placeholder-slate-500 pl-8 pr-3 py-2 rounded-lg border ${t.border} focus:border-blue-500/50 focus:outline-none transition-all`}
             />
             <span className="absolute left-2.5 top-2.5 text-slate-500">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -262,8 +314,8 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
                 onClick={() => setLevelFilter(lvl.id as any)}
                 className={`px-1 py-1 rounded text-[10px] font-semibold text-center border transition-all ${
                   levelFilter === lvl.id
-                    ? "bg-blue-600/15 border-blue-500/50 text-blue-300 font-bold"
-                    : "bg-slate-950/30 border-slate-800/80 text-slate-400 hover:text-slate-200"
+                    ? t.tabActive
+                    : `${t.inputBg} ${t.border} ${t.textMuted} ${t.accentHover}`
                 }`}
               >
                 {lvl.label}
@@ -273,7 +325,7 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
         </div>
 
         {/* Challenge list */}
-        <div className="flex-1 overflow-y-auto p-2 space-y-1">
+        <div className={`flex-1 overflow-y-auto p-2 space-y-1 ${t.subBgSolid}`}>
           {filteredChallenges.length > 0 ? (
             filteredChallenges.map((challenge) => {
               // Check how many shells are completed for this challenge
@@ -289,12 +341,12 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
                   onClick={() => setSelectedChallenge(challenge)}
                   className={`w-full text-left p-3 rounded-lg transition-all border ${
                     selectedChallenge.id === challenge.id
-                      ? "bg-blue-600/10 border-blue-500/40 text-white"
-                      : "bg-transparent border-transparent hover:bg-slate-800/20 text-slate-300"
+                      ? t.activeCategory
+                      : `bg-transparent border-transparent ${t.accentHover} ${t.textMuted}`
                   }`}
                 >
                   <div className="flex items-start justify-between gap-1.5">
-                    <span className="font-bold text-xs tracking-tight text-slate-200 block line-clamp-1">
+                    <span className={`font-bold text-xs tracking-tight block line-clamp-1 ${t.textTitle}`}>
                       {challenge.title}
                     </span>
                     {isFullyCompleted ? (
@@ -307,10 +359,10 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
                       </span>
                     ) : null}
                   </div>
-                  <p className="text-[11px] text-slate-400 line-clamp-1 mt-1 font-medium">
+                  <p className={`text-[11px] line-clamp-1 mt-1 font-medium ${t.textMuted}`}>
                     {challenge.goal}
                   </p>
-                  <div className="flex items-center justify-between gap-1 mt-2.5 pt-1.5 border-t border-slate-800/40">
+                  <div className={`flex items-center justify-between gap-1 mt-2.5 pt-1.5 border-t ${t.border}`}>
                     <span className={`text-[8px] px-1.5 py-0.2 rounded font-bold uppercase tracking-wider ${
                       challenge.level === "podstawowa"
                         ? "bg-emerald-950/50 text-emerald-400 border border-emerald-800/30"
@@ -324,14 +376,14 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
             })
           ) : (
             <div className="text-center py-8 px-4">
-              <p className="text-xs text-slate-500">Brak wyzwań spełniających kryteria.</p>
+              <p className={`text-xs ${t.textMuted}`}>Brak wyzwań spełniających kryteria.</p>
             </div>
           )}
         </div>
 
         {/* Bottom stats / reset button */}
-        <div className="p-4 border-t border-slate-800/70 bg-slate-950/30 flex items-center justify-between">
-          <div className="text-[10px] text-slate-400 font-mono">
+        <div className={`p-4 border-t bg-slate-950/30 flex items-center justify-between ${t.border}`}>
+          <div className={`text-[10px] font-mono ${t.textMuted}`}>
             Ukończone powłoki: <strong className="text-emerald-400">{completedChallenges.length}</strong>
           </div>
           {completedChallenges.length > 0 && (
@@ -349,14 +401,14 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
       {/* Main panel */}
       <div className="flex-1 bg-slate-950/15 flex flex-col overflow-y-auto p-6 md:p-8 space-y-6">
         {/* Header card with current Challenge */}
-        <div className="bg-slate-900/60 border border-slate-800/70 rounded-xl p-5 md:p-6 space-y-4 shadow-xl">
+        <div className={`border rounded-xl p-5 md:p-6 space-y-4 shadow-xl transition-all duration-200 ${t.cardBg} ${t.border}`}>
           <div className="flex flex-wrap items-center gap-2.5">
             {getLevelBadge(selectedChallenge.level)}
-            <span className="text-xs text-slate-500 font-mono">&bull; Wyzwanie Praktyczne</span>
+            <span className={`text-xs font-mono ${t.textMuted}`}>&bull; Wyzwanie Praktyczne</span>
           </div>
 
           <div className="space-y-1.5">
-            <h2 className="text-xl md:text-2xl font-display font-bold text-white tracking-tight flex items-center gap-2">
+            <h2 className={`text-xl md:text-2xl font-display font-bold tracking-tight flex items-center gap-2 ${t.textTitle}`}>
               {selectedChallenge.title}
             </h2>
             <p className="text-sm font-semibold text-blue-300">
@@ -364,11 +416,11 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
             </p>
           </div>
 
-          <p className="text-xs text-slate-400 leading-relaxed max-w-3xl">
+          <p className={`text-xs leading-relaxed max-w-3xl ${t.textMuted}`}>
             {selectedChallenge.description}
           </p>
 
-          <div className="flex items-center gap-2 pt-2 text-[11px] text-slate-500 font-mono">
+          <div className={`flex items-center gap-2 pt-2 text-[11px] font-mono ${t.textMuted}`}>
             <Info size={12} className="text-blue-500" />
             <span>Sprawdź się w różnych powłokach, aby zebrać maksymalną liczbę punktów!</span>
           </div>
@@ -379,11 +431,11 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
           
           {/* Left / Input panel */}
           <div className="lg:col-span-7 space-y-4">
-            <div className="bg-slate-900/40 border border-slate-800/60 rounded-xl overflow-hidden flex flex-col">
+            <div className={`border rounded-xl overflow-hidden flex flex-col transition-all duration-200 ${t.cardBg} ${t.border}`}>
               
               {/* Shell selectors */}
-              <div className="bg-slate-950 border-b border-slate-800/80 p-2 flex items-center justify-between">
-                <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider pl-2">
+              <div className={`border-b p-2 flex items-center justify-between ${t.inputBg} ${t.border}`}>
+                <span className={`text-[10px] font-mono uppercase tracking-wider pl-2 ${t.textMuted}`}>
                   Wybierz Powłokę docelową:
                 </span>
                 <div className="flex gap-1">
@@ -395,8 +447,8 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
                         onClick={() => setSelectedShell(sh)}
                         className={`px-3 py-1 text-[10px] font-mono font-bold rounded uppercase border transition-all ${
                           selectedShell === sh
-                            ? "bg-blue-600/15 border-blue-500/50 text-blue-300"
-                            : "bg-slate-900/50 border-transparent text-slate-400 hover:text-slate-200"
+                            ? t.tabActive
+                            : `${t.inputBg} ${t.border} ${t.textMuted} ${t.accentHover}`
                         }`}
                       >
                         {sh === "powershell" ? "PS" : sh}
@@ -408,8 +460,8 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
               </div>
 
               {/* Terminal code editor area */}
-              <div className="p-4 bg-slate-950 flex-1 flex flex-col space-y-3">
-                <div className="flex items-center justify-between text-xs text-slate-500 font-mono">
+              <div className="p-4 bg-slate-950/40 flex-1 flex flex-col space-y-3">
+                <div className={`flex items-center justify-between text-xs font-mono ${t.textMuted}`}>
                   <span>Edytor polecenia ({selectedShell.toUpperCase()})</span>
                   <button
                     onClick={handleInsertQuickTip}
@@ -420,8 +472,8 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
                   </button>
                 </div>
 
-                <div className="relative font-mono text-sm bg-slate-900 rounded-lg p-3 border border-slate-800/60 flex items-start gap-2.5">
-                  <span className="text-slate-600 select-none">
+                <div className={`relative font-mono text-sm rounded-lg p-3 border flex items-start gap-2.5 ${t.inputBg} ${t.border}`}>
+                  <span className={`${t.textMuted} select-none`}>
                     {selectedShell === "powershell" ? "PS C:\\>" : selectedShell === "cmd" ? "C:\\>" : "$"}
                   </span>
                   <input
@@ -429,7 +481,7 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
                     value={userCommand}
                     onChange={(e) => setUserCommand(e.target.value)}
                     placeholder="Wpisz swoje polecenie systemowe tutaj..."
-                    className="w-full bg-transparent text-slate-100 focus:outline-none placeholder-slate-600 font-mono resize-none py-0.5"
+                    className={`w-full bg-transparent focus:outline-none placeholder-slate-600 font-mono resize-none py-0.5 ${t.textTitle}`}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         handleEvaluate();
@@ -439,7 +491,7 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
                 </div>
 
                 <div className="flex items-center justify-between pt-1">
-                  <span className="text-[10px] text-slate-500 max-w-[65%] leading-normal font-mono">
+                  <span className={`text-[10px] max-w-[65%] leading-normal font-mono ${t.textMuted}`}>
                     Wciśnij Enter lub kliknij przycisk po prawej, aby ocenić.
                   </span>
                   <button
@@ -468,11 +520,11 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
             </div>
 
             {/* Static tip card */}
-            <div className="bg-slate-900/30 border border-slate-800/40 rounded-xl p-4 flex gap-3 items-start">
+            <div className={`border rounded-xl p-4 flex gap-3 items-start ${t.innerCard}`}>
               <HelpCircle size={16} className="text-blue-400 mt-0.5 flex-shrink-0" />
               <div className="space-y-1">
-                <h4 className="text-xs font-bold text-slate-300">Wskazówki dla powłoki {selectedShell.toUpperCase()}</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed">
+                <h4 className={`text-xs font-bold ${t.textTitle}`}>Wskazówki dla powłoki {selectedShell.toUpperCase()}</h4>
+                <p className={`text-[11px] leading-relaxed ${t.textMuted}`}>
                   {selectedChallenge.tips}
                 </p>
               </div>
@@ -525,7 +577,7 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
                   <div className="pt-2">
                     <button
                       onClick={() => setShowSolution(!showSolution)}
-                      className="w-full py-2 px-3 rounded-lg bg-slate-900 border border-slate-800 text-[10px] font-bold uppercase tracking-wider text-slate-300 hover:bg-slate-800/70 hover:text-white transition-all flex items-center justify-center gap-1.5"
+                      className={`w-full py-2 px-3 rounded-lg border text-[10px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${t.inputBg} ${t.border} ${t.textTitle} hover:bg-slate-800/70`}
                     >
                       <BookOpen size={12} />
                       {showSolution ? "Ukryj wzorzec" : "Pokaż wzorcowe polecenie"}
@@ -539,8 +591,8 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
                           exit={{ opacity: 0, height: 0 }}
                           className="overflow-hidden mt-2.5"
                         >
-                          <div className="p-3 rounded-lg bg-slate-950 border border-slate-800/80 font-mono text-xs text-blue-300 space-y-1.5">
-                            <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wider block">Zalecany wzorzec:</span>
+                          <div className={`p-3 rounded-lg border font-mono text-xs text-blue-300 space-y-1.5 ${t.inputBg} ${t.border}`}>
+                            <span className={`text-[9px] uppercase font-bold tracking-wider block ${t.textMuted}`}>Zalecany wzorzec:</span>
                             <div className="p-1.5 rounded bg-slate-900 border border-slate-800 text-[11px] text-slate-200">
                               {evaluationResult.alternative || selectedChallenge.solutions[selectedShell][0]}
                             </div>
@@ -556,12 +608,12 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="bg-slate-900/20 border border-slate-800/60 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center space-y-3 min-h-[250px]"
+                  className={`border border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center space-y-3 min-h-[250px] ${t.cardBg} ${t.dashedBorder}`}
                 >
-                  <Award size={36} className="text-slate-600 animate-pulse" />
+                  <Award size={36} className={`${t.textMuted} animate-pulse`} />
                   <div className="space-y-1 max-w-[80%]">
-                    <h3 className="font-bold text-xs text-slate-400 uppercase tracking-wider">Czekam na ocenę</h3>
-                    <p className="text-[11px] text-slate-500 leading-normal">
+                    <h3 className={`font-bold text-xs uppercase tracking-wider ${t.textTitle}`}>Czekam na ocenę</h3>
+                    <p className={`text-[11px] leading-normal ${t.textMuted}`}>
                       Wpisz polecenie systemowe i kliknij <strong>"Oceń polecenie"</strong>, aby rzucić wyzwanie inteligentnej ocenie nauczyciela.
                     </p>
                   </div>

@@ -41,6 +41,114 @@ import HighlightedInput from "./components/HighlightedInput";
 import MarkdownRenderer from "./components/MarkdownRenderer";
 import ScenariosView from "./components/ScenariosView";
 
+const appThemes = {
+  dark: {
+    bg: "bg-[#0b0f19] text-slate-200",
+    headerBg: "bg-slate-900/95 border-slate-800",
+    sidebarBg: "bg-slate-900/40 border-slate-800",
+    cardBg: "bg-[#0b0f19]/80 border-slate-800",
+    cardBgSolid: "bg-slate-900 border-slate-800",
+    border: "border-slate-800",
+    textMuted: "text-slate-400",
+    textTitle: "text-white",
+    tabActive: "bg-blue-600 text-white shadow-md shadow-blue-500/15",
+    tabInactive: "text-slate-400 hover:text-slate-200",
+    inputBg: "bg-slate-950 border-slate-800",
+    kbdBg: "bg-slate-900/60 text-slate-400 border-slate-800",
+    innerCard: "bg-slate-950/40 border-slate-800/50",
+    badgeBg: "bg-indigo-500/10 text-indigo-300 border-indigo-500/20",
+    difficultyAll: "bg-purple-600 text-white shadow-sm font-bold",
+    accentText: "text-blue-400",
+    accentHover: "hover:bg-slate-800/40 hover:text-slate-200",
+    activeCategory: "bg-blue-600/15 text-blue-300 border-l-2 border-blue-500 pl-2",
+    scrollbar: "scrollbar-dark",
+    badgeGeneral: "bg-slate-800 text-blue-400 border-slate-700",
+    activeItem: "bg-slate-800 border-slate-700 shadow-md",
+    inactiveItem: "bg-slate-900/25 border-transparent hover:bg-slate-900/60",
+    subBg: "bg-[#0b0f19]/60",
+    subBgSolid: "bg-slate-950/50",
+    interactiveActive: "bg-blue-600/15 border-blue-500/50 text-blue-300 font-bold",
+    interactiveInactive: "bg-slate-950/40 border-slate-800/80 text-slate-400 hover:bg-slate-800/40 hover:text-slate-200",
+    gradientHeaderBg: "bg-[#0b0f19]/80 border-slate-800",
+    gradientColor: "text-blue-500",
+    badgeSuccess: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+    badgeWarning: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+    badgePurple: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+    quizPaneBg: "bg-[#0b0f19]/80 border-slate-800",
+    dashedBorder: "border-slate-800/60",
+  },
+  monokai: {
+    bg: "bg-[#191916] text-[#f8f8f2]",
+    headerBg: "bg-[#272822]/95 border-[#3e3d32]",
+    sidebarBg: "bg-[#272822]/40 border-[#3e3d32]",
+    cardBg: "bg-[#272822]/80 border-[#3e3d32]",
+    cardBgSolid: "bg-[#272822] border-[#3e3d32]",
+    border: "border-[#3e3d32]",
+    textMuted: "text-[#75715e]",
+    textTitle: "text-[#f92672]",
+    tabActive: "bg-[#a6e22e] text-black shadow-md shadow-[#a6e22e]/15 font-bold",
+    tabInactive: "text-[#f8f8f2]/60 hover:text-[#f8f8f2]",
+    inputBg: "bg-[#1e1e1a] border-[#49483e]",
+    kbdBg: "bg-[#272822]/60 text-[#75715e] border-[#49483e]",
+    innerCard: "bg-[#272822]/40 border-[#49483e]/50",
+    badgeBg: "bg-[#ae81ff]/10 text-[#ae81ff] border-[#ae81ff]/20",
+    difficultyAll: "bg-[#a6e22e] text-black shadow-sm font-bold",
+    accentText: "text-[#66d9ef]",
+    accentHover: "hover:bg-[#272822]/40 hover:text-[#f8f8f2]",
+    activeCategory: "bg-[#a6e22e]/15 text-[#a6e22e] border-l-2 border-[#a6e22e] pl-2",
+    scrollbar: "scrollbar-monokai",
+    badgeGeneral: "bg-[#272822] text-[#66d9ef] border-[#49483e]",
+    activeItem: "bg-[#272822] border-[#a6e22e]/40 shadow-md",
+    inactiveItem: "bg-[#1e1e1a]/25 border-transparent hover:bg-[#272822]/60",
+    subBg: "bg-[#191916]/60",
+    subBgSolid: "bg-[#272822]/50",
+    interactiveActive: "bg-[#a6e22e]/15 border-[#a6e22e]/50 text-[#a6e22e] font-bold",
+    interactiveInactive: "bg-[#1e1e1a]/40 border-[#3e3d32]/80 text-[#75715e] hover:bg-[#272822]/40 hover:text-[#f8f8f2]",
+    gradientHeaderBg: "bg-[#272822]/80 border-[#3e3d32]",
+    gradientColor: "text-[#f92672]",
+    badgeSuccess: "bg-[#a6e22e]/10 text-[#a6e22e] border-[#a6e22e]/20",
+    badgeWarning: "bg-[#e6db74]/10 text-[#e6db74] border-[#e6db74]/20",
+    badgePurple: "bg-[#ae81ff]/10 text-[#ae81ff] border-[#ae81ff]/20",
+    quizPaneBg: "bg-[#272822]/80 border-[#3e3d32]",
+    dashedBorder: "border-[#49483e]/60",
+  },
+  solarized: {
+    bg: "bg-[#001f27] text-[#93a1a1]",
+    headerBg: "bg-[#002b36]/95 border-[#073642]",
+    sidebarBg: "bg-[#002b36]/40 border-[#073642]",
+    cardBg: "bg-[#002b36]/80 border-[#073642]",
+    cardBgSolid: "bg-[#002b36] border-[#073642]",
+    border: "border-[#073642]",
+    textMuted: "text-[#586e75]",
+    textTitle: "text-[#268bd2]",
+    tabActive: "bg-[#2aa198] text-white shadow-md shadow-[#2aa198]/15 font-bold",
+    tabInactive: "text-[#93a1a1]/60 hover:text-[#e0e0e0]",
+    inputBg: "bg-[#001f27] border-[#073642]",
+    kbdBg: "bg-[#002b36]/60 text-[#586e75] border-[#073642]",
+    innerCard: "bg-[#002b36]/40 border-[#073642]/50",
+    badgeBg: "bg-[#b58900]/10 text-[#b58900] border-[#b58900]/20",
+    difficultyAll: "bg-[#2aa198] text-white shadow-sm font-bold",
+    accentText: "text-[#2aa198]",
+    accentHover: "hover:bg-[#002b36]/40 hover:text-[#e0e0e0]",
+    activeCategory: "bg-[#2aa198]/15 text-[#2aa198] border-l-2 border-[#2aa198] pl-2",
+    scrollbar: "scrollbar-solarized",
+    badgeGeneral: "bg-[#002b36] text-[#268bd2] border-[#073642]",
+    activeItem: "bg-[#002b36] border-[#2aa198]/40 shadow-md",
+    inactiveItem: "bg-[#001f27]/25 border-transparent hover:bg-[#002b36]/60",
+    subBg: "bg-[#001f27]/60",
+    subBgSolid: "bg-[#002b36]/50",
+    interactiveActive: "bg-[#2aa198]/15 border-[#2aa198]/50 text-[#2aa198] font-bold",
+    interactiveInactive: "bg-[#001f27]/40 border-[#073642]/80 text-[#586e75] hover:bg-[#002b36]/40 hover:text-[#93a1a1]",
+    gradientHeaderBg: "bg-[#002b36]/80 border-[#073642]",
+    gradientColor: "text-[#268bd2]",
+    badgeSuccess: "bg-[#859900]/10 text-[#859900] border-[#859900]/20",
+    badgeWarning: "bg-[#b58900]/10 text-[#b58900] border-[#b58900]/20",
+    badgePurple: "bg-[#d33682]/10 text-[#d33682] border-[#d33682]/20",
+    quizPaneBg: "bg-[#002b36]/80 border-[#073642]",
+    dashedBorder: "border-[#073642]/60",
+  },
+};
+
 export default function App() {
   // Tab states
   const [activeTab, setActiveTab] = useState<ActiveTab>("atlas");
@@ -133,13 +241,26 @@ export default function App() {
   const [quizSubmitted, setQuizSubmitted] = useState(false);
   const [quizScore, setQuizScore] = useState({ correct: 0, total: 0 });
   const [quizStreak, setQuizStreak] = useState(0);
+  const [quizDifficulty, setQuizDifficulty] = useState<"all" | "podstawowa" | "ponadpodstawowa">("all");
 
-  const startNewQuizQuestion = () => {
+  const startNewQuizQuestion = (difficultyOverride?: "all" | "podstawowa" | "ponadpodstawowa") => {
     if (ATLAS_ITEMS.length === 0) return;
     
-    // Pick random item
-    const randomIndex = Math.floor(Math.random() * ATLAS_ITEMS.length);
-    const item = ATLAS_ITEMS[randomIndex];
+    const activeDifficulty = difficultyOverride !== undefined ? difficultyOverride : quizDifficulty;
+
+    // Filter items based on selected difficulty
+    const pool = ATLAS_ITEMS.filter(item => {
+      if (activeDifficulty === "all") return true;
+      if (activeDifficulty === "podstawowa") return item.level === "podstawowa" || !item.level;
+      if (activeDifficulty === "ponadpodstawowa") return item.level === "ponadpodstawowa";
+      return true;
+    });
+
+    if (pool.length === 0) return;
+    
+    // Pick random item from filtered pool
+    const randomIndex = Math.floor(Math.random() * pool.length);
+    const item = pool[randomIndex];
     
     // Pick random source shell and target shell (different)
     const shells: ShellType[] = ["bash", "cmd", "powershell"];
@@ -153,9 +274,10 @@ export default function App() {
     setQuizSelectedOption(null);
     setQuizSubmitted(false);
     
-    // Generate options
+    // Generate options using pool or full ATLAS_ITEMS if pool has too few items
     const correctOption = item[target];
-    const distractors = ATLAS_ITEMS
+    const distractorSource = pool.length >= 4 ? pool : ATLAS_ITEMS;
+    const distractors = distractorSource
       .filter(i => i.id !== item.id)
       .map(i => i[target]);
     
@@ -405,10 +527,12 @@ export default function App() {
     handleTranslate(item.bash, "Bash");
   };
 
+  const t = appThemes[terminalTheme] || appThemes.dark;
+
   return (
-    <div className="h-screen w-full flex flex-col bg-[#0F172A] text-slate-200 font-sans overflow-hidden">
+    <div className={`h-screen w-full flex flex-col ${t.bg} font-sans overflow-hidden transition-all duration-200`}>
       {/* HEADER */}
-      <header className="h-16 border-b border-slate-800 bg-slate-900/95 flex items-center justify-between px-6 md:px-8 flex-shrink-0 z-10">
+      <header className={`h-16 border-b ${t.border} ${t.headerBg} flex items-center justify-between px-6 md:px-8 flex-shrink-0 z-10 transition-all duration-200`}>
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center font-display font-bold text-white shadow-lg shadow-blue-500/10">
             ST
@@ -416,23 +540,21 @@ export default function App() {
           <div className="flex flex-col">
             <h1 className="text-lg font-display font-bold tracking-tight text-white flex items-center gap-2">
               ShellCompare
-              <span className="bg-slate-800 text-[10px] font-mono font-medium px-1.5 py-0.5 rounded text-blue-400 border border-slate-700">
+              <span className={`text-[10px] font-mono font-medium px-1.5 py-0.5 rounded border transition-all duration-200 ${t.badgeGeneral}`}>
                 v1.3.0
               </span>
             </h1>
-            <span className="text-[10px] text-slate-400 font-medium">Atlas & Komparator terminali w czasie rzeczywistym</span>
+            <span className={`text-[10px] font-medium transition-all duration-200 ${t.textMuted}`}>Atlas & Komparator terminali w czasie rzeczywistym</span>
           </div>
         </div>
 
         {/* Global Tab Navigation */}
-        <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800 gap-1 flex-wrap md:flex-nowrap">
+        <div className={`flex p-1 rounded-lg border gap-1 flex-wrap md:flex-nowrap transition-all duration-200 ${t.inputBg}`}>
           <button
             onClick={() => setActiveTab("atlas")}
             title="Atlas Komend [Alt+A]"
             className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap group ${
-              activeTab === "atlas"
-                ? "bg-blue-600 text-white shadow-md shadow-blue-500/15"
-                : "text-slate-400 hover:text-slate-200"
+              activeTab === "atlas" ? t.tabActive : t.tabInactive
             }`}
           >
             <BookOpen size={14} />
@@ -442,9 +564,7 @@ export default function App() {
             onClick={() => setActiveTab("sandbox")}
             title="Komparator Live [Alt+S]"
             className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap group ${
-              activeTab === "sandbox"
-                ? "bg-blue-600 text-white shadow-md shadow-blue-500/15"
-                : "text-slate-400 hover:text-slate-200"
+              activeTab === "sandbox" ? t.tabActive : t.tabInactive
             }`}
           >
             <TerminalIcon size={14} />
@@ -455,9 +575,7 @@ export default function App() {
             onClick={() => setActiveTab("concepts")}
             title="Różnice Architektoniczne [Alt+C]"
             className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap group ${
-              activeTab === "concepts"
-                ? "bg-blue-600 text-white shadow-md shadow-blue-500/15"
-                : "text-slate-400 hover:text-slate-200"
+              activeTab === "concepts" ? t.tabActive : t.tabInactive
             }`}
           >
             <Layers size={14} />
@@ -467,9 +585,7 @@ export default function App() {
             onClick={() => setActiveTab("scenarios")}
             title="Scenariusze i Wyzwania [Alt+W]"
             className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap group ${
-              activeTab === "scenarios"
-                ? "bg-blue-600 text-white shadow-md shadow-blue-500/15"
-                : "text-slate-400 hover:text-slate-200"
+              activeTab === "scenarios" ? t.tabActive : t.tabInactive
             }`}
           >
             <Cpu size={14} />
@@ -480,9 +596,7 @@ export default function App() {
             onClick={() => setActiveTab("about")}
             title="O programie i Regulamin [Alt+I]"
             className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap group ${
-              activeTab === "about"
-                ? "bg-blue-600 text-white shadow-md shadow-blue-500/15"
-                : "text-slate-400 hover:text-slate-200"
+              activeTab === "about" ? t.tabActive : t.tabInactive
             }`}
           >
             <Info size={14} />
@@ -492,13 +606,13 @@ export default function App() {
 
         <div className="flex items-center gap-3 text-xs font-semibold text-slate-400">
           {/* Terminal Theme Toggle */}
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 focus-within:border-blue-500/50 transition-all">
-            <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">Motyw:</span>
+          <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border transition-all focus-within:border-blue-500/50 ${t.inputBg}`}>
+            <span className={`text-[10px] font-mono hidden sm:inline ${t.textMuted}`}>Motyw:</span>
             <select
               value={terminalTheme}
               onChange={(e) => setTerminalTheme(e.target.value as TerminalTheme)}
               className="bg-transparent text-[10px] font-mono text-white focus:outline-none cursor-pointer border-none py-0.5"
-              title="Zmień motyw terminali (Dark, Monokai, Solarized)"
+              title="Zmień motyw całego programu (Dark, Monokai, Solarized)"
             >
               <option value="dark" className="bg-slate-900 text-slate-200">Dark</option>
               <option value="monokai" className="bg-slate-900 text-slate-200">Monokai</option>
@@ -506,18 +620,18 @@ export default function App() {
             </select>
           </div>
 
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-slate-950 border border-slate-800 text-slate-400">
+          <div className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded border transition-all ${t.inputBg}`}>
             <Wifi size={11} className="text-blue-400" />
             <span className="text-[10px] font-mono text-blue-400 font-medium">Atlas Offline Ready</span>
           </div>
 
           {isOnline ? (
-            <div className="hidden lg:flex items-center gap-2 px-2.5 py-1.5 rounded bg-slate-950 border border-slate-800">
+            <div className={`hidden lg:flex items-center gap-2 px-2.5 py-1.5 rounded border transition-all ${t.inputBg}`}>
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               <span className="text-[10px] text-emerald-400 font-mono">Gemini 3.5 Flash Active</span>
             </div>
           ) : (
-            <div className="hidden lg:flex items-center gap-2 px-2.5 py-1.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400">
+            <div className={`hidden lg:flex items-center gap-2 px-2.5 py-1.5 rounded border text-amber-400 transition-all ${t.inputBg}`}>
               <WifiOff size={11} className="text-amber-400 animate-pulse" />
               <span className="text-[10px] font-mono">Tryb Offline: Silnik Lokalny</span>
             </div>
@@ -532,15 +646,15 @@ export default function App() {
         {activeTab === "atlas" && (
           <div className="flex-1 flex overflow-hidden">
             {/* Left Sidebar - Categories & Search */}
-            <aside className="w-80 border-r border-slate-800 bg-slate-900/40 flex flex-col flex-shrink-0">
-              <div className="p-4 border-b border-slate-800 space-y-3">
+            <aside className={`w-80 border-r ${t.border} ${t.sidebarBg} flex flex-col flex-shrink-0 transition-all duration-200`}>
+              <div className={`p-4 border-b ${t.border} space-y-3`}>
                 <div className="relative">
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Szukaj komendy lub opisu..."
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/60 transition-colors"
+                    className={`w-full ${t.inputBg} border ${t.border} rounded-lg pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/60 transition-colors`}
                   />
                   <Search size={14} className="absolute left-3 top-3 text-slate-500" />
                   {searchQuery && (
@@ -555,7 +669,7 @@ export default function App() {
 
                 {/* Category selectors */}
                 <div className="space-y-1">
-                  <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-2 mb-1">
+                  <h3 className={`text-[10px] font-bold ${t.textMuted} uppercase tracking-wider px-2 mb-1`}>
                     Kategorie Atlasu
                   </h3>
                   <div className="space-y-1 max-h-[140px] overflow-y-auto pr-1">
@@ -565,12 +679,12 @@ export default function App() {
                         onClick={() => setSelectedCategory(cat.id)}
                         className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs font-medium transition-all flex items-center justify-between ${
                           selectedCategory === cat.id
-                            ? "bg-blue-600/15 text-blue-300 border-l-2 border-blue-500 pl-2"
-                            : "text-slate-400 hover:bg-slate-800/40 hover:text-slate-200"
+                            ? t.activeCategory
+                            : `${t.textMuted} ${t.accentHover}`
                         }`}
                       >
                         <span>{cat.name}</span>
-                        <span className="text-[10px] font-mono bg-slate-950 text-slate-500 px-1 py-0.5 rounded">
+                        <span className={`text-[10px] font-mono ${t.inputBg} ${t.textMuted} px-1 py-0.5 rounded border ${t.border}`}>
                           {cat.id === "all" 
                             ? ATLAS_ITEMS.length 
                             : ATLAS_ITEMS.filter(i => i.category === cat.id).length
@@ -582,8 +696,8 @@ export default function App() {
                 </div>
 
                 {/* Educational Level selector */}
-                <div className="space-y-1.5 pt-2.5 border-t border-slate-800/60">
-                  <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-2 mb-1">
+                <div className={`space-y-1.5 pt-2.5 border-t ${t.border}`}>
+                  <h3 className={`text-[10px] font-bold ${t.textMuted} uppercase tracking-wider px-2 mb-1`}>
                     Poziom Edukacyjny
                   </h3>
                   <div className="grid grid-cols-3 gap-1 px-1">
@@ -598,8 +712,8 @@ export default function App() {
                         title={lvl.id === "all" ? "Wszystkie poziomy" : lvl.id === "podstawowa" ? "Szkoła Podstawowa" : "Szkoła Ponadpodstawowa"}
                         className={`px-1.5 py-1.5 rounded-lg text-[10px] font-semibold tracking-tight transition-all text-center border ${
                           selectedLevel === lvl.id
-                            ? "bg-blue-600/15 border-blue-500/50 text-blue-300 font-bold"
-                            : "bg-slate-950/40 border-slate-800/80 text-slate-400 hover:bg-slate-800/40 hover:text-slate-200"
+                            ? t.interactiveActive
+                            : t.interactiveInactive
                         }`}
                       >
                         {lvl.label}
@@ -610,8 +724,8 @@ export default function App() {
               </div>
 
               {/* Command List */}
-              <div className="flex-1 overflow-y-auto p-3 space-y-1 bg-slate-950/20">
-                <div className="flex items-center justify-between px-2 py-1 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+              <div className={`flex-1 overflow-y-auto p-3 space-y-1 ${t.subBgSolid}`}>
+                <div className={`flex items-center justify-between px-2 py-1 text-[10px] font-bold ${t.textMuted} uppercase tracking-wider`}>
                   <span>Dostępne artykuły ({filteredAtlasItems.length})</span>
                 </div>
                 {filteredAtlasItems.length > 0 ? (
@@ -621,14 +735,14 @@ export default function App() {
                       onClick={() => setSelectedAtlasItem(item)}
                       className={`w-full text-left p-2.5 rounded-lg border transition-all duration-150 flex flex-col gap-1 ${
                         selectedAtlasItem.id === item.id
-                          ? "bg-slate-800 border-slate-700 shadow-md"
-                          : "bg-slate-900/25 border-transparent hover:bg-slate-900/60"
+                          ? t.activeItem
+                          : t.inactiveItem
                       }`}
                     >
-                      <h4 className="text-xs font-semibold text-slate-200 font-display line-clamp-1">
+                      <h4 className={`text-xs font-semibold font-display line-clamp-1 ${selectedAtlasItem.id === item.id ? "text-white" : t.textTitle}`}>
                         {item.title}
                       </h4>
-                      <p className="text-[11px] text-slate-400 line-clamp-1">
+                      <p className={`text-[11px] line-clamp-1 ${selectedAtlasItem.id === item.id ? "text-slate-300" : t.textMuted}`}>
                         {item.description}
                       </p>
                       <div className="flex items-center justify-between gap-1 mt-1 pt-1 border-t border-slate-800/30">
@@ -677,8 +791,8 @@ export default function App() {
             {/* Right Pane - Visual Details & Comparison Grid or Quiz Mode */}
             <section className="flex-1 p-6 md:p-8 flex flex-col gap-6 overflow-y-auto bg-slate-950/10">
               {/* Header Selector to switch between Details and Quiz */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
-                <div className="flex bg-slate-900 p-1 rounded-lg border border-slate-800 self-start">
+              <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b ${t.border} pb-4`}>
+                <div className={`flex p-1 rounded-lg border self-start ${t.inputBg}`}>
                   <button
                     onClick={() => {
                       setIsQuizMode(false);
@@ -686,8 +800,8 @@ export default function App() {
                     }}
                     className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all flex items-center gap-2 ${
                       !isQuizMode && !isFlashcardMode
-                        ? "bg-blue-600 text-white shadow-md shadow-blue-500/15"
-                        : "text-slate-400 hover:text-slate-200"
+                        ? t.tabActive
+                        : `${t.textMuted} ${t.accentHover}`
                     }`}
                   >
                     <BookOpen size={13} />
@@ -701,7 +815,7 @@ export default function App() {
                     className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all flex items-center gap-2 ${
                       !isQuizMode && isFlashcardMode
                         ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/15"
-                        : "text-slate-400 hover:text-slate-200"
+                        : `${t.textMuted} ${t.accentHover}`
                     }`}
                   >
                     <span className="text-xs">🎴</span>
@@ -718,7 +832,7 @@ export default function App() {
                     className={`px-4 py-1.5 text-xs font-semibold rounded-md transition-all flex items-center gap-2 ${
                       isQuizMode
                         ? "bg-purple-600 text-white shadow-md shadow-purple-500/15"
-                        : "text-slate-400 hover:text-slate-200"
+                        : `${t.textMuted} ${t.accentHover}`
                     }`}
                   >
                     <Trophy size={13} />
@@ -727,44 +841,74 @@ export default function App() {
                 </div>
 
                 {isQuizMode && (
-                  <div className="flex items-center gap-4 bg-slate-900/60 px-4 py-1.5 rounded-lg border border-slate-800/80 text-xs font-mono self-start sm:self-auto">
-                    <div className="flex items-center gap-1.5">
-                      <Award size={13} className="text-yellow-500" />
-                      <span className="text-slate-400">Wynik:</span>
-                      <span className="text-emerald-400 font-bold">{quizScore.correct}/{quizScore.total}</span>
-                    </div>
-                    {quizStreak > 0 && (
-                      <div className="flex items-center gap-1">
-                        <span className="animate-pulse">🔥</span>
-                        <span className="text-orange-400 font-bold">{quizStreak}</span>
+                  <div className="flex flex-wrap items-center gap-3 self-start sm:self-auto">
+                    {/* Difficulty selector */}
+                    <div className={`flex items-center gap-1.5 p-1 rounded-lg border text-xs ${t.inputBg}`}>
+                      <span className={`${t.textMuted} font-mono text-[9px] uppercase tracking-wider px-1.5 select-none`}>Trudność:</span>
+                      <div className="flex gap-1">
+                        {[
+                          { id: "all", label: "Wszystkie" },
+                          { id: "podstawowa", label: "Podstawowy" },
+                          { id: "ponadpodstawowa", label: "Ponadpodstawowy" }
+                        ].map((lvl) => (
+                          <button
+                            key={lvl.id}
+                            onClick={() => {
+                              setQuizDifficulty(lvl.id as any);
+                              startNewQuizQuestion(lvl.id as any);
+                            }}
+                            className={`px-2 py-1 text-[10px] font-semibold rounded-md transition-all whitespace-nowrap ${
+                              quizDifficulty === lvl.id
+                                ? t.tabActive
+                                : `${t.textMuted} ${t.accentHover}`
+                            }`}
+                          >
+                            {lvl.label}
+                          </button>
+                        ))}
                       </div>
-                    )}
-                    <button
-                      onClick={() => {
-                        setQuizScore({ correct: 0, total: 0 });
-                        setQuizStreak(0);
-                        startNewQuizQuestion();
-                      }}
-                      title="Resetuj statystyki"
-                      className="text-slate-500 hover:text-slate-300 transition-colors pl-2 border-l border-slate-800"
-                    >
-                      <RotateCcw size={12} />
-                    </button>
+                    </div>
+
+                    {/* Score/Streak tracker */}
+                    <div className={`flex items-center gap-4 px-4 py-2 rounded-lg border text-xs font-mono ${t.inputBg}`}>
+                      <div className="flex items-center gap-1.5">
+                        <Award size={13} className="text-yellow-500" />
+                        <span className={t.textMuted}>Wynik:</span>
+                        <span className="text-emerald-400 font-bold">{quizScore.correct}/{quizScore.total}</span>
+                      </div>
+                      {quizStreak > 0 && (
+                        <div className="flex items-center gap-1">
+                          <span className="animate-pulse">🔥</span>
+                          <span className="text-orange-400 font-bold">{quizStreak}</span>
+                        </div>
+                      )}
+                      <button
+                        onClick={() => {
+                          setQuizScore({ correct: 0, total: 0 });
+                          setQuizStreak(0);
+                          startNewQuizQuestion();
+                        }}
+                        title="Resetuj statystyki"
+                        className={`hover:text-slate-300 transition-colors pl-2 border-l ${t.border} ${t.textMuted}`}
+                      >
+                        <RotateCcw size={12} />
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
 
               {!isQuizMode ? (
                 <>
-                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800/40 pb-6">
+                  <div className={`flex flex-col md:flex-row md:items-end justify-between gap-4 border-b ${t.border} pb-6`}>
                     <div className="space-y-1.5">
                       <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
-                        <span className="text-blue-500 uppercase tracking-widest font-bold">
+                        <span className={`${t.accentText} uppercase tracking-widest font-bold`}>
                           Atlas Komend › {ATLAS_CATEGORIES.find(c => c.id === selectedAtlasItem.category)?.name.replace(/[^A-Za-z0-9óóóęąśłżźń ]/g, "").trim() || selectedAtlasItem.category}
                         </span>
                         {selectedAtlasItem.level && (
                           <>
-                            <span className="text-slate-600 font-normal">&bull;</span>
+                            <span className={`${t.textMuted} font-normal`}>&bull;</span>
                             <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
                               selectedAtlasItem.level === "podstawowa"
                                 ? "bg-emerald-950/70 text-emerald-400 border border-emerald-800/40"
@@ -778,7 +922,7 @@ export default function App() {
                       <h2 className="text-2xl md:text-3xl font-display font-bold text-white tracking-tight">
                         {selectedAtlasItem.title}
                       </h2>
-                      <p className="text-slate-400 text-sm max-w-2xl">
+                      <p className={`${t.textMuted} text-sm max-w-2xl`}>
                         {selectedAtlasItem.description}
                       </p>
                     </div>
@@ -796,13 +940,13 @@ export default function App() {
                   </div>
 
                   {isFlashcardMode && (
-                    <div className="bg-indigo-950/20 border border-indigo-500/20 rounded-xl p-4 flex items-start gap-3 animate-fadeIn">
+                    <div className={`border rounded-xl p-4 flex items-start gap-3 animate-fadeIn ${t.badgeGeneral}`}>
                       <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-400 shrink-0">
                         <span className="text-lg">🎴</span>
                       </div>
                       <div className="space-y-1">
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider">Interaktywny Trening Fiszki</h4>
-                        <p className="text-xs text-indigo-200 leading-relaxed">
+                        <p className={`text-xs leading-relaxed ${t.textMuted}`}>
                           Składnia poleceń została celowo ukryta. Spróbuj przypomnieć sobie, jak wygląda komenda dla wybranego zadania (<strong>{selectedAtlasItem.title}</strong>) w poszczególnych powłokach, a następnie kliknij odpowiednią kartę, aby sprawdzić swoją wiedzę i odsłonić detale!
                         </p>
                       </div>
@@ -853,8 +997,8 @@ export default function App() {
                   </div>
 
                   {/* Detailed Technical Insight */}
-                  <div className="bg-slate-900/60 rounded-xl border border-slate-800 p-5 space-y-4">
-                    <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
+                  <div className={`rounded-xl border p-5 space-y-4 transition-all duration-200 ${t.cardBg}`}>
+                    <div className={`flex items-center gap-2 border-b ${t.border} pb-3`}>
                       <Layers size={18} className="text-blue-400" />
                       <h3 className="text-sm font-semibold text-white uppercase tracking-wider font-display">
                         Analiza architektury i różnic
@@ -869,19 +1013,19 @@ export default function App() {
                           Zauważ, że podczas gdy <strong>Bash</strong> dąży do prostoty i traktuje wszystko jako strumień tekstu, <strong>PowerShell</strong> wymusza podejście strukturalne (obiektowe). Ułatwia to automatyzację, lecz wymaga zapoznania się ze specyficzną, dłuższą składnią poleceń typu <em>Verb-Noun</em>.
                         </p>
                       </div>
-                      <div className="space-y-3 bg-slate-950/50 p-3 rounded-lg border border-slate-800/60">
+                      <div className={`p-3 rounded-lg border transition-all duration-200 ${t.innerCard}`}>
                         <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Porównanie Szybkie</h4>
                         <div className="space-y-2">
-                          <div className="flex justify-between border-b border-slate-900 pb-1.5">
-                            <span className="text-slate-400">Przenośność:</span>
+                          <div className={`flex justify-between border-b pb-1.5 ${t.border}`}>
+                            <span className={t.textMuted}>Przenośność:</span>
                             <span className="text-emerald-400 font-medium">Bash (Wysoka)</span>
                           </div>
-                          <div className="flex justify-between border-b border-slate-900 pb-1.5">
-                            <span className="text-slate-400">Typowanie danych:</span>
+                          <div className={`flex justify-between border-b pb-1.5 ${t.border}`}>
+                            <span className={t.textMuted}>Typowanie danych:</span>
                             <span className="text-blue-400 font-medium">PowerShell (Obiektowe)</span>
                           </div>
                           <div className="flex justify-between pb-0.5">
-                            <span className="text-slate-400">Kompaktowość:</span>
+                            <span className={t.textMuted}>Kompaktowość:</span>
                             <span className="text-yellow-500 font-medium">Bash / CMD (Zwięzłe)</span>
                           </div>
                         </div>
@@ -890,23 +1034,23 @@ export default function App() {
 
                     {/* Visual Comparison Table for Flags and Arguments */}
                     {SYNTAX_COMPARISON_DATA[selectedAtlasItem.id] && (
-                      <div className="pt-4 border-t border-slate-800/60 space-y-3">
+                      <div className={`pt-4 border-t ${t.border} space-y-3`}>
                         <div className="flex justify-between items-center flex-wrap gap-2 pb-1">
                           <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                             <Code size={13} className="text-blue-400" />
                             <span>Zestawienie flag i argumentów polecenia</span>
                           </div>
-                          <span className="text-[9.5px] text-slate-500 font-semibold flex items-center gap-1 bg-slate-950 px-2 py-0.5 rounded border border-slate-900">
+                          <span className={`text-[9.5px] text-slate-500 font-semibold flex items-center gap-1 px-2 py-0.5 rounded border ${t.inputBg}`}>
                             <Sparkles size={10} className="text-yellow-500 animate-pulse" />
                             Kliknij dowolny wiersz tabeli, aby rozwinąć szczegóły i dokumentację!
                           </span>
                         </div>
                         
-                        <div className="overflow-x-auto rounded-lg border border-slate-800 bg-slate-950/40">
+                        <div className={`overflow-x-auto rounded-lg border ${t.innerCard}`}>
                           <table className="w-full text-left border-collapse text-[11px] min-w-[600px]">
                             <thead>
-                              <tr className="bg-slate-900/80 border-b border-slate-800 text-slate-400 font-bold uppercase tracking-wider text-[10px]">
-                                <th className="p-2.5 w-1/5 border-r border-slate-800/60">Element</th>
+                              <tr className={`border-b ${t.border} ${t.textMuted} font-bold uppercase tracking-wider text-[10px] ${t.subBgSolid}`}>
+                                <th className={`p-2.5 w-1/5 border-r ${t.border}`}>Element</th>
                                 <th className="p-2.5 w-[26%] text-emerald-400 border-r border-slate-800/60 font-mono">Bash (POSIX)</th>
                                 <th className="p-2.5 w-[26%] text-zinc-300 border-r border-slate-800/60 font-mono">CMD (DOS)</th>
                                 <th className="p-2.5 w-[28%] text-cyan-400 font-mono">PowerShell (.NET)</th>
@@ -1056,23 +1200,31 @@ export default function App() {
                 quizQuestion && (
                   <div className="flex-1 flex flex-col gap-6 max-w-4xl mx-auto w-full py-2">
                     {/* Question Card */}
-                    <div className="bg-slate-900/65 rounded-2xl border border-slate-800 p-6 md:p-8 space-y-6 shadow-xl relative overflow-hidden">
+                    <div className={`rounded-2xl border p-6 md:p-8 space-y-6 shadow-xl relative overflow-hidden transition-all duration-200 ${t.cardBg}`}>
                       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
                       
-                      <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-                        <div className="flex items-center gap-2">
+                      <div className={`flex items-center justify-between border-b ${t.border} pb-4`}>
+                        <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest font-mono">
                             Zadanie Quizowe
                           </span>
+                          <span className={`${t.textMuted} font-normal select-none`}>&bull;</span>
+                          <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider font-mono ${
+                            quizQuestion.level === "podstawowa" || !quizQuestion.level
+                              ? "bg-emerald-950/70 text-emerald-400 border border-emerald-800/40"
+                              : "bg-purple-950/70 text-purple-400 border border-purple-800/40"
+                          }`}>
+                            {quizQuestion.level === "podstawowa" || !quizQuestion.level ? "Podstawowy" : "Ponadpodstawowy"}
+                          </span>
                         </div>
-                        <span className="text-[10px] font-mono bg-indigo-500/10 text-indigo-300 px-2 py-0.5 rounded border border-indigo-500/20">
+                        <span className={`text-[10px] font-mono ${t.badgeGeneral} px-2 py-0.5 rounded border`}>
                           {ATLAS_CATEGORIES.find(c => c.id === quizQuestion.category)?.name || quizQuestion.category}
                         </span>
                       </div>
 
                       <div className="space-y-4">
                         <div className="space-y-1.5">
-                          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Opis zadania:</h3>
+                          <h3 className={`text-xs font-bold ${t.textMuted} uppercase tracking-wider`}>Opis zadania:</h3>
                           <p className="text-base md:text-lg text-white font-medium leading-relaxed font-display">
                             {quizQuestion.description}
                           </p>
@@ -1081,30 +1233,30 @@ export default function App() {
                         {/* Source Command block */}
                         <div className="space-y-2 pt-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-slate-400">
-                              Znasz polecenie w powłoce: <strong className="text-slate-200 capitalize font-mono text-xs bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">{quizSourceShell}</strong>
+                            <span className={`text-xs ${t.textMuted}`}>
+                              Znasz polecenie w powłoce: <strong className={`text-slate-200 capitalize font-mono text-xs ${t.inputBg} px-1.5 py-0.5 rounded border ${t.border}`}>{quizSourceShell}</strong>
                             </span>
                           </div>
-                          <div className="bg-slate-950 rounded-xl p-4 font-mono text-xs md:text-sm text-emerald-400 border border-slate-800 shadow-inner flex items-center justify-between">
+                          <div className={`${t.innerCard} rounded-xl p-4 font-mono text-xs md:text-sm text-emerald-400 border shadow-inner flex items-center justify-between`}>
                             <span>
-                              <span className="text-slate-600 mr-2 select-none">
+                              <span className={`${t.textMuted} mr-2 select-none`}>
                                 {quizSourceShell === "bash" ? "$" : quizSourceShell === "cmd" ? "C:\\>" : "PS>"}
                               </span>
                               {quizQuestion[quizSourceShell]}
                             </span>
-                            <span className="text-[9px] uppercase font-bold text-slate-500 bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-800">
+                            <span className={`text-[9px] uppercase font-bold ${t.textMuted} ${t.inputBg} px-1.5 py-0.5 rounded border ${t.border}`}>
                               {quizSourceShell}
                             </span>
                           </div>
                         </div>
 
                         {/* Instruction for the player */}
-                        <div className="pt-4 border-t border-slate-800/50 space-y-3">
+                        <div className={`pt-4 border-t ${t.border} space-y-3`}>
                           <div className="flex items-center gap-2 text-xs text-slate-300 font-semibold">
                             <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
                             <span>
                               Jak brzmi odpowiednik tego polecenia w powłoce:{" "}
-                              <strong className="text-indigo-400 capitalize font-mono text-xs bg-indigo-950/40 px-2 py-0.5 rounded border border-indigo-900/30">
+                              <strong className={`text-indigo-400 capitalize font-mono text-xs ${t.badgeGeneral} px-2 py-0.5 rounded border`}>
                                 {quizTargetShell === "bash" ? "Bash" : quizTargetShell === "cmd" ? "Command Prompt (CMD)" : "PowerShell"}
                               </strong>
                               ?
@@ -1117,7 +1269,7 @@ export default function App() {
                               const isSelected = quizSelectedOption === option;
                               const isCorrectAnswer = option === quizQuestion[quizTargetShell];
                               
-                              let btnStyles = "bg-slate-950/40 border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-900/40";
+                              let btnStyles = `${t.inputBg} ${t.border} ${t.textMuted} hover:border-slate-700 hover:bg-slate-900/40`;
                               if (isSelected) {
                                 btnStyles = "bg-indigo-600/15 border-indigo-500/80 text-indigo-300 shadow-lg shadow-indigo-500/5";
                               }
@@ -1128,7 +1280,7 @@ export default function App() {
                                 } else if (isSelected) {
                                   btnStyles = "bg-red-500/10 border-red-500 text-red-300 shadow-lg shadow-red-500/10";
                                 } else {
-                                  btnStyles = "bg-slate-950/20 border-slate-900 text-slate-500 opacity-50";
+                                  btnStyles = `${t.inputBg} ${t.border} text-slate-500 opacity-50`;
                                 }
                               }
 
@@ -1140,7 +1292,7 @@ export default function App() {
                                   className={`w-full text-left p-3.5 rounded-xl border text-xs font-mono flex items-center justify-between transition-all duration-150 ${btnStyles}`}
                                 >
                                   <div className="flex items-center gap-3">
-                                    <span className="text-[10px] bg-slate-900 text-slate-500 border border-slate-800 w-5 h-5 rounded-full flex items-center justify-center font-sans">
+                                    <span className={`text-[10px] ${t.innerCard} ${t.textMuted} border ${t.border} w-5 h-5 rounded-full flex items-center justify-center font-sans`}>
                                       {String.fromCharCode(65 + idx)}
                                     </span>
                                     <span>{option}</span>
@@ -1163,8 +1315,8 @@ export default function App() {
                       </div>
 
                       {/* Controls Area */}
-                      <div className="pt-4 border-t border-slate-800/60 flex items-center justify-between gap-4">
-                        <div className="text-xs text-slate-400">
+                      <div className={`pt-4 border-t ${t.border} flex items-center justify-between gap-4`}>
+                        <div className={`text-xs ${t.textMuted}`}>
                           {!quizSubmitted && quizSelectedOption && (
                             <span className="text-indigo-400 animate-pulse font-medium">Wybrano odpowiedź. Kliknij sprawdź!</span>
                           )}
@@ -1179,7 +1331,7 @@ export default function App() {
                                 </span>
                               ) : (
                                 <span className="text-red-400 flex items-center gap-1.5">
-                                  ❌ Ups! Poprawna to: <code className="bg-slate-950 px-1 py-0.5 rounded text-emerald-400 font-mono text-[11px]">{quizQuestion[quizTargetShell]}</code>
+                                  ❌ Ups! Poprawna to: <code className={`bg-slate-950 px-1 py-0.5 rounded text-emerald-400 font-mono text-[11px]`}>{quizQuestion[quizTargetShell]}</code>
                                 </span>
                               )}
                             </span>
@@ -1197,7 +1349,7 @@ export default function App() {
                             </button>
                           ) : (
                             <button
-                              onClick={startNewQuizQuestion}
+                              onClick={() => startNewQuizQuestion()}
                               className="px-5 py-2 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/15 transition-all flex items-center gap-1.5"
                             >
                               Następne pytanie
@@ -1210,8 +1362,8 @@ export default function App() {
 
                     {/* Explanatory insights shown after submission */}
                     {quizSubmitted && (
-                      <div className="bg-slate-900/40 rounded-xl border border-slate-800/80 p-5 space-y-3 animate-fadeIn">
-                        <div className="flex items-center gap-2 text-indigo-400 border-b border-slate-800/60 pb-2">
+                      <div className={`rounded-xl border p-5 space-y-3 animate-fadeIn transition-all duration-200 ${t.cardBg}`}>
+                        <div className={`flex items-center gap-2 text-indigo-400 border-b ${t.border} pb-2`}>
                           <Info size={14} />
                           <h4 className="text-xs font-bold uppercase tracking-wider font-display">
                             Wyjaśnienie i Filozofia
@@ -1221,7 +1373,7 @@ export default function App() {
                           {quizQuestion.explanation}
                         </p>
                         <div className="pt-2 flex items-center justify-between">
-                          <span className="text-[10px] text-slate-500">
+                          <span className={`text-[10px] ${t.textMuted}`}>
                             Komenda: <strong>{quizQuestion.title}</strong>
                           </span>
                           <button
@@ -1248,7 +1400,7 @@ export default function App() {
         {activeTab === "sandbox" && (
           <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
             {/* Input & Control Panel */}
-            <div className="w-full md:w-96 border-b md:border-b-0 md:border-r border-slate-800 bg-slate-900/30 flex flex-col flex-shrink-0 overflow-y-auto">
+            <div className={`w-full md:w-96 border-b md:border-b-0 md:border-r ${t.border} ${t.sidebarBg} flex flex-col flex-shrink-0 overflow-y-auto transition-all duration-200`}>
               <div className="p-5 space-y-5 flex-1">
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-1.5 text-xs text-blue-400 font-bold uppercase tracking-wider">
@@ -1256,7 +1408,7 @@ export default function App() {
                     <span>Translator i Symulator Live</span>
                   </div>
                   <h2 className="text-xl font-display font-bold text-white">Komparator AI</h2>
-                  <p className="text-slate-400 text-xs leading-relaxed">
+                  <p className={`${t.textMuted} text-xs leading-relaxed`}>
                     Wpisz dowolne polecenie w jednym z systemów, lub po prostu opisz własnymi słowami po polsku, co chcesz osiągnąć. Gemini przetłumaczy intencję i zasymuluje wynik w czasie rzeczywistym.
                   </p>
                 </div>
@@ -1264,7 +1416,7 @@ export default function App() {
                 {/* Form controls */}
                 <div className="space-y-4 pt-2">
                   <div className="space-y-1.5">
-                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                    <label className={`text-[11px] font-bold ${t.textMuted} uppercase tracking-wider block`}>
                       Wybierz wejście:
                     </label>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 gap-2">
@@ -1274,8 +1426,8 @@ export default function App() {
                           onClick={() => setSandboxSource(src)}
                           className={`px-3 py-1.5 text-xs font-semibold rounded-lg border text-center transition-all ${
                             sandboxSource === src
-                              ? "bg-blue-600/20 text-blue-300 border-blue-500/60"
-                              : "bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700"
+                              ? t.tabActive
+                              : `${t.inputBg} ${t.border} ${t.textMuted} ${t.accentHover}`
                           } ${src === "Opis słowny" ? "col-span-2 sm:col-span-1 md:col-span-2" : ""}`}
                         >
                           {src}
@@ -1286,10 +1438,10 @@ export default function App() {
 
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-center">
-                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                      <label className={`text-[11px] font-bold ${t.textMuted} uppercase tracking-wider block`}>
                         Twoje polecenie lub intencja:
                       </label>
-                      <span className="text-[9px] font-semibold text-slate-500 bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800/60 font-mono">
+                      <span className={`text-[9px] font-semibold ${t.textMuted} ${t.inputBg} px-1.5 py-0.5 rounded border ${t.border} font-mono`}>
                         Ctrl + Enter
                       </span>
                     </div>
@@ -1333,8 +1485,8 @@ export default function App() {
                 </div>
 
                 {/* Suggestions block */}
-                <div className="space-y-2 pt-4 border-t border-slate-800/60">
-                  <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                <div className={`space-y-2 pt-4 border-t ${t.border}`}>
+                  <h3 className={`text-[11px] font-bold ${t.textMuted} uppercase tracking-wider block`}>
                     Ciekawe scenariusze do testu:
                   </h3>
                   <div className="space-y-1.5">
@@ -1346,14 +1498,14 @@ export default function App() {
                           setSandboxSource(sug.source);
                           handleTranslate(sug.input, sug.source);
                         }}
-                        className="w-full text-left p-2 rounded bg-slate-950/60 border border-slate-800/40 hover:border-slate-700 transition-colors flex items-start gap-2"
+                        className={`w-full text-left p-2 rounded border transition-colors flex items-start gap-2 ${t.innerCard} hover:border-slate-700`}
                       >
                         <ChevronRight size={12} className="text-blue-500 shrink-0 mt-0.5" />
                         <div className="space-y-0.5">
-                          <p className="text-[11px] font-semibold text-slate-300 font-display line-clamp-1">
+                          <p className={`text-[11px] font-semibold font-display line-clamp-1 ${t.textTitle}`}>
                             {sug.title}
                           </p>
-                          <p className="text-[9px] text-slate-500 truncate max-w-[240px]">
+                          <p className={`text-[9px] truncate max-w-[240px] ${t.textMuted}`}>
                             {sug.source} • {sug.input}
                           </p>
                         </div>
@@ -1364,10 +1516,10 @@ export default function App() {
               </div>
 
               {/* Bottom system status in sidebar */}
-              <div className="p-4 border-t border-slate-800 bg-slate-950/40 text-[10px] text-slate-500 font-mono space-y-1">
+              <div className={`p-4 border-t bg-slate-950/40 text-[10px] font-mono space-y-1 ${t.border} ${t.textMuted}`}>
                 <div className="flex justify-between">
                   <span>Wykryte wejście:</span>
-                  <span className="text-slate-300">{sandboxResult?.detectedSource || "Brak"}</span>
+                  <span className={t.textTitle}>{sandboxResult?.detectedSource || "Brak"}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Status AI:</span>
@@ -1429,8 +1581,8 @@ export default function App() {
 
               {/* Dynamic Comparison text generated by AI */}
               {sandboxResult && !isSandboxLoading && (
-                <div className="bg-slate-900/60 rounded-xl border border-slate-800 p-5 space-y-4">
-                  <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
+                <div className={`rounded-xl border p-5 space-y-4 ${t.cardBg}`}>
+                  <div className={`flex items-center gap-2 border-b ${t.border} pb-3`}>
                     <Sparkles size={16} className="text-blue-400" />
                     <h3 className="text-xs font-semibold text-white uppercase tracking-wider font-display">
                       Zasymulowane różnice architektoniczne i składniowe
@@ -1443,10 +1595,10 @@ export default function App() {
               )}
 
               {!sandboxResult && !isSandboxLoading && (
-                <div className="flex-1 flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-slate-800/60 rounded-2xl">
-                  <TerminalIcon className="text-slate-600 mb-3" size={36} />
-                  <h3 className="font-display font-semibold text-slate-300 text-sm mb-1">Czekam na zapytanie...</h3>
-                  <p className="text-xs text-slate-500 max-w-sm">
+                <div className={`flex-1 flex flex-col items-center justify-center p-12 text-center border-2 border-dashed rounded-2xl ${t.dashedBorder}`}>
+                  <TerminalIcon className={`${t.textMuted} mb-3`} size={36} />
+                  <h3 className={`font-display font-semibold text-sm mb-1 ${t.textTitle}`}>Czekam na zapytanie...</h3>
+                  <p className={`text-xs max-w-sm ${t.textMuted}`}>
                     Wpisz komendę po lewej stronie i kliknij <strong className="text-blue-400">Porównaj i symuluj</strong>, aby wygenerować unikalny widok terminali.
                   </p>
                 </div>
@@ -1459,24 +1611,24 @@ export default function App() {
         {activeTab === "concepts" && (
           <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
             {/* Sidebar with Concepts */}
-            <aside className="w-80 border-b md:border-b-0 md:border-r border-slate-800 bg-slate-900/30 flex flex-col flex-shrink-0">
-              <div className="p-4 border-b border-slate-800">
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+            <aside className={`w-80 border-b md:border-b-0 md:border-r ${t.border} ${t.sidebarBg} flex flex-col flex-shrink-0 transition-all duration-200`}>
+              <div className={`p-4 border-b ${t.border}`}>
+                <h3 className={`text-xs font-bold ${t.textMuted} uppercase tracking-wider mb-2`}>
                   Zrozumieć Różnice
                 </h3>
-                <p className="text-[11px] text-slate-400 leading-relaxed">
+                <p className={`text-[11px] leading-relaxed ${t.textMuted}`}>
                   Pod maską każdego systemu leży zupełnie inna technologia. Wybierz pojęcie, aby przeanalizować fundamentalne rozbieżności.
                 </p>
               </div>
-              <div className="flex-1 overflow-y-auto p-3 space-y-1 bg-slate-950/10">
+              <div className={`flex-1 overflow-y-auto p-3 space-y-1 ${t.subBgSolid}`}>
                 {conceptConcepts.map((con) => (
                   <button
                     key={con}
                     onClick={() => handleLoadConcept(con)}
                     className={`w-full text-left px-3 py-2.5 rounded-lg border text-xs font-medium transition-all ${
                       selectedConcept === con
-                        ? "bg-blue-600/15 border-blue-500/50 text-blue-300 font-semibold"
-                        : "bg-transparent border-transparent text-slate-400 hover:bg-slate-800/40 hover:text-slate-200"
+                        ? t.activeCategory
+                        : `bg-transparent border-transparent ${t.textMuted} ${t.accentHover}`
                     }`}
                   >
                     {con}
@@ -1484,8 +1636,8 @@ export default function App() {
                 ))}
               </div>
               
-              <div className="p-4 border-t border-slate-800 bg-slate-950/40">
-                <div className="p-3 bg-blue-950/20 rounded-lg border border-blue-900/30 text-[11px] text-slate-400">
+              <div className={`p-4 border-t bg-slate-950/40 ${t.border}`}>
+                <div className={`p-3 rounded-lg border text-[11px] ${t.badgeGeneral}`}>
                   <span className="font-bold text-blue-400 block mb-1">Filozofia Potoku (Pipe):</span>
                   <strong>Linux:</strong> bajty tekstowe są przesyłane z lewej na prawą.<br />
                   <strong>Windows PS:</strong> kompletne, silnie typowane obiekty przechodzą dalej.
@@ -1508,14 +1660,14 @@ export default function App() {
               ) : conceptResult ? (
                 <div className="space-y-6">
                   {/* Concept Summary Header */}
-                  <div className="space-y-2 border-b border-slate-800 pb-5">
+                  <div className={`space-y-2 border-b ${t.border} pb-5`}>
                     <span className="text-xs font-mono text-blue-500 uppercase font-bold tracking-widest">
                       Koncepcja i Teoria Systemowa
                     </span>
                     <h2 className="text-2xl font-display font-bold text-white">
                       {conceptResult.conceptName}
                     </h2>
-                    <p className="text-slate-300 text-sm leading-relaxed max-w-3xl">
+                    <p className={`${t.textMuted} text-sm leading-relaxed max-w-3xl`}>
                       {conceptResult.summary}
                     </p>
                   </div>
@@ -1523,9 +1675,9 @@ export default function App() {
                   {/* Four pillars explanations */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                     {/* Bash block */}
-                    <div className="bg-[#0b0f19] border border-emerald-950/50 rounded-xl p-5 space-y-3 shadow-md flex flex-col justify-between">
+                    <div className={`border rounded-xl p-5 space-y-3 shadow-md flex flex-col justify-between transition-all duration-200 ${t.cardBg}`}>
                       <div className="space-y-3">
-                        <div className="flex items-center justify-between border-b border-emerald-950/40 pb-2">
+                        <div className={`flex items-center justify-between border-b pb-2 ${t.border}`}>
                           <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest font-mono">BASH (Linux)</span>
                           <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
                         </div>
@@ -1536,9 +1688,9 @@ export default function App() {
                     </div>
 
                     {/* Zsh block */}
-                    <div className="bg-[#0b0f19] border border-violet-950/50 rounded-xl p-5 space-y-3 shadow-md flex flex-col justify-between">
+                    <div className={`border rounded-xl p-5 space-y-3 shadow-md flex flex-col justify-between transition-all duration-200 ${t.cardBg}`}>
                       <div className="space-y-3">
-                        <div className="flex items-center justify-between border-b border-violet-950/40 pb-2">
+                        <div className={`flex items-center justify-between border-b pb-2 ${t.border}`}>
                           <span className="text-xs font-bold text-violet-400 uppercase tracking-widest font-mono">ZSH (macOS)</span>
                           <span className="w-2 h-2 rounded-full bg-violet-500"></span>
                         </div>
@@ -1549,9 +1701,9 @@ export default function App() {
                     </div>
 
                     {/* CMD block */}
-                    <div className="bg-[#0b0f19] border border-zinc-800 rounded-xl p-5 space-y-3 shadow-md flex flex-col justify-between">
+                    <div className={`border rounded-xl p-5 space-y-3 shadow-md flex flex-col justify-between transition-all duration-200 ${t.cardBg}`}>
                       <div className="space-y-3">
-                        <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+                        <div className={`flex items-center justify-between border-b pb-2 ${t.border}`}>
                           <span className="text-xs font-bold text-zinc-300 uppercase tracking-widest font-mono">CMD (Windows)</span>
                           <span className="w-2 h-2 rounded-full bg-zinc-500"></span>
                         </div>
@@ -1562,9 +1714,9 @@ export default function App() {
                     </div>
 
                     {/* PowerShell block */}
-                    <div className="bg-[#0b0f19] border border-blue-900/40 rounded-xl p-5 space-y-3 shadow-md flex flex-col justify-between">
+                    <div className={`border rounded-xl p-5 space-y-3 shadow-md flex flex-col justify-between transition-all duration-200 ${t.cardBg}`}>
                       <div className="space-y-3">
-                        <div className="flex items-center justify-between border-b border-blue-900/30 pb-2">
+                        <div className={`flex items-center justify-between border-b pb-2 ${t.border}`}>
                           <span className="text-xs font-bold text-blue-400 uppercase tracking-widest font-mono">POWERSHELL</span>
                           <span className="w-2 h-2 rounded-full bg-blue-500"></span>
                         </div>
@@ -1576,8 +1728,8 @@ export default function App() {
                   </div>
 
                   {/* Comparison Grid or Markdown Table */}
-                  <div className="bg-slate-900/40 rounded-xl border border-slate-800 p-5 space-y-4">
-                    <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
+                  <div className={`rounded-xl border p-5 space-y-4 transition-all duration-200 ${t.cardBg}`}>
+                    <div className={`flex items-center gap-2 border-b ${t.border} pb-3`}>
                       <Layers size={16} className="text-blue-400" />
                       <h4 className="text-xs font-semibold text-white uppercase tracking-wider font-display">
                         Tabela porównawcza mechanizmów
@@ -1589,7 +1741,7 @@ export default function App() {
                   </div>
 
                   {/* Pro tips checklist */}
-                  <div className="bg-gradient-to-br from-slate-900 to-indigo-950/20 rounded-xl border border-blue-900/30 p-5 space-y-4">
+                  <div className={`rounded-xl border p-5 space-y-4 transition-all duration-200 ${t.innerCard}`}>
                     <div className="flex items-center gap-2">
                       <Sparkles size={16} className="text-yellow-400 animate-pulse" />
                       <h4 className="text-xs font-semibold text-white uppercase tracking-wider font-display">
@@ -1600,7 +1752,7 @@ export default function App() {
                       {conceptResult.proTips.map((tip, idx) => (
                         <li 
                           key={idx}
-                          className="bg-slate-950/50 p-3 rounded-lg border border-slate-800/60 text-xs text-slate-300 relative pl-8"
+                          className={`p-3 rounded-lg border text-xs text-slate-300 relative pl-8 ${t.inputBg} ${t.border}`}
                         >
                           <span className="absolute left-3 top-3.5 w-2.5 h-2.5 bg-blue-500/30 text-blue-400 border border-blue-500/50 rounded-full flex items-center justify-center font-bold text-[8px]">
                             {idx + 1}
@@ -1627,9 +1779,9 @@ export default function App() {
 
         {/* TAB 5: O PROGRAMIE */}
         {activeTab === "about" && (
-          <div className="flex-1 w-full min-w-0 p-6 md:p-8 overflow-y-auto bg-slate-950/10 space-y-8">
+          <div className={`flex-1 w-full min-w-0 p-6 md:p-8 overflow-y-auto space-y-8 ${t.subBgSolid}`}>
             {/* Header section with elegant gradients */}
-            <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 p-6 md:p-8 space-y-4">
+            <div className={`relative overflow-hidden rounded-2xl border p-6 md:p-8 space-y-4 transition-all duration-200 ${t.border} ${t.cardBg}`}>
               <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
               <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -1641,7 +1793,7 @@ export default function App() {
                   <Info className="text-blue-500 shrink-0" size={28} />
                   O programie ShellCompare
                 </h2>
-                <p className="text-slate-400 text-sm max-w-4xl leading-relaxed">
+                <p className={`text-sm max-w-4xl leading-relaxed ${t.textMuted}`}>
                   Interaktywna platforma edukacyjna dedykowana pasjonatom technologii, studentom oraz profesjonalistom pragnącym zgłębić tajniki wieloplatformowej administracji systemami.
                 </p>
               </div>
@@ -1651,15 +1803,15 @@ export default function App() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               
               {/* Opis programu (Col span 7) */}
-              <div className="lg:col-span-7 bg-[#0b0f19]/80 border border-slate-800 rounded-xl p-6 md:p-8 space-y-5 shadow-lg relative overflow-hidden flex flex-col justify-between">
+              <div className={`border rounded-xl p-6 md:p-8 space-y-5 shadow-lg relative overflow-hidden flex flex-col justify-between transition-all duration-200 ${t.cardBg} ${t.border}`}>
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3 border-b border-slate-800/80 pb-3">
+                  <div className={`flex items-center gap-3 border-b pb-3 ${t.border}`}>
                     <BookOpen size={18} className="text-blue-400" />
                     <h3 className="text-sm font-bold text-white uppercase tracking-wider font-display">
                       Opis Projektu
                     </h3>
                   </div>
-                  <div className="text-slate-300 text-xs md:text-sm leading-relaxed space-y-4">
+                  <div className={`text-xs md:text-sm leading-relaxed space-y-4 ${t.textMuted}`}>
                     <p>
                       <strong>ShellCompare</strong> to zaawansowane narzędzie edukacyjne, którego celem jest ułatwienie zrozumienia różnic i podobieństw między najpopularniejszymi interpreterami poleceń. Aplikacja zestawia ze sobą powłoki z różnych środowisk operacyjnych: <strong>Bash (Linux)</strong>, <strong>Zsh (macOS)</strong>, klasyczny wiersz poleceń <strong>CMD (Windows)</strong> oraz obiektowy <strong>PowerShell</strong>.
                     </p>
@@ -1672,39 +1824,39 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-slate-800/60 mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                  <div className="p-2 bg-slate-950/50 rounded-lg border border-slate-800/40">
+                <div className={`pt-4 border-t mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center ${t.border}`}>
+                  <div className={`p-2 rounded-lg border ${t.innerCard}`}>
                     <span className="block text-xs font-bold text-blue-400 font-mono">100%</span>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Offline Ready</span>
+                    <span className={`text-[10px] uppercase tracking-wider font-semibold ${t.textMuted}`}>Offline Ready</span>
                   </div>
-                  <div className="p-2 bg-slate-950/50 rounded-lg border border-slate-800/40">
+                  <div className={`p-2 rounded-lg border ${t.innerCard}`}>
                     <span className="block text-xs font-bold text-emerald-400 font-mono">PWA</span>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Instalowalne</span>
+                    <span className={`text-[10px] uppercase tracking-wider font-semibold ${t.textMuted}`}>Instalowalne</span>
                   </div>
-                  <div className="p-2 bg-slate-950/50 rounded-lg border border-slate-800/40">
+                  <div className={`p-2 rounded-lg border ${t.innerCard}`}>
                     <span className="block text-xs font-bold text-amber-400 font-mono">Gemini</span>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">AI Powered</span>
+                    <span className={`text-[10px] uppercase tracking-wider font-semibold ${t.textMuted}`}>AI Powered</span>
                   </div>
-                  <div className="p-2 bg-slate-950/50 rounded-lg border border-slate-800/40">
+                  <div className={`p-2 rounded-lg border ${t.innerCard}`}>
                     <span className="block text-xs font-bold text-violet-400 font-mono">Bash/Zsh/CMD/PS</span>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Multi-Shell</span>
+                    <span className={`text-[10px] uppercase tracking-wider font-semibold ${t.textMuted}`}>Multi-Shell</span>
                   </div>
                 </div>
               </div>
 
               {/* Informacje o Autorze (Col span 5) */}
-              <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 to-indigo-950/20 border border-slate-800 rounded-xl p-6 md:p-8 space-y-5 shadow-lg relative overflow-hidden flex flex-col justify-between">
+              <div className={`border rounded-xl p-6 md:p-8 space-y-5 shadow-lg relative overflow-hidden flex flex-col justify-between transition-all duration-200 ${t.cardBg} ${t.border}`}>
                 <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3 border-b border-slate-800/80 pb-3">
+                  <div className={`flex items-center gap-3 border-b pb-3 ${t.border}`}>
                     <Award size={18} className="text-yellow-400" />
                     <h3 className="text-sm font-bold text-white uppercase tracking-wider font-display">
                       O Autorze
                     </h3>
                   </div>
 
-                  <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-950/40 border border-slate-800/50">
+                  <div className={`flex items-center gap-4 p-4 rounded-xl border ${t.innerCard}`}>
                     <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-bold text-white text-lg font-display shrink-0 border-2 border-slate-700 shadow-inner">
                       KJ
                     </div>
@@ -1714,7 +1866,7 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div className="text-slate-300 text-xs md:text-sm leading-relaxed space-y-3">
+                  <div className={`text-xs md:text-sm leading-relaxed space-y-3 ${t.textMuted}`}>
                     <p>
                       Inżynier, starszy wykładowca i doświadczony pedagog z wieloletnim stażem dydaktycznym. Specjalizuje się w architekturze systemów operacyjnych, teorii powłok systemowych oraz metodologii efektywnego nauczania technologii informatycznych.
                     </p>
@@ -1724,7 +1876,7 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-slate-800/40 mt-6 text-[10px] text-slate-500 font-mono flex justify-between items-center">
+                <div className={`pt-4 border-t mt-6 text-[10px] font-mono flex justify-between items-center ${t.border} ${t.textMuted}`}>
                   <span>Profil GitHub</span>
                   <a 
                     href="https://github.com/KrzJur" 
@@ -1739,19 +1891,19 @@ export default function App() {
               </div>
 
               {/* Regulamin (Col span 6) */}
-              <div className="lg:col-span-6 bg-[#0b0f19]/80 border border-slate-800 rounded-xl p-6 md:p-8 space-y-4 shadow-lg">
-                <div className="flex items-center gap-3 border-b border-slate-800/80 pb-3">
+              <div className={`border rounded-xl p-6 md:p-8 space-y-4 shadow-lg transition-all duration-200 ${t.cardBg} ${t.border}`}>
+                <div className={`flex items-center gap-3 border-b pb-3 ${t.border}`}>
                   <Code size={18} className="text-emerald-400" />
                   <h3 className="text-sm font-bold text-white uppercase tracking-wider font-display">
                     Regulamin Korzystania
                   </h3>
                 </div>
 
-                <div className="text-slate-300 text-xs md:text-sm leading-relaxed">
+                <div className={`text-xs md:text-sm leading-relaxed ${t.textMuted}`}>
                   <p className="mb-3 text-slate-400 text-xs font-semibold">
                     Zasady i warunki użytkowania platformy edukacyjnej ShellCompare:
                   </p>
-                  <ol className="list-decimal list-inside space-y-2.5 text-slate-300 text-xs">
+                  <ol className={`list-decimal list-inside space-y-2.5 text-xs ${t.textMuted}`}>
                     <li>
                       <span className="font-semibold text-white">Cel edukacyjny:</span> Aplikacja służy wyłącznie celom szkoleniowym, naukowym oraz osobistemu rozwojowi wiedzy w dziedzinie technologii IT.
                     </li>
@@ -1765,25 +1917,25 @@ export default function App() {
                       <span className="font-semibold text-white">Bezpieczeństwo i odpowiedzialność:</span> Autor platformy nie ponosi odpowiedzialności za ewentualne szkody, utratę danych bądź awarie sprzętowe powstałe w wyniku samodzielnego uruchomienia przedstawionych poleceń na rzeczywistych serwerach lub stacjach roboczych użytkownika.
                     </li>
                     <li>
-                      <span className="font-semibold text-white">Poszanowanie integralności:</span> Zabrania się podejmowania działań mających na celu przeciążenie, uszkodzenie bądź zakłócenie działania infrastruktury serwerowej aplikacji.
+                      <span className="font-semibold text-white">Poszanowanie integralności:</span> Zabrania się podejmowania działania mających na celu przeciążenie, uszkodzenie bądź zakłócenie działania infrastruktury serwerowej aplikacji.
                     </li>
                   </ol>
                 </div>
               </div>
 
               {/* Licencja (Col span 6) */}
-              <div className="lg:col-span-6 bg-[#0b0f19]/80 border border-slate-800 rounded-xl p-6 md:p-8 space-y-4 shadow-lg relative overflow-hidden">
+              <div className={`border rounded-xl p-6 md:p-8 space-y-4 shadow-lg relative overflow-hidden transition-all duration-200 ${t.cardBg} ${t.border}`}>
                 <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/[0.02] rounded-full blur-2xl pointer-events-none"></div>
 
-                <div className="flex items-center gap-3 border-b border-slate-800/80 pb-3">
+                <div className={`flex items-center gap-3 border-b pb-3 ${t.border}`}>
                   <XCircle size={18} className="text-rose-400" />
                   <h3 className="text-sm font-bold text-white uppercase tracking-wider font-display">
                     Licencja i Prawa Autorskie
                   </h3>
                 </div>
 
-                <div className="text-slate-300 text-xs md:text-sm leading-relaxed space-y-3.5">
-                  <div className="p-3 bg-rose-500/5 rounded-lg border border-rose-500/10 text-rose-300 text-xs flex items-start gap-2.5">
+                <div className={`text-xs md:text-sm leading-relaxed space-y-3.5 ${t.textMuted}`}>
+                  <div className={`p-3 rounded-lg border text-rose-300 text-xs flex items-start gap-2.5 ${t.innerCard} border-rose-500/20`}>
                     <XCircle size={16} className="text-rose-400 shrink-0 mt-0.5" />
                     <div>
                       <strong className="text-white block mb-0.5">Ścisła Licencja Dydaktyczna (Ograniczona):</strong>
@@ -1791,11 +1943,11 @@ export default function App() {
                     </div>
                   </div>
 
-                  <p className="text-xs text-slate-300">
+                  <p className="text-xs">
                     Oprogramowanie udostępniane jest <strong>wyłącznie do osobistego użytku edukacyjnego</strong>.
                   </p>
 
-                  <div className="bg-slate-950/60 p-3 rounded-lg border border-slate-800 text-xs text-slate-400 space-y-1.5 font-mono">
+                  <div className={`p-3 rounded-lg border text-xs space-y-1.5 font-mono ${t.innerCard} ${t.border}`}>
                     <p className="text-rose-400 font-semibold text-[10px] uppercase tracking-wider">Kategorycznie zabrania się:</p>
                     <ul className="list-disc list-inside space-y-1 text-[11px]">
                       <li>Kopiowania, powielania bądź dekompilacji kodu źródłowego,</li>
@@ -1805,7 +1957,7 @@ export default function App() {
                     </ul>
                   </div>
 
-                  <p className="text-xs text-slate-400 italic">
+                  <p className="text-xs italic">
                     Naruszenie powyższych warunków bez uprzedniej, jednoznacznej i <strong>pisemnej zgody autora (mgr. Krzysztofa Jureczka)</strong> pociąga za sobą pełną odpowiedzialność cywilną oraz karną.
                   </p>
                 </div>
@@ -1817,7 +1969,7 @@ export default function App() {
       </main>
 
       {/* FOOTER */}
-      <footer className="h-12 border-t border-slate-800 bg-slate-900/95 flex items-center justify-between px-6 md:px-8 text-[10px] text-slate-500 font-medium flex-shrink-0 z-10">
+      <footer className={`h-12 border-t flex items-center justify-between px-6 md:px-8 text-[10px] font-medium flex-shrink-0 z-10 transition-all duration-200 ${t.border} ${t.sidebarBg} ${t.textMuted}`}>
         <div className="flex items-center gap-4 md:gap-8">
           <span>Środowisko: <span className="text-green-500 text-[9px] uppercase font-bold tracking-tighter">Online sandbox</span></span>
           <span className="hidden md:inline">Wybrane silniki: <span className="text-slate-400">Ubuntu 22.04 LTS / PowerShell Core 7.4 / Win11 CMD</span></span>
