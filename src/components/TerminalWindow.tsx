@@ -206,7 +206,7 @@ export default function TerminalWindow({
               <span className={`select-none ${shellTheme.text} shrink-0`}>
                 {shellTheme.prompt}
               </span>
-              <span className={`${shellTheme.commandColor} break-all ml-1`}>
+              <span className={`${shellTheme.commandColor} break-words whitespace-pre-wrap ml-1`}>
                 {command || <span className="text-zinc-600 italic">Brak polecenia</span>}
               </span>
               <span className={`w-1.5 h-4 ml-0.5 bg-zinc-400 animate-[pulse_0.8s_infinite] shrink-0 block self-center`}></span>

@@ -811,7 +811,7 @@ export default function App() {
                   )}
 
                   {/* Terminal Windows Comparison Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                     <TerminalWindow 
                       key={`${selectedAtlasItem.id}-${flashcardResetKey}-bash`}
                       type="bash" 
@@ -1389,7 +1389,7 @@ export default function App() {
               )}
 
               {/* Live Terminal outputs */}
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 <TerminalWindow
                   type="bash"
                   command={sandboxResult?.bash.command || ""}
@@ -1514,7 +1514,7 @@ export default function App() {
                   </div>
 
                   {/* Four pillars explanations */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                     {/* Bash block */}
                     <div className="bg-[#0b0f19] border border-emerald-950/50 rounded-xl p-5 space-y-3 shadow-md flex flex-col justify-between">
                       <div className="space-y-3">
