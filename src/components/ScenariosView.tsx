@@ -94,6 +94,7 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
   const [showSolution, setShowSolution] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [levelFilter, setLevelFilter] = useState<"all" | "podstawowa" | "ponadpodstawowa">("all");
+  const [categoryFilter, setCategoryFilter] = useState<"all" | "ogolne" | "bezpieczenstwo">("all");
 
   // Toast notifications state
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -138,7 +139,11 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
       c.goal.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesLevel = levelFilter === "all" || c.level === levelFilter;
-    return matchesSearch && matchesLevel;
+    
+    const challengeCategory = c.category || "ogolne";
+    const matchesCategory = categoryFilter === "all" || challengeCategory === categoryFilter;
+    
+    return matchesSearch && matchesLevel && matchesCategory;
   });
 
   // When selected challenge or shell changes, reset input & evaluation
@@ -322,6 +327,33 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
               </button>
             ))}
           </div>
+
+          {/* Category filters */}
+          <div className="flex flex-col gap-1.5 pt-1.5 border-t border-slate-800/30">
+            <span className={`text-[9px] font-mono uppercase tracking-wider ${t.textMuted}`}>
+              Kategoria:
+            </span>
+            <div className="grid grid-cols-3 gap-1">
+              {[
+                { id: "all", label: "Wszystkie" },
+                { id: "ogolne", label: "Ogólne" },
+                { id: "bezpieczenstwo", label: "Tarcza" }
+              ].map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setCategoryFilter(cat.id as any)}
+                  className={`px-1 py-1 rounded text-[9px] font-semibold text-center border transition-all truncate ${
+                    categoryFilter === cat.id
+                      ? t.tabActive
+                      : `${t.inputBg} ${t.border} ${t.textMuted} ${t.accentHover}`
+                  }`}
+                  title={cat.id === "bezpieczenstwo" ? "Bezpieczeństwo" : cat.label}
+                >
+                  {cat.id === "bezpieczenstwo" ? "Tarcza" : cat.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Challenge list */}
@@ -370,6 +402,13 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
                     }`}>
                       {challenge.level === "podstawowa" ? "Podst." : "Ponadp."}
                     </span>
+                    <span className={`text-[8px] px-1.5 py-0.2 rounded font-bold uppercase tracking-wider ${
+                      challenge.category === "bezpieczenstwo"
+                        ? "bg-rose-950/50 text-rose-400 border border-rose-800/30"
+                        : "bg-blue-950/50 text-blue-400 border border-blue-800/30"
+                    }`}>
+                      {challenge.category === "bezpieczenstwo" ? "Bezpiecz." : "Ogólne"}
+                    </span>
                   </div>
                 </button>
               );
@@ -404,6 +443,13 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
         <div className={`border rounded-xl p-5 md:p-6 space-y-4 shadow-xl transition-all duration-200 ${t.cardBg} ${t.border}`}>
           <div className="flex flex-wrap items-center gap-2.5">
             {getLevelBadge(selectedChallenge.level)}
+            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+              selectedChallenge.category === "bezpieczenstwo"
+                ? "bg-rose-950/70 text-rose-400 border border-rose-800/40"
+                : "bg-blue-950/70 text-blue-400 border border-blue-800/40"
+            }`}>
+              Kategoria: {selectedChallenge.category === "bezpieczenstwo" ? "Bezpieczeństwo" : "Ogólne"}
+            </span>
             <span className={`text-xs font-mono ${t.textMuted}`}>&bull; Wyzwanie Praktyczne</span>
           </div>
 

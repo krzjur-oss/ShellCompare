@@ -4,11 +4,12 @@ import remarkGfm from "remark-gfm";
 
 interface MarkdownRendererProps {
   content: string;
+  className?: string;
 }
 
-export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
+export default function MarkdownRenderer({ content, className = "" }: MarkdownRendererProps) {
   return (
-    <div className="markdown-body text-xs text-slate-300 leading-relaxed">
+    <div className={`markdown-body text-xs text-slate-300 leading-relaxed prose prose-sm prose-invert max-w-full min-w-0 break-words whitespace-normal overflow-hidden ${className}`}>
       <Markdown
         remarkPlugins={[remarkGfm]}
         components={{

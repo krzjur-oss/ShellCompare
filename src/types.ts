@@ -48,6 +48,7 @@ export interface Challenge {
   goal: string;
   description: string;
   level: "podstawowa" | "ponadpodstawowa";
+  category?: string;
   solutions: {
     bash: string[];
     cmd: string[];
@@ -55,6 +56,7 @@ export interface Challenge {
     zsh: string[];
   };
   tips: string;
+  dangerExplanation?: string;
 }
 
 export interface ChallengeEvaluationResult {
