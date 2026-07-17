@@ -15,6 +15,7 @@ import {
   Terminal as TerminalIcon,
   Flame,
   ArrowRight,
+  ShieldAlert,
   X
 } from "lucide-react";
 import { CHALLENGES, localEvaluateChallenge } from "../data/scenariosData";
@@ -666,6 +667,27 @@ export default function ScenariosView({ terminalTheme }: ScenariosViewProps) {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {selectedChallenge.category === "bezpieczenstwo" && 
+             selectedChallenge.dangerExplanation && 
+             (evaluationResult?.isCorrect || completedChallenges.includes(`${selectedChallenge.id}-${selectedShell}`)) && (
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="border rounded-xl p-5 md:p-6 space-y-3 shadow-xl bg-rose-950/20 border-rose-500/30 text-slate-200"
+              >
+                <div className="flex items-center gap-2.5 pb-2.5 border-b border-rose-500/25">
+                  <ShieldAlert size={20} className="text-rose-400 shrink-0" />
+                  <h3 className="font-bold text-xs uppercase tracking-wider text-rose-400">
+                    ⚠️ Dlaczego to jest niebezpieczne?
+                  </h3>
+                </div>
+                <p className="text-xs leading-relaxed text-slate-300">
+                  {selectedChallenge.dangerExplanation}
+                </p>
+              </motion.div>
+            )}
           </div>
 
         </div>

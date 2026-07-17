@@ -1903,31 +1903,36 @@ export default function App() {
                 <div className={`flex items-center gap-3 border-b pb-3 ${t.border}`}>
                   <Code size={18} className="text-emerald-400" />
                   <h3 className="text-sm font-bold text-white uppercase tracking-wider font-display">
-                    Regulamin Korzystania
+                    Regulamin i Prywatność
                   </h3>
                 </div>
 
-                <div className={`text-xs md:text-sm leading-relaxed ${t.textMuted}`}>
-                  <p className="mb-3 text-slate-400 text-xs font-semibold">
-                    Zasady i warunki użytkowania platformy edukacyjnej ShellCompare:
-                  </p>
-                  <ol className={`list-decimal list-inside space-y-2.5 text-xs ${t.textMuted}`}>
+                <div className={`text-xs md:text-sm leading-relaxed space-y-3.5 ${t.textMuted}`}>
+                  <div className="flex justify-between items-center bg-slate-900/50 p-2 rounded-lg border border-slate-800/60 font-mono text-[11px]">
+                    <span className="text-slate-400">Wersja v1.3.0</span>
+                    <span className="text-slate-400">Obowiązuje od 17.07.2026 r.</span>
+                  </div>
+                  
+                  <ol className="list-decimal list-inside space-y-2.5 text-xs">
                     <li>
-                      <span className="font-semibold text-white">Cel edukacyjny:</span> Aplikacja służy wyłącznie celom szkoleniowym, naukowym oraz osobistemu rozwojowi wiedzy w dziedzinie technologii IT.
+                      <span className="font-semibold text-white">Postanowienia ogólne:</span> Właścicielem, twórcą i jedynym autorem aplikacji <strong>ShellCompare</strong> jest <strong>mgr Krzysztof Jureczek</strong>. Program jest dystrybuowany na warunkach Wolnej Licencji Domowo-Edukacyjnej (Zastrzeżonej) — WLDE.
                     </li>
                     <li>
-                      <span className="font-semibold text-white">Dobrowolność i brak opłat:</span> Korzystanie z wszelkich zasobów platformy (atlasu komend, wyzwań oraz symulatora sandbox) jest w pełni darmowe.
+                      <span className="font-semibold text-white">Przeznaczenie:</span> Aplikacja przeznaczona jest wyłącznie do <strong>użytku domowego/prywatnego</strong> (rozrywka, samokształcenie) oraz <strong>użytku edukacyjnego</strong> (szkoły, uczelnie, świetlice, placówki terapeutyczne w ramach zajęć).
                     </li>
                     <li>
-                      <span className="font-semibold text-white">Symulacja działania:</span> Wyniki poleceń oraz opisy zachowania systemów generowane są w celach poglądowych. Autor dokłada wszelkich starań, aby były rzetelne, ale nie gwarantuje identycznego zachowania na fizycznych systemach produkcyjnych.
+                      <span className="font-semibold text-white">Zasady korzystania:</span> Korzystanie z aplikacji jest całkowicie bezpłatne we wskazanym zakresie. Program nie zawiera reklam, mikropłatności ani płatnych subskrypcji.
                     </li>
                     <li>
-                      <span className="font-semibold text-white">Bezpieczeństwo i odpowiedzialność:</span> Autor platformy nie ponosi odpowiedzialności za ewentualne szkody, utratę danych bądź awarie sprzętowe powstałe w wyniku samodzielnego uruchomienia przedstawionych poleceń na rzeczywistych serwerach lub stacjach roboczych użytkownika.
+                      <span className="font-semibold text-white">Dane i prywatność (RODO):</span> Program <strong>nie wymaga rejestracji ani logowania</strong>. Wprowadzane dane (komendy, postępy wyzwań) są przechowywane <strong>wyłącznie lokalnie w pamięci przeglądarki (`localStorage`)</strong> i nigdy nie opuszczają urządzenia użytkownika. Autor nie zbiera danych ani nie ma do nich dostępu.
                     </li>
                     <li>
-                      <span className="font-semibold text-white">Poszanowanie integralności:</span> Zabrania się podejmowania działania mających na celu przeciążenie, uszkodzenie bądź zakłócenie działania infrastruktury serwerowej aplikacji.
+                      <span className="font-semibold text-white">Odpowiedzialność:</span> Aplikacja udostępniana jest w stanie „takim, jakim jest” (<em>as is</em>). Autor nie ponosi odpowiedzialności za ewentualne błędy działania lub szkody wynikające z użytkowania programu.
                     </li>
                   </ol>
+                  <p className="text-[10px] italic text-slate-500 pt-1 border-t border-slate-800/40">
+                    Kontakt: kjureczek@proton.me · github.com/krzjur-oss
+                  </p>
                 </div>
               </div>
 
@@ -1938,35 +1943,36 @@ export default function App() {
                 <div className={`flex items-center gap-3 border-b pb-3 ${t.border}`}>
                   <XCircle size={18} className="text-rose-400" />
                   <h3 className="text-sm font-bold text-white uppercase tracking-wider font-display">
-                    Licencja i Prawa Autorskie
+                    Licencja Oprogramowania (WLDE)
                   </h3>
                 </div>
 
-                <div className={`text-xs md:text-sm leading-relaxed space-y-3.5 ${t.textMuted}`}>
+                <div className={`text-xs md:text-sm leading-relaxed space-y-3 ${t.textMuted}`}>
                   <div className={`p-3 rounded-lg border text-rose-300 text-xs flex items-start gap-2.5 ${t.innerCard} border-rose-500/20`}>
                     <XCircle size={16} className="text-rose-400 shrink-0 mt-0.5" />
                     <div>
-                      <strong className="text-white block mb-0.5">Ścisła Licencja Dydaktyczna (Ograniczona):</strong>
-                      Wszystkie materiały, baza wiedzy, opisy, kody źródłowe oraz interfejs graficzny aplikacji ShellCompare stanowią wyłączną własność intelektualną autora.
+                      <strong className="text-white block mb-0.5">Wolna Licencja Domowo-Edukacyjna (Zastrzeżona):</strong>
+                      Udziela się bezpłatnej, niewyłącznej i nieprzenoszalnej licencji do celów prywatnych oraz dydaktycznych, przy pełnym zachowaniu praw autorskich twórcy (mgr. Krzysztofa Jureczka).
                     </div>
                   </div>
-
-                  <p className="text-xs">
-                    Oprogramowanie udostępniane jest <strong>wyłącznie do osobistego użytku edukacyjnego</strong>.
-                  </p>
 
                   <div className={`p-3 rounded-lg border text-xs space-y-1.5 font-mono ${t.innerCard} ${t.border}`}>
                     <p className="text-rose-400 font-semibold text-[10px] uppercase tracking-wider">Kategorycznie zabrania się:</p>
                     <ul className="list-disc list-inside space-y-1 text-[11px]">
                       <li>Kopiowania, powielania bądź dekompilacji kodu źródłowego,</li>
-                      <li>Modyfikowania kodu lub tworzenia na jego bazie dzieł zależnych,</li>
-                      <li>Wykorzystywania komercyjnego, odsprzedaży lub dystrybucji,</li>
-                      <li>Używania w płatnych szkoleniach i kursach bez zgody.</li>
+                      <li>Modyfikowania kodu lub tworzenia na jego bazie forków,</li>
+                      <li>Rozpowszechniania i dystrybucji kopii bez zgody,</li>
+                      <li>Sprzedaży, komercjalizacji lub pobierania jakichkolwiek opłat,</li>
+                      <li>Usuwania oznaczeń autorskich i informacji o Autorze.</li>
                     </ul>
                   </div>
 
-                  <p className="text-xs italic">
-                    Naruszenie powyższych warunków bez uprzedniej, jednoznacznej i <strong>pisemnej zgody autora (mgr. Krzysztofa Jureczka)</strong> pociąga za sobą pełną odpowiedzialność cywilną oraz karną.
+                  <p className="text-xs italic leading-normal">
+                    Naruszenie warunków licencji WLDE skutkuje jej natychmiastowym wygaśnięciem. Wszelkie spory rozstrzyga sąd właściwy dla siedziby Licencjodawcy.
+                  </p>
+                  
+                  <p className="text-[10px] font-mono text-slate-400 pt-1 border-t border-slate-800/40 text-right">
+                    Kraków, lipiec 2026 r. · © Krzysztof Jureczek
                   </p>
                 </div>
               </div>
